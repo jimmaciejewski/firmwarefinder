@@ -1,0 +1,10 @@
+{% extends "firmware/base.html" %}
+
+{% block content %}
+    <h2>Firmware</h2>
+    <ul>
+        {% for firmware in object_list %}
+            <li><a href="{% url 'firmware:firmware-detail' firmware.id %}">{{ firmware }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "firmware/base.html" %}
+{% block content %}
+
+<div class="container">
+  <div class="row" style="background-color:#c7bfb2; border-radius: 5px;">
+    NX-1200
+  </div>
+  <div class="row">
+    <div class="col-sm-1">
+      col-1
+    </div>
+    <div class="col-sm-3" style="outline: 8px ridge rgba(170, 50, 220, .6);
+    border-radius: 2rem;">
+      col-3
+    </div>
+    <div class="col-sm-8" style="outline: 8px ridge rgba(170, 50, 220, .6);
+    border-radius: 2rem;">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Disserendi artem nullam habuit. Quae cum magnifice primo dici viderentur, considerata minus probabantur. Bonum negas esse divitias, praeposìtum esse dicis? Duo Reges: constructio interrete. Illis videtur, qui illud non dubitant bonum dicere -; Cum praesertim illa perdiscere ludus esset.
+    </div>
+  </div>
+      <!-- <div class="row">
+        1
+      </div>
+      <div class="row">
+        1
+      </div>
+      <div class="row">
+        1
+      </div>
+      <div class="row">
+        1
+      </div>
+
+    </div>
+  </div>
+
+  <div class="row" >
+      test 2
+  </div>
+  <div class="row" style="background-color:#da8900; border-radius: 5px;">
+    test 2
+  </div>
+
+  <div class="row" style="background-color:#c7bfb2; border-radius: 5px;">
+    test 2
+  </div>
+  <div class="row" style="background-color:#4f1c09; border-radius: 5px;">
+    NX-1200 -->
+  </div>
+
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "firmware/base.html" %}
+
+{% block content %}
+<h1>{{ product.name }}</h1>
+<ul>
+{% for firmware in product.firmware_set.all %}
+<li><a href="{% url 'firmware:firmware-detail' firmware.id %}">{{ firmware }}</a></li>
+{% endfor %}
+</ul>
+{% endblock %}

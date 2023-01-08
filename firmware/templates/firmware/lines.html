@@ -1,0 +1,41 @@
+{% extends "firmware/base.html" %}
+
+{% block content %}
+
+<style>
+
+</style>
+<div class="container">
+  <table class="table table-responsive table-hover">
+    <thead>
+          <tr><th>Column</th><th>Column</th><th>Column</th><th>Column</th></tr>
+      </thead>
+      <tbody>
+          <tr class="clickable" data-toggle="collapse" id="row1" data-target=".row1">
+              <td><i class="glyphicon glyphicon-plus"></i></td>
+              <td>data</td>
+              <td>data</td>  
+              <td>data</td>
+          </tr>
+          <tr class="collapse row1">
+              <td>- child row</td>
+              <td>data</td>
+              <td>data</td>  
+              <td>data</td>
+          </tr>
+          <tr class="collapse row1">
+              <td>- child row</td>
+              <td>data</td>
+              <td>data</td>  
+              <td>data</td>
+          </tr>
+      </tbody>
+  </table>
+  <style>
+  .collapsing {
+    -webkit-transition: height .01s ease;
+    transition: height .01s ease
+  }
+  </style>
+
+{% endblock %}

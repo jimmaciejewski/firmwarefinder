@@ -1,0 +1,21 @@
+
+{% extends "firmware/base.html" %}
+
+{% block content %}
+
+<table class="table">
+
+    <tbody>
+      {% for product in products %}
+        {% for version in product.fgs.all.0.version_set.all|dictsortreversed:"number" %}
+        <tr>
+          <th scope="row">{{product}}</th>
+          <td>{{version.name}}</td>
+          <td>{{version.number}}</td>
+        </tr>
+        {% endfor %}
+      {% endfor %}
+    </tbody>
+  </table>
+
+{% endblock %}

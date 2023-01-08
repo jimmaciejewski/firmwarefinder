@@ -1,0 +1,25 @@
+{% extends "firmware/base.html" %}
+
+{% block content %}
+
+<h1>{{firmware.name}}</h1>
+<i>Site: <a href="{% url 'firmware:site-detail' firmware.site.id %}">{{firmware.site}}</a></i>
+<h2>Firware</h2>
+<ul>
+    {% for version in firmware.version_set.all %}
+        <li><a href="{{firmware.site}}{{version.download_page}}">{{version.number}}</a></li>
+        {% if firmware.file %}
+            <li>{{firmware.file}}</li>
+        {% endif %}
+    {% endfor %}
+</ul>
+
+<h2>Related Products</h2>
+    <ul>
+        {% for product in firmware.products.all %}
+        <li><a href="{% url 'firmware:product-detail' product.id %}">{{ product.name }}</a>
+        {% endfor %}
+    </ul>
+
+
+{% endblock %}
