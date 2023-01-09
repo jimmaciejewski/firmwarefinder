@@ -2,11 +2,11 @@ from fabric.contrib.files import append, exists, sed
 from fabric.api import env, local, run
 import random
 
-REPO_URL = 'git@bitbucket.org:jacobschnitty/djacob.git'
+REPO_URL = 'git@bitbucket.org:jim/firmware_finder.git'
 
 
 def deploy():
-    site_folder = f'/home/{env.user}/sites/djacob'
+    site_folder = f'/home/{env.user}/sites/firmware_finder'
     source_folder = site_folder + '/source'
     _create_directory_structure_if_necessary(site_folder)
     _get_latest_source(source_folder)
@@ -33,13 +33,13 @@ def _get_latest_source(source_folder):
 
 
 def _update_settings(source_folder, site_name):
-    settings_path = source_folder + '/mysite/mysite/settings.py'
+    settings_path = source_folder + '/firmwarefinder/settings.py'
     sed(settings_path, "DEBUG = True", "DEBUG = False") # sed replaces stuff
     sed(settings_path,
         'ALLOWED_HOSTS =.+$',
         f'ALLOWED_HOSTS = ["{site_name}","localhost"]'
         )
-    secret_key_file = source_folder + '/mysite/secret_key.py'
+    secret_key_file = source_folder + '/firmwarefinder/secret_key.py'
     if not exists(secret_key_file):
         chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
         key = ''.join(random.SystemRandom().choice(chars) for _ in range(50))
@@ -47,7 +47,7 @@ def _update_settings(source_folder, site_name):
     append(settings_path, '\nfrom .secret_key import SECRET_KEY')
 
 def _update_service_files(source_folder, site_name):
-    nginx_service_path = source_folder + '/deploy_tools/djacob.nginx.conf'
+    nginx_service_path = source_folder + '/deploy_tools/firmware_finder.nginx.conf'
     sed(nginx_service_path,
         '\*\*ADDRESS HERE\*\*', site_name)
     sed(nginx_service_path,
@@ -77,5 +77,5 @@ def _update_database(source_folder):
 
 
 def _restart_service():
-    run("sudo systemctl restart djacob.service")
+    run("sudo systemctl restart firmware_finder.service")
 

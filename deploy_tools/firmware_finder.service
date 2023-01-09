@@ -4,9 +4,9 @@ After=network.target
 
 [Service]
 Restart=on-failure
-User=jacob
-WorkingDirectory=/home/jacob/sites/djacob/source/mysite
-ExecStart=/home/jacob/sites/djacob/source/mysite /home/jacob/sites/djacob/.env/bin/gunicorn --bind unix:/tmp/firmware.turkishjohnnys.com.socket mysite.wsgi:application
+User=jim
+WorkingDirectory=/home/jim/sites/firmware_finder/source/firmwarefinder
+ExecStart=/home/jim/sites/sites/firmware_finder/source/firmwarefinder /home/jim/sites/firmware_finder/.env/bin/gunicorn --bind unix:/tmp/firmware.turkishjohnnys.com.socket mysite.wsgi:application
 
 
 [Install]
