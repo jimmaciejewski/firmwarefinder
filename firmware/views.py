@@ -1,8 +1,12 @@
 from django.shortcuts import render
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, FormView
 from django.db.models import Q
-from .models import Brand, Product, Version, FG
-
+from django.http import JsonResponse
+import re
+from django.core.mail import send_mail
+from django.conf import settings
+from .models import Brand, Product, Version, FG, SubscribedUser
+from .forms import SubscribeForm
 
 def welcome(request):
     return render(request, 'firmware/index.html')
@@ -60,19 +64,15 @@ class ProductDetailView(DetailView):
     model = Product
 
 
+class SubscribeForm(FormView):
+    template_name = 'firmware/subscribe.html'
+    form_class = SubscribeForm
+    success_url = '/'
+
+    def form_valid(self, form):
+        if form.is_valid():
+            form.save()
+
+        return super().form_valid(form)
 
 
-# class FirmwareListView(ListView):
-#     model = Firmware
-
-# class FirmwareDetailView(DetailView):
-#     model = Firmware
-
-# def tree(request):
-#     # {
-#     #     "name": "Site"
-#     #     "childern": [
-#     #         ..
-#     #     ]
-#     # }
-#     return render(request, 'firmware/tree.html')

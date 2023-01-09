@@ -4,7 +4,7 @@
 
 <h1>{{firmware.name}}</h1>
 <i>Site: <a href="{% url 'firmware:site-detail' firmware.site.id %}">{{firmware.site}}</a></i>
-<h2>Firware</h2>
+<h2>Firmware</h2>
 <ul>
     {% for version in firmware.version_set.all %}
         <li><a href="{{firmware.site}}{{version.download_page}}">{{version.number}}</a></li>

@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 
-from .models import Brand, AssociatedName, Product, FG, Version
+from .models import Brand, AssociatedName, Product, FG, Version, SubscribedUser
 
 
 class ProductAdmin(admin.ModelAdmin):
@@ -56,3 +56,4 @@ admin.site.register(AssociatedName, AssociatedNameAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(FG, FGAdmin)
 admin.site.register(Version, VersionAdmin)
+admin.site.register(SubscribedUser)

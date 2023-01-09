@@ -1,17 +1,18 @@
 from django.core.management.base import BaseCommand, CommandError
-from firmware.models import Brand, Product, FG, Version, AssociatedName
+from firmware.models import Brand, Product, FG, Version, AssociatedName, SubscribedUser
 
 import requests
 from dataclasses import dataclass, field
 import json
 import re
 from bs4 import BeautifulSoup
-
+from mailqueue.models import MailerMessage
 
 class Command(BaseCommand):
     help = 'Scrapes all products from Harman Hotfix page'
 
     def handle(self, *args, **options):
+        new_found_firmwares = []
         url = "https://help.harmanpro.com/_api/web/lists/getbytitle('Pages')/Items?$top=1000&$orderby=Title&$select=PublishingPageContent,PageURL,Title,FileRef,Brand/Title, Brand/ID, Model/Title, Family/Title, DocType/Title,CaseType0/Title,FaultCategory/Title&$expand=Family,Model,CaseType0,Brand,FaultCategory,DocType&$filter=DocType/Title eq 'Hotfix firmware'"
         
         headers = {'user-agent': 'FirmwareTracker', "accept": "application/json"}
@@ -54,6 +55,8 @@ class Command(BaseCommand):
 
                     if created:
                         self.stdout.write(self.style.SUCCESS(f'Created: {new_version.name}'))
+                        new_found_firmwares.append(new_version)
+
                     else:
                         self.stdout.write(self.style.NOTICE(f'Already Exists: {new_version.name}'))
 
@@ -61,8 +64,38 @@ class Command(BaseCommand):
                 pass
             except Exception as error:
                 pass
+
+        ### Email updates
+        for sub in SubscribedUser.objects.all():
+            my_name = "Firmware Finder"
+            firmware_names = [firmware.name for firmware in new_found_firmwares]
+            content = f"""
+            Dear {sub.name},
+
+            I found new firmware today!
+            {firmware_names}
+
+            Thanks,
+            Turkish Johnny!
+            """
+
+            msg = MailerMessage()
+            msg.subject = "Updated Firmwares"
+            msg.to_address = sub.email
+
+            # For sender names to be displayed correctly on mail clients, simply put your name first
+            # and the actual email in angle brackets 
+            # The below example results in "Dave Johnston <dave@example.com>"
+            msg.from_address = '{} <{}>'.format(my_name, sub.email)
+
+            # As this is only an example, we place the text content in both the plaintext version (content) 
+            # and HTML version (html_content).
+            msg.content = content
+            msg.html_content = content
+            msg.save()
                     
             
 
 
-                
+
+

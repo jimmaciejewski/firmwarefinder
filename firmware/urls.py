@@ -17,4 +17,6 @@ urlpatterns = [
     # path('firmware/<int:pk>/', views.FirmwareDetailView.as_view(), name='firmware-detail'),
     # path('<int:pk>/results/', views.ResultsView.as_view(), name='results'),
     # path('<int:question_id>/vote/', views.vote, name='vote'),
+    path('subscribe/', views.SubscribeForm.as_view(), name='subscribe'),
+    # path('validate/', views.validate_email, name='validate_email'),
 ]

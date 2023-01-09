@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'mailqueue',
     'firmware.apps.FirmwareConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -126,3 +127,16 @@ MEDIA_ROOT = BASE_DIR / '../../media/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Enable the mail queue. If this is set to False, the mail queue will be disabled and emails will be 
+# sent immediately instead.
+MAILQUEUE_QUEUE_UP = True
+
+# Maximum amount of emails to send during each queue run
+MAILQUEUE_LIMIT = 50
+
+# If MAILQUEUE_STORAGE is set to True, will ignore your default storage settings
+# and use Django's filesystem storage instead (stores them in MAILQUEUE_ATTACHMENT_DIR) 
+MAILQUEUE_STORAGE = False
+MAILQUEUE_ATTACHMENT_DIR = 'mailqueue-attachments'
