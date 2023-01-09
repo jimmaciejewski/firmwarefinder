@@ -5,8 +5,8 @@ After=network.target
 [Service]
 Restart=on-failure
 User=jim
-WorkingDirectory=/home/jim/sites/firmware_finder/source/firmwarefinder
-ExecStart=/home/jim/sites/sites/firmware_finder/source/firmwarefinder /home/jim/sites/firmware_finder/.env/bin/gunicorn --bind unix:/tmp/firmware.turkishjohnnys.com.socket mysite.wsgi:application
+WorkingDirectory=/home/jim/sites/firmware_finder/source
+ExecStart=/home/jim/sites/firmware_finder/.env/bin/gunicorn --bind unix:/tmp/firmware.turkishjohnnys.com.socket firmwarefinder.wsgi:application
 
 
 [Install]

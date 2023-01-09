@@ -2,7 +2,7 @@ from fabric.contrib.files import append, exists, sed
 from fabric.api import env, local, run
 import random
 
-REPO_URL = 'git@bitbucket.org:jim/firmware_finder.git'
+REPO_URL = 'git@bitbucket.org:itsmagic/firmware_finder.git'
 
 
 def deploy():
@@ -64,15 +64,15 @@ def _update_virtualenv(source_folder):
 
 def _update_static_files(source_folder): 
     run(
-        f'cd {source_folder}/mysite'
-        ' && ../../.env/bin/python manage.py collectstatic --noinput'
+        f'cd {source_folder}'
+        ' && ../.env/bin/python manage.py collectstatic --noinput'
     )
 
 
 def _update_database(source_folder):
     run(
-        f'cd {source_folder}/mysite'
-        ' && ../../.env/bin/python manage.py migrate --noinput'
+        f'cd {source_folder}'
+        ' && ../.env/bin/python manage.py migrate --noinput'
     )
 
 
