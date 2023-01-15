@@ -57,8 +57,9 @@ class Command(BaseCommand):
                         self.stdout.write(self.style.SUCCESS(f'Created: {new_version.name}'))
                         new_found_firmwares.append(new_version)
 
-                    else:
-                        self.stdout.write(self.style.NOTICE(f'Already Exists: {new_version.name}'))
+                    # Don't print anything if the firmware already exists...
+                    # else:
+                    #     self.stdout.write(self.style.NOTICE(f'Already Exists: {new_version.name}'))
 
             except (IndexError, TypeError):
                 pass
@@ -68,12 +69,16 @@ class Command(BaseCommand):
         ### Email updates
         for sub in SubscribedUser.objects.all():
             my_name = "Firmware Finder"
-            firmware_names = [firmware.name for firmware in new_found_firmwares]
+            firmware_names = []
+            for firmware in new_found_firmwares:
+                firmware_names.append(f"<li>{firmware.name} --> {firmware.number}</li>\r")
             content = f"""
             Dear {sub.name},
 
             I found new firmware today!
-            {firmware_names}
+            <ul>
+                {firmware_names}
+            </ul>
 
             Thanks,
             Turkish Johnny!

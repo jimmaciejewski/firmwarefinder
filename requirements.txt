@@ -2,3 +2,4 @@ django
 requests
 bs4
 django-mail-queue
+gunicorn

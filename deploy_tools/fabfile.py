@@ -10,10 +10,10 @@ def deploy():
     source_folder = site_folder + '/source'
     _create_directory_structure_if_necessary(site_folder)
     _get_latest_source(source_folder)
-    _update_settings(source_folder, env.host)
+    _create_or_update_dotenv()
     _update_service_files(source_folder, env.host)
     _update_virtualenv(source_folder)
-    # _update_static_files(source_folder)
+    _update_static_files(source_folder)
     _update_database(source_folder)
     _restart_service()
 
@@ -31,20 +31,16 @@ def _get_latest_source(source_folder):
     current_commit = local("git log -n 1 --format=%H", capture=True)
     run(f'cd {source_folder} && git reset --hard {current_commit}')
 
+def _create_or_update_dotenv():
+    append('.env', 'DJANGO_DEBUG_FALSE=y')  
+    append('.env', f'SITENAME={env.host}')
+    current_contents = run('cat .env')  
+    if 'DJANGO_SECRET_KEY' not in current_contents:  
+        new_secret = ''.join(random.SystemRandom().choices(  
+            'abcdefghijklmnopqrstuvwxyz0123456789', k=50
+        ))
+        append('.env', f'DJANGO_SECRET_KEY={new_secret}')
 
-def _update_settings(source_folder, site_name):
-    settings_path = source_folder + '/firmwarefinder/settings.py'
-    sed(settings_path, "DEBUG = True", "DEBUG = False") # sed replaces stuff
-    sed(settings_path,
-        'ALLOWED_HOSTS =.+$',
-        f'ALLOWED_HOSTS = ["{site_name}","localhost"]'
-        )
-    secret_key_file = source_folder + '/firmwarefinder/secret_key.py'
-    if not exists(secret_key_file):
-        chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
-        key = ''.join(random.SystemRandom().choice(chars) for _ in range(50))
-        append(secret_key_file, f'SECRET_KEY = "{key}"')
-    append(settings_path, '\nfrom .secret_key import SECRET_KEY')
 
 def _update_service_files(source_folder, site_name):
     nginx_service_path = source_folder + '/deploy_tools/firmware_finder.nginx.conf'

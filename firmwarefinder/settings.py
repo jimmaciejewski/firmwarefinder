@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,13 +20,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-+30c**#lh6s+o*2r^5nc3m0=*lc+&0)j7970o^z6vtb=@_wf=@'
+if 'DJANGO_DEBUG_FALSE' in os.environ:  
+    DEBUG = False
+    SECRET_KEY = os.environ['DJANGO_SECRET_KEY']  
+    ALLOWED_HOSTS = [os.environ['SITENAME']]  
+else:
+    DEBUG = True  
+    SECRET_KEY = 'insecure-key-for-dev'
+    ALLOWED_HOSTS = []
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -128,6 +131,14 @@ MEDIA_ROOT = BASE_DIR / '../media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Only enable email on production
+if 'DJANGO_DEBUG_FALSE' in os.environ:  
+    DEFAULT_FROM_EMAIL =  os.environ['EMAIL_USER']
+    EMAIL_USE_TLS = True
+    EMAIL_HOST = 'smtp.mailgun.org'
+    EMAIL_HOST_USER = os.environ['EMAIL_USER']
+    EMAIL_HOST_PASSWORD = os.environ['EMAIL_USER']
+    EMAIL_PORT = 587
 
 # Enable the mail queue. If this is set to False, the mail queue will be disabled and emails will be 
 # sent immediately instead.
