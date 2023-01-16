@@ -10,32 +10,31 @@ REPO_URL = f'git@bitbucket.org:itsmagic/{REPO_NAME}.git'
 def deploy(c):
     site_folder = f'/home/{c.user}/sites/{REPO_NAME}'
     source_folder = site_folder + '/source'
-    # _create_directory_structure_if_necessary(c, site_folder)
-    # _get_latest_source(c, source_folder)
-    # _create_or_update_dotenv(c, source_folder)
+    _create_directory_structure_if_necessary(c, site_folder)
+    _get_latest_source(c, source_folder)
+    _create_or_update_dotenv(c, source_folder)
     _update_service_files(c, source_folder)
-#     _update_virtualenv(source_folder)
-#     _update_static_files(source_folder)
-#     _update_database(source_folder)
-#     _restart_service()
+    _update_virtualenv(c, source_folder)
+    _update_static_files(c, source_folder)
+    _update_database(c, source_folder)
+    _restart_service(c)
 
 
 
 def _create_directory_structure_if_necessary(c, site_folder):
-    for subfolder in ('database', 'static', '.env', 'source'):
-        c.run(f'mkdir -p {site_folder}/{subfolder}')
-        print(f'mkdir -p {site_folder}/{subfolder}')
+    for subfolder in ('database', 'static', 'source'):
+        if c.run(f'test -d {site_folder}/{subfolder}', warn=True).failed:
+            c.run(f'mkdir -p {site_folder}/{subfolder}')
+            print(f'mkdir -p {site_folder}/{subfolder}')
 
 
 def _get_latest_source(c, source_folder):
-    if c.run(f'test -f {source_folder}/.git', warn=True).failed:
-        print("Found git fetching")
-        c.run(f'cd {source_folder} && git fetch')
-    else:
+    if c.run(f'test -d {source_folder}/.git', warn=True).failed:
         print("No .git found")
         c.run(f'git clone {REPO_URL} {source_folder}')
-        
-
+    else:
+        print("Found git fetching")
+        c.run(f'cd {source_folder} && git fetch')
     current_commit = c.run(f'cd {source_folder} && git log -n 1 --format=%H')
     c.run(f'cd {source_folder} && git reset --hard {current_commit.stdout.strip()}')
 
@@ -62,28 +61,22 @@ def _update_service_files(c, source_folder):
     c.run(f"sed -i 's/\*\*SITE NAME\*\*/{REPO_NAME}/g' {nginx_service_path}")
 
 
-# def _update_virtualenv(source_folder):
-#     virtualenv_folder = source_folder + '/../.env' # maybe this needs work
-#     if not exists(virtualenv_folder + '/bin/pip'):
-#         run(f'python -m venv {virtualenv_folder}')
-#     run(f'{virtualenv_folder}/bin/pip install --upgrade pip')
-#     run(f'{virtualenv_folder}/bin/pip install --upgrade -r {source_folder}/requirements.txt')
+def _update_virtualenv(c, source_folder):
+    virtualenv_folder = source_folder + '/../virtualenv' # maybe this needs work
+    if c.run(f'test -f {virtualenv_folder}/bin/pip', warn=True).failed:
+        c.run(f'python -m venv {virtualenv_folder}')
+    c.run(f'{virtualenv_folder}/bin/pip install --upgrade pip')
+    c.run(f'{virtualenv_folder}/bin/pip install --upgrade -r {source_folder}/requirements.txt')
 
 
-# def _update_static_files(source_folder): 
-#     run(
-#         f'cd {source_folder}'
-#         ' && ../.env/bin/python manage.py collectstatic --noinput'
-#     )
+def _update_static_files(c, source_folder): 
+    c.run(f'cd {source_folder} && ../virtualenv/bin/python manage.py collectstatic --noinput')
 
 
-# def _update_database(source_folder):
-#     run(
-#         f'cd {source_folder}'
-#         ' && ../.env/bin/python manage.py migrate --noinput'
-#     )
+def _update_database(c, source_folder):
+    c.run(f'cd {source_folder} && ../virtualenv/bin/python manage.py migrate --noinput')
 
 
-# def _restart_service():
-#     run("sudo systemctl restart firmware_finder.service")
+def _restart_service(c):
+    c.run(f"sudo systemctl restart {REPO_NAME}.service")
 
