@@ -15,16 +15,16 @@ REPO_URL = f'git@bitbucket.org:itsmagic/{REPO_NAME}.git'
 def deploy(c):
     site_folder = f'/home/{c.user}/sites/{REPO_NAME}'
     source_folder = site_folder + '/source'
-    _create_directory_structure_if_necessary(c, site_folder)
-    _get_latest_source(c, source_folder)
+    # _create_directory_structure_if_necessary(c, site_folder)
+    # _get_latest_source(c, source_folder)
     _create_or_update_dotenv(c, source_folder)
-    _update_service_files(c, source_folder)
-    _update_virtualenv(c, source_folder)
-    _update_static_files(c, source_folder)
-    _update_database(c, source_folder)
-    _add_service(c, source_folder, force=True)
-    _add_nginx_config(c, source_folder, force=True)
-    _restart_service(c)
+    # _update_service_files(c, source_folder)
+    # _update_virtualenv(c, source_folder)
+    # _update_static_files(c, source_folder)
+    # _update_database(c, source_folder)
+    # _add_service(c, source_folder, force=True)
+    # _add_nginx_config(c, source_folder, force=True)
+    # _restart_service(c)
 
 
 
@@ -48,20 +48,16 @@ def _get_latest_source(c, source_folder):
     # c.run(f'cd {source_folder} && git reset --hard {current_commit.stdout.strip()}')
 
 def _create_or_update_dotenv(c, source_folder):
-    if not os.path.exists('.env'):
-        print("Creating a new local .env")
-        with open('.env', 'w') as f:
-            f.write('DJANGO_DEBUG_FALSE=y\n')
-            f.write(f'SITENAME={c.host}\n')
-    with open('.env', 'r') as f:
-        my_env = f.read()
-    if 'DJANGO_SECRET_KEY' not in my_env:  
+    if c.run(f'test -f {source_folder}/../.env', warn=True).failed:
+        print("Creating a .env")
+        c.run(f'cd {source_folder} && echo DJANGO_DEBUG_FALSE=y > ../.env')
+
+        c.run(f'cd {source_folder} && echo SITENAME={c.host} >> ../.env')
         new_secret = ''.join(random.SystemRandom().choices(  
             'abcdefghijklmnopqrstuvwxyz0123456789', k=50
         ))
-        with open('.env', 'a') as f:
-            f.write(f"DJANGO_SECRET_KEY={new_secret}\n")
-    c.put('.env', f'{source_folder}')
+
+        c.run(f'cd {source_folder} && echo DJANGO_SECRET_KEY={new_secret} >> ../.env')
 
 
 def _update_service_files(c, source_folder):
