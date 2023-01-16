@@ -117,4 +117,5 @@ def _restart_service(c):
 
 
 def _get_sudo(c):
-    c.config.sudo.password = getpass.getpass(f"What is the sudo password for {c.user}?")
+    if c.config.sudo.password == None:
+        c.config.sudo.password = getpass.getpass(f"What is the sudo password for {c.user}?")
