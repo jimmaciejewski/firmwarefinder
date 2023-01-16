@@ -93,6 +93,8 @@ class Command(BaseCommand):
             response = requests.get(url, headers=headers)
             
             new_versions = self.parse_page(response.text, brand, product)
+            if new_version is None:
+                continue
             for version in new_versions:
                 new_found_firmwares.append(version)
 
