@@ -69,19 +69,19 @@ class Command(BaseCommand):
         ### Email updates
         for sub in SubscribedUser.objects.all():
             my_name = "Firmware Finder"
-            firmware_names = []
+            firmware_html = ""
             for firmware in new_found_firmwares:
-                firmware_names.append(f"<li>{firmware.name} --> {firmware.number}</li>\r")
+                firmware_html = firmware_html + f"<li>{firmware.name} --> {firmware.number}</li>"
             content = f"""
-            Dear {sub.name},
-
-            I found new firmware today!
+            Dear {sub.name},</br>
+            </br>
+            I found new firmware today!</br>
             <ul>
-                {firmware_names}
+                {firmware_html}
             </ul>
-
-            Thanks,
-            Turkish Johnny!
+            </br>
+            Thanks,</br>
+            Turkish Johnny!</br>
             """
 
             msg = MailerMessage()
@@ -91,16 +91,10 @@ class Command(BaseCommand):
             # For sender names to be displayed correctly on mail clients, simply put your name first
             # and the actual email in angle brackets 
             # The below example results in "Dave Johnston <dave@example.com>"
-            msg.from_address = '{} <{}>'.format(my_name, sub.email)
+            msg.from_address = '{} <{}>'.format(my_name, 'firmware_finder@ornear.com')
 
             # As this is only an example, we place the text content in both the plaintext version (content) 
             # and HTML version (html_content).
             msg.content = content
             msg.html_content = content
             msg.save()
-                    
-            
-
-
-
-

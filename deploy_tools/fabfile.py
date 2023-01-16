@@ -33,6 +33,8 @@ def _create_directory_structure_if_necessary(c, site_folder):
         if c.run(f'test -d {site_folder}/{subfolder}', warn=True).failed:
             c.run(f'mkdir -p {site_folder}/{subfolder}')
             print(f'mkdir -p {site_folder}/{subfolder}')
+        else:
+            print(f'skipping: mkdir -p {site_folder}/{subfolder}')
 
 
 def _get_latest_source(c, source_folder):
@@ -58,13 +60,16 @@ def _create_or_update_dotenv(c, source_folder):
         ))
 
         c.run(f'cd {source_folder} && echo DJANGO_SECRET_KEY={new_secret} >> ../.env')
-
+    else:
+        print('Skipping .env already exists')
 
 def _update_service_files(c, source_folder):
+    print("Updating nginx file")
     nginx_service_path = source_folder + '/deploy_tools/firmware_finder.nginx.conf'
     c.run(f"sed -i 's/\*\*SERVER NAME\*\*/{c.host}/g' {nginx_service_path}")
     c.run(f"sed -i 's/\*\*SITE NAME\*\*/{REPO_NAME}/g' {nginx_service_path}")
 
+    print("Updating service file")
     service_path = source_folder + '/deploy_tools/firmware_finder.service'
     c.run(f"sed -i 's/\*\*PROJECT NAME\*\*/{PROJECT_NAME}/g' {service_path}")
     c.run(f"sed -i 's/\*\*SERVER NAME\*\*/{c.host}/g' {service_path}")
