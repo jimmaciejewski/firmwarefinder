@@ -93,7 +93,7 @@ class Command(BaseCommand):
             response = requests.get(url, headers=headers)
             
             new_versions = self.parse_page(response.text, brand, product)
-            if new_version is None:
+            if not new_versions:
                 continue
             for version in new_versions:
                 new_found_firmwares.append(version)
@@ -110,7 +110,7 @@ class Command(BaseCommand):
         except TypeError:
             # This probably means the page doesn't exist or something is different
             # self.stdout.write(self.style.WARNING(f"Unable to parse, brand: {brand.name}, product: {product.name}"))
-            return
+            return None
         at_firmware = False
         for row in rows:
             if at_firmware and row("h6"):
@@ -158,7 +158,7 @@ class Command(BaseCommand):
         except (TypeError, IndexError):
             # This probably means the page doesn't exist or something is different
             # self.stdout.write(self.style.WARNING(f"Unable find specs for, brand: {brand.name}, product: {product.name}"))
-            return
+            return None
         for row in rows:
             if "FG Numbers" in row.text:
                 # single_fg = row.text.replace("FG Numbers", "").strip()
@@ -207,6 +207,7 @@ class Command(BaseCommand):
             return new_versions
         except IntegrityError:
             print(f"got an error on {product}")
+            return None
             
 
 
