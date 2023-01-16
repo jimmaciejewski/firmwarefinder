@@ -102,14 +102,14 @@ class Command(BaseCommand):
 
     def parse_page(self, html: str, brand: Brand, product: Product):
         new_versions = []
-        self.stdout.write(self.style.SUCCESS(f'Parsing {product.name} for firmware'))
+        # self.stdout.write(self.style.SUCCESS(f'Parsing {product.name} for firmware'))
         cap = Captured()
         soup = BeautifulSoup(html, 'html.parser')
         try:
             rows = soup.body.table("tr")
         except TypeError:
             # This probably means the page doesn't exist or something is different
-            self.stdout.write(self.style.WARNING(f"Unable to parse, brand: {brand.name}, product: {product.name}"))
+            # self.stdout.write(self.style.WARNING(f"Unable to parse, brand: {brand.name}, product: {product.name}"))
             return
         at_firmware = False
         for row in rows:
@@ -157,7 +157,7 @@ class Command(BaseCommand):
             rows = soup.body("table", {"class":"specs"})[0]("tr")
         except (TypeError, IndexError):
             # This probably means the page doesn't exist or something is different
-            self.stdout.write(self.style.WARNING(f"Unable find specs for, brand: {brand.name}, product: {product.name}"))
+            # self.stdout.write(self.style.WARNING(f"Unable find specs for, brand: {brand.name}, product: {product.name}"))
             return
         for row in rows:
             if "FG Numbers" in row.text:

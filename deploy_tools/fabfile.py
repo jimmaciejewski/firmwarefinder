@@ -44,8 +44,9 @@ def _get_latest_source(c, source_folder):
     else:
         print("Found git fetching")
         c.run(f'cd {source_folder} && git fetch')
-    c.run(f'cd {source_folder} && git reset --hard')
     c.run(f'cd {source_folder} && git pull')
+    c.run(f'cd {source_folder} && git reset --hard')
+    
     # current_commit = c.run(f'cd {source_folder} && git log -n 1 --format=%H')
     # c.run(f'cd {source_folder} && git reset --hard {current_commit.stdout.strip()}')
 
