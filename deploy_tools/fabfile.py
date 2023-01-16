@@ -42,8 +42,10 @@ def _get_latest_source(c, source_folder):
     else:
         print("Found git fetching")
         c.run(f'cd {source_folder} && git fetch')
-    current_commit = c.run(f'cd {source_folder} && git log -n 1 --format=%H')
-    c.run(f'cd {source_folder} && git reset --hard {current_commit.stdout.strip()}')
+    c.run(f'cd {source_folder} && git reset --hard')
+    c.run(f'cd {source_folder} && git pull')
+    # current_commit = c.run(f'cd {source_folder} && git log -n 1 --format=%H')
+    # c.run(f'cd {source_folder} && git reset --hard {current_commit.stdout.strip()}')
 
 def _create_or_update_dotenv(c, source_folder):
     if not os.path.exists('.env'):
@@ -68,9 +70,9 @@ def _update_service_files(c, source_folder):
     c.run(f"sed -i 's/\*\*SITE NAME\*\*/{REPO_NAME}/g' {nginx_service_path}")
 
     service_path = source_folder + '/deploy_tools/firmware_finder.service'
-    c.run(f"sed -i 's/\*\*PROJECT NAME\*\*/{PROJECT_NAME}/g' {nginx_service_path}")
-    c.run(f"sed -i 's/\*\*SERVER NAME\*\*/{c.host}/g' {nginx_service_path}")
-    c.run(f"sed -i 's/\*\*SITE NAME\*\*/{REPO_NAME}/g' {nginx_service_path}")
+    c.run(f"sed -i 's/\*\*PROJECT NAME\*\*/{PROJECT_NAME}/g' {service_path}")
+    c.run(f"sed -i 's/\*\*SERVER NAME\*\*/{c.host}/g' {service_path}")
+    c.run(f"sed -i 's/\*\*SITE NAME\*\*/{REPO_NAME}/g' {service_path}")
 
 def _update_virtualenv(c, source_folder):
     virtualenv_folder = source_folder + '/../virtualenv' # maybe this needs work
