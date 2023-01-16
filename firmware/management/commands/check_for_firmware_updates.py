@@ -219,7 +219,7 @@ class Command(BaseCommand):
             for firmware in new_found_firmwares:
                 firmware_html = firmware_html + f"<li>{firmware.name} --> {firmware.number}</li>"
             
-            if firmware == "":
+            if firmware_html == "":
                 content = f"""
                 Dear {sub.name},</br>
                 </br>
