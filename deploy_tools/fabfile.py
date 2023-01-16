@@ -51,8 +51,8 @@ def _create_or_update_dotenv(c, source_folder):
     if not os.path.exists('.env'):
         print("Creating a new local .env")
         with open('.env', 'w') as f:
-            f.write('DJANGO_DEBUG_FALSE=y\r')
-            f.write(f'SITENAME={c.host}\r')
+            f.write('DJANGO_DEBUG_FALSE=y\n')
+            f.write(f'SITENAME={c.host}\n')
     with open('.env', 'r') as f:
         my_env = f.read()
     if 'DJANGO_SECRET_KEY' not in my_env:  
@@ -60,7 +60,7 @@ def _create_or_update_dotenv(c, source_folder):
             'abcdefghijklmnopqrstuvwxyz0123456789', k=50
         ))
         with open('.env', 'a') as f:
-            f.write(f"DJANGO_SECRET_KEY={new_secret}\r")
+            f.write(f"DJANGO_SECRET_KEY={new_secret}\n")
     c.put('.env', f'{source_folder}')
 
 
@@ -108,7 +108,7 @@ def _add_nginx_config(c, source_folder, force=False):
         c.sudo(f'cp {source_folder}/deploy_tools/{REPO_NAME}.nginx.conf /etc/nginx/sites-available/{REPO_NAME}.nginx.conf', hide='stderr')
         c.sudo(f'ln -sf /etc/nginx/sites-available/{REPO_NAME}.nginx.conf /etc/nginx/sites-enabled/', hide='stderr')
         check_config = c.sudo(f'nginx -t', hide='stderr')
-        if check_config != "nginx: the configuration file /etc/nginx/nginx.conf syntax is ok\nnginx: configuration file /etc/nginx/nginx.conf test is successful":
+        if check_config.stdout != "":
             print("NGINX config failed test, not restarting nginx")
             print(check_config)
         else:

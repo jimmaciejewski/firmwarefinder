@@ -21,15 +21,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 if 'DJANGO_DEBUG_FALSE' in os.environ:  
-    DEBUG = False
+    # DEBUG = False
     SECRET_KEY = os.environ['DJANGO_SECRET_KEY']  
     ALLOWED_HOSTS = [os.environ['SITENAME']]  
 else:
-    DEBUG = True  
+    # DEBUG = True  
     SECRET_KEY = 'insecure-key-for-dev'
     ALLOWED_HOSTS = []
 
-
+DEBUG = True
 
 # Application definition
 
@@ -137,7 +137,7 @@ if 'DJANGO_DEBUG_FALSE' in os.environ:
     EMAIL_USE_TLS = True
     EMAIL_HOST = 'smtp.mailgun.org'
     EMAIL_HOST_USER = os.environ['EMAIL_USER']
-    EMAIL_HOST_PASSWORD = os.environ['EMAIL_USER']
+    EMAIL_HOST_PASSWORD = os.environ['EMAIL_PASSWORD']
     EMAIL_PORT = 587
 
 # Enable the mail queue. If this is set to False, the mail queue will be disabled and emails will be 
