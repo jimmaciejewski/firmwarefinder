@@ -6,7 +6,7 @@ After=network.target
 Restart=on-failure
 User=jim
 WorkingDirectory=/home/jim/sites/**SITE NAME**/source
-EnvironmentFile=/home/jim/sites/**SITE NAME**/.env
+EnvironmentFile=/home/jim/sites/**SITE NAME**/source/.env
 ExecStart=/home/jim/sites/**SITE NAME**/virtualenv/bin/gunicorn --bind unix:/tmp/**SERVER NAME**.socket **PROJECT NAME**.wsgi:application
 
 
