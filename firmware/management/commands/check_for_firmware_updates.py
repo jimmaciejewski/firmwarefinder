@@ -96,7 +96,7 @@ class Command(BaseCommand):
             for version in new_versions:
                 new_found_firmwares.append(version)
 
-            self.send_emails(new_found_firmwares)
+        self.send_emails(new_found_firmwares)
 
     def parse_page(self, html: str, brand: Brand, product: Product):
         new_versions = []
@@ -215,17 +215,28 @@ class Command(BaseCommand):
             firmware_html = ""
             for firmware in new_found_firmwares:
                 firmware_html = firmware_html + f"<li>{firmware.name} --> {firmware.number}</li>"
-            content = f"""
-            Dear {sub.name},</br>
-            </br>
-            I found new firmware today!</br>
-            <ul>
-                {firmware_html}
-            </ul>
-            </br>
-            Thanks,</br>
-            Turkish Johnny!</br>
-            """
+            
+            if firmware == "":
+                content = f"""
+                Dear {sub.name},</br>
+                </br>
+                I didn't find any firmware today :(</br>
+                </br>
+                Thanks,</br>
+                Turkish Johnny!</br>
+                """
+            else:
+                content = f"""
+                Dear {sub.name},</br>
+                </br>
+                I found new firmware today!</br>
+                <ul>
+                    {firmware_html}
+                </ul>
+                </br>
+                Thanks,</br>
+                Turkish Johnny!</br>
+                """
 
             msg = MailerMessage()
             msg.subject = "Updated Firmwares"
