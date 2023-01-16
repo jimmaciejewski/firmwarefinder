@@ -1,9 +1,14 @@
 from fabric import task
 import os
 import random
+import getpass
 
 
+# Django project name
+PROJECT_NAME = 'firmwarefinder'
+# Git name
 REPO_NAME = 'firmware_finder'
+
 REPO_URL = f'git@bitbucket.org:itsmagic/{REPO_NAME}.git'
 
 @task
@@ -17,6 +22,8 @@ def deploy(c):
     _update_virtualenv(c, source_folder)
     _update_static_files(c, source_folder)
     _update_database(c, source_folder)
+    _add_service(c, source_folder)
+    _add_nginx_config(c, source_folder)
     _restart_service(c)
 
 
@@ -60,6 +67,10 @@ def _update_service_files(c, source_folder):
     c.run(f"sed -i 's/\*\*SERVER NAME\*\*/{c.host}/g' {nginx_service_path}")
     c.run(f"sed -i 's/\*\*SITE NAME\*\*/{REPO_NAME}/g' {nginx_service_path}")
 
+    service_path = source_folder + '/deploy_tools/firmware_finder.service'
+    c.run(f"sed -i 's/\*\*PROJECT NAME\*\*/{PROJECT_NAME}/g' {nginx_service_path}")
+    c.run(f"sed -i 's/\*\*SERVER NAME\*\*/{c.host}/g' {nginx_service_path}")
+    c.run(f"sed -i 's/\*\*SITE NAME\*\*/{REPO_NAME}/g' {nginx_service_path}")
 
 def _update_virtualenv(c, source_folder):
     virtualenv_folder = source_folder + '/../virtualenv' # maybe this needs work
@@ -77,6 +88,33 @@ def _update_database(c, source_folder):
     c.run(f'cd {source_folder} && ../virtualenv/bin/python manage.py migrate --noinput')
 
 
+def _add_service(c, source_folder):
+    if c.run(f'test -f /etc/systemd/system/{REPO_NAME}.service', warn=True).failed:
+        # The service file doesn't exist, lets add it
+        print("Adding service file")
+        _get_sudo(c)
+        c.sudo(f'cp {source_folder}/deploy_tools/{REPO_NAME}.service /etc/systemd/system/{REPO_NAME}.service')
+        c.sudo(f'systemctl enable {REPO_NAME}.service')
+        c.sudo(f'systemctl daemon-reload')
+        c.sudo(f'systemctl start {REPO_NAME}.service')
+        
+def _add_nginx_config(c, source_folder):
+    if c.run(f'test -f /etc/nginx/sites-available/{REPO_NAME}.nginx.conf', warn=True).failed:
+        # The config file doesn't exist, lets add it
+        print("Adding nginx config file")
+        _get_sudo(c)
+        c.sudo(f'cp {source_folder}/deploy_tools/{REPO_NAME}.nginx.conf /etc/nginx/sites-available/{REPO_NAME}.nginx.conf')
+        c.sudo(f'ln -sf /etc/nginx/sites-available/{REPO_NAME}.nginx.conf /etc/nginx/sites-enabled/')
+        check_config = c.sudo(f'nginx -t')
+        if check_config != "nginx: the configuration file /etc/nginx/nginx.conf syntax is ok\nnginx: configuration file /etc/nginx/nginx.conf test is successful":
+            print("NGINX config failed test, not restarting nginx")
+            print(check_config)
+        else:
+            c.sudo(f'systemctl restart nginx')
+
 def _restart_service(c):
     c.run(f"sudo systemctl restart {REPO_NAME}.service")
 
+
+def _get_sudo(c):
+    c.config.sudo.password = getpass.getpass(f"What is the sudo password for {c.user}?")

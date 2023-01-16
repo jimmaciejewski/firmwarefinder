@@ -1,13 +1,13 @@
 [Unit]
-Description=Service For Firmware.TurkishJohnnys
+Description=Service For **SERVER NAME**
 After=network.target
 
 [Service]
 Restart=on-failure
 User=jim
-WorkingDirectory=/home/jim/sites/firmware_finder/source
-EnvironmentFile=/home/jim/sites/firmware_finder/.env
-ExecStart=/home/jim/sites/firmware_finder/.env/bin/gunicorn --bind unix:/tmp/firmware.turkishjohnnys.com.socket firmwarefinder.wsgi:application
+WorkingDirectory=/home/jim/sites/**SITE NAME**/source
+EnvironmentFile=/home/jim/sites/**SITE NAME**/.env
+ExecStart=/home/jim/sites/**SITE NAME**/virtualenv/bin/gunicorn --bind unix:/tmp/**SERVER NAME**.socket **PROJECT NAME**.wsgi:application
 
 
 [Install]
