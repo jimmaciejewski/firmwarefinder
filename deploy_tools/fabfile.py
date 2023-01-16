@@ -15,16 +15,16 @@ REPO_URL = f'git@bitbucket.org:itsmagic/{REPO_NAME}.git'
 def deploy(c):
     site_folder = f'/home/{c.user}/sites/{REPO_NAME}'
     source_folder = site_folder + '/source'
-    # _create_directory_structure_if_necessary(c, site_folder)
-    # _get_latest_source(c, source_folder)
+    _create_directory_structure_if_necessary(c, site_folder)
+    _get_latest_source(c, source_folder)
     _create_or_update_dotenv(c, source_folder)
-    # _update_service_files(c, source_folder)
-    # _update_virtualenv(c, source_folder)
-    # _update_static_files(c, source_folder)
-    # _update_database(c, source_folder)
-    # _add_service(c, source_folder, force=True)
-    # _add_nginx_config(c, source_folder, force=True)
-    # _restart_service(c)
+    _update_service_files(c, source_folder)
+    _update_virtualenv(c, source_folder)
+    _update_static_files(c, source_folder)
+    _update_database(c, source_folder)
+    _add_service(c, source_folder)
+    _add_nginx_config(c, source_folder)
+    _restart_service(c)
 
 
 
