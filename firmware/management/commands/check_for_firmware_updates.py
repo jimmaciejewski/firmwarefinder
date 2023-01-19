@@ -69,6 +69,7 @@ class Command(BaseCommand):
                     new_version.download_page = f"https://help.harmanpro.com{hotfix_page['PageURL']}"
                     new_version.download_url = f"https://help.harmanpro.com{download_link}"
                     new_version.hotfix = True
+                    new_version.date_last_seen = timezone.now()
                     new_version.save()
 
                     if created:
