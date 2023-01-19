@@ -33,7 +33,7 @@ class ProductListView(ListView):
            I suspect this could be written more efficiently
         """
         products_with_versions = []
-        for product in Product.objects.filter(discontinued=False):
+        for product in Product.objects.all():
             if Version.objects.filter(fgs__in=FG.objects.filter(product=product)):
                 products_with_versions.append(product.id)
         queryset = Product.objects.filter(id__in=products_with_versions).order_by('name')
