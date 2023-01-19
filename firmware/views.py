@@ -49,9 +49,11 @@ class ProductSearchView(ProductListView):
             return queryset
         # To search the read_me in the firmware versions -- first get the fgs with the search result
         versions_fgs = Version.objects.filter(read_me__icontains=query).values_list('fgs')
+        versions_names_fgs = Version.objects.filter(name__icontains=query).values_list('fgs')
+        
         # Then check if the fgs are in the product
         products = queryset.filter(
-            Q(name__icontains=query) | Q(fgs__number__icontains=query) | Q(fgs__in=versions_fgs)
+            Q(name__icontains=query) | Q(fgs__number__icontains=query) | Q(fgs__in=versions_fgs) | Q(fgs__in=versions_names_fgs)
         )
         return products
 
