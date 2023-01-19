@@ -8,15 +8,23 @@
     {% for product in products %}
     <div class="accordion-item">
       <h2 class="accordion-header" id="heading{{ product.id }}">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ product.id }}" aria-expanded="true" aria-controls="collapse{{ product.id}}">
+        <button class="accordion-button text-center d-block collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ product.id }}" aria-expanded="true" aria-controls="collapse{{ product.id}}">
            
           <figure>
             <blockquote class="blockquote">
               <p>{{ product.name }}</p>
             </blockquote>
-            <figcaption class="blockquote-footer">
-              FG Numbers: <cite title="Source Title">{% for fg in product.fgs.all %}{{fg}} {% endfor %}</cite>
-            </figcaption>
+
+              <h6>
+                  {% for fg in product.fgs.all %}
+                    {% if forloop.last %}
+                      {{fg}}
+                    {% else %}
+                      {{fg}},
+                    {% endif %}
+                  {% endfor %}
+              </h6>
+
           </figure>
         </button>
       </h2>
