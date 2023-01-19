@@ -23,7 +23,7 @@
           <a href="{% if not version.hotfix %}{{ product.brand.base_url }}{% endif %}{{ version.download_page }}" target="_blank" class="list-group-item list-group-item-action flex-column align-items-start list-group-item {% if version.hotfix %}list-group-item-danger{% else %}list-group-item-success{% endif %}">
             <div class="d-flex w-100 justify-content-between">
               <h5 class="mb-1">{{version.number}}   {{version.name}}</h5>
-              <small>Last Seen: {{ version.date_last_seen }}</small>
+              <small>Last Seen: {{ version.date_last_seen|date:"d-M-Y" }}</small>
             </div>
             <div class="d-flex w-100 justify-content-between">
               {% if version.read_me %}
