@@ -11,28 +11,28 @@
 
 .expandable-box {
   width: 30%;
-  height: 130px;
+  min-height: 100px; 
   float: left;
   margin: 0 3% 20px 0;
   border: 1px solid #999;
   border-radius: 12px;
   padding: 10px;
   box-sizing: border-box;
-  -webkit-transition: all .3s ease-in-out;
+  /* -webkit-transition: all .3s ease-in-out;
   -moz-transition: all .3s ease-in-out;
   -o-transition: all .3s ease-in-out;
   -ms-transition: all .3s ease-in-out;
-  transition: all .3s ease-in-out;
+  transition: all .3s ease-in-out; */
 }
 
 .firmwares {
-    display: none;
+    /* display: 'd-none'; */
 }
 
 .open {
     border-color: #424141;
     width: 96%;
-    height: 180px;
+    /* height: 180px; */
     margin: 0;
 }
   

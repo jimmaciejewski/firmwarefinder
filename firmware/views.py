@@ -1,15 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, reverse
 from django.views.generic import ListView, DetailView, FormView
 from django.db.models import Q
-from django.http import JsonResponse
-import re
-from django.core.mail import send_mail
-from django.conf import settings
-from .models import Brand, Product, Version, FG, SubscribedUser
+
+
+from .models import Brand, Product, Version, FG
 from .forms import SubscribeForm
 
 def welcome(request):
-    return render(request, 'firmware/index.html')
+    return redirect("/products")
 
 def lines(request):
     context = {}
@@ -22,28 +20,27 @@ class BrandListView(ListView):
 class BrandDetailView(DetailView):
     model = Brand
 
-class ProductListView(ListView):
-    # paginate_by = 14
+
+class DiscontinuedProductListView(ListView):
     model = Product
     context_object_name = 'products'
     ordering = ['name']
+
+    def get_context_data(self, **kwargs):
+        context = super(DiscontinuedProductListView, self).get_context_data(**kwargs)
+        context['active'] = "discontinued"
+        context['search'] = self.request.GET.get('q')
+        return context
 
     def get_queryset(self):
         """My attempt at getting the intersection of product fg and version fg 
            I suspect this could be written more efficiently
         """
         products_with_versions = []
-        for product in Product.objects.all():
+        for product in Product.objects.filter(discontinued=True):
             if Version.objects.filter(fgs__in=FG.objects.filter(product=product)):
                 products_with_versions.append(product.id)
-        queryset = Product.objects.filter(id__in=products_with_versions).order_by('name')
-        return queryset
-
-class ProductSearchView(ProductListView):
-    
-    def get_queryset(self):
-        # Get the queryset however you usually would.  For example:
-        queryset = super().get_queryset()
+        queryset = Product.objects.filter(discontinued=True, id__in=products_with_versions).order_by('name')
         query = self.request.GET.get('q')
         if not query:
             return queryset
@@ -57,10 +54,40 @@ class ProductSearchView(ProductListView):
         )
         return products
 
+
+class ProductSearchView(ListView):
+    model = Product
+    context_object_name = 'products'
+    ordering = ['name']
+
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context = super(ProductSearchView, self).get_context_data(**kwargs)
+        context['active'] = "products"
         context['search'] = self.request.GET.get('q')
         return context
+    
+    def get_queryset(self):
+        """My attempt at getting the intersection of product fg and version fg 
+           I suspect this could be written more efficiently
+        """
+        products_with_versions = []
+        for product in Product.objects.filter(discontinued=False):
+            if Version.objects.filter(fgs__in=FG.objects.filter(product=product)):
+                products_with_versions.append(product.id)
+        queryset = Product.objects.filter(discontinued=False, id__in=products_with_versions).order_by('name')
+        query = self.request.GET.get('q')
+        if not query:
+            return queryset
+        # To search the read_me in the firmware versions -- first get the fgs with the search result
+        versions_fgs = Version.objects.filter(read_me__icontains=query).values_list('fgs')
+        versions_names_fgs = Version.objects.filter(name__icontains=query).values_list('fgs')
+        
+        # Then check if the fgs are in the product
+        products = queryset.filter(
+            Q(name__icontains=query) | Q(fgs__number__icontains=query) | Q(fgs__in=versions_fgs) | Q(fgs__in=versions_names_fgs)
+        )
+        return products
+
 
 class ProductDetailView(DetailView):
     model = Product

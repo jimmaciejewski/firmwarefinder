@@ -11,6 +11,7 @@ urlpatterns = [
     path('sites', views.BrandListView.as_view(), name='brand-list'),
     path('brand/<int:pk>/', views.BrandDetailView.as_view(), name='brand-detail'),
     path('products', views.ProductSearchView.as_view(), name='product-list'),
+    path('discontinued-products', views.DiscontinuedProductListView.as_view(), name='discontinued-product-list'),
     # path('products/', views.ProductListView.as_view(), name='product-list'),
     path('product/<int:pk>/', views.ProductDetailView.as_view(), name='product-detail'),
     # path('firmwares', views.FirmwareListView.as_view(), name='firmware-list'),

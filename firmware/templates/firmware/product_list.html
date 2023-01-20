@@ -2,12 +2,12 @@
 
 {% block content %}
 
-<div class="container">
-  <div class="expandable-boxes">
-    {% for product in products %}
-      <div class="expandable-box">
-         <h2>{{ product.name }}</h2>
-         <h6>
+<div class="container-md text-center">
+  {% for product in products %}
+    {% if forloop.counter|divisibleby:3 %}<div class="row">{% endif %}
+      <div class="col col-lg expandable-box">
+        <span class="product">{{ product.name }}</span>
+        <h6>
           {% for fg in product.fgs.all %}
             {% if forloop.last %}
               {{fg}}
@@ -16,29 +16,40 @@
             {% endif %}
           {% endfor %}
         </h6>
-        <ul class="list-group firmwares">
+        <ul class="list-group firmwares d-none">
             
           {% for version in product.fgs.all.0.version_set.all|dictsortreversed:"number" %}
 
           <a href="{% if not version.hotfix %}{{ product.brand.base_url }}{% endif %}{{ version.download_page }}" target="_blank" class="list-group-item list-group-item-action flex-column align-items-start list-group-item {% if version.hotfix %}list-group-item-danger{% else %}list-group-item-success{% endif %}">
-            <div class="d-flex w-100 justify-content-between">
+            <div class="d-flex w-120 justify-content-between">
               <h5 class="mb-1">{{version.number}}   {{version.name}}</h5>
               <small>Last Seen: {{ version.date_last_seen|date:"d-M-Y" }}</small>
             </div>
-            <div class="d-flex w-100 justify-content-between">
+          </a>
+            <div class="d-flex w-120 justify-content-between">
               {% if version.read_me %}
-                <textarea style="min-width: 100%" rows="6">{{version.read_me}}</textarea>
+                {% if version.read_me != "Unable to find readme" %}
+                  <textarea style="min-width: 100%;" rows="6">{{version.read_me}}</textarea>
+                {% endif %}
               {% endif %}
             </div>
-          </a>
+ 
             
           {% endfor %}
 
         </ul>
+
+
       </div>
+      {% if forloop.counter|divisibleby:3 %}</div>{% endif %}
+
+
+    {% empty %}
+      <h2>No {% if active == 'discontinued' %} discontinued {% endif %}products found....</h2>
     {% endfor %}
-  </div>
 </div>
+
+
 
 {% endblock %}
 
@@ -47,18 +58,31 @@
 
 <script>
 $(document).ready(function() {
-    $('.firmwares').hide()
+    $('.firmwares').click(function(e){
+      // Don't act on clicks in read_me
+      e.stopPropagation()
+      return
+    })
+
     $('.expandable-box').click(function(e) {
+
+
       if($(this).hasClass('open')) {
         $('.expandable-box.out').not($(this)).removeClass('out');
         $(this).removeClass('open');
-        $('.firmwares').not($(this)).hide()
-        $('.expandable-box').not($(this)).show()
+
+        $(this).find('.firmwares').addClass('d-none')
+
+      } else if($(this).hasClass('out')) {
+        console.log("Clicked on something that is hidden")
+        return
       } else {
-        $('.expandable-box').not($(this)).hide()
+
+        $(this).find('.firmwares').removeClass('d-none')
+        
         $('.expandable-box').not($(this)).addClass('out');
-        $('.firmwares').not($(this)).show()
         $(this).addClass('open');
+
       }
     });
   });
