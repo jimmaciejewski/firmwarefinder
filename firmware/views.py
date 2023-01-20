@@ -98,10 +98,12 @@ class SubscribeForm(FormView):
     form_class = SubscribeForm
     success_url = '/'
 
-    def form_valid(self, form):
-        if form.is_valid():
-            form.save()
+    def get_context_data(self, **kwargs):
+        context = super(SubscribeForm, self).get_context_data(**kwargs)
+        context['active'] = "subscribe"
+        return context
 
+    def form_valid(self, form):
         return super().form_valid(form)
 
 

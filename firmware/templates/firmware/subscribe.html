@@ -7,9 +7,21 @@
 <div class="container">
   <form method="post">
     {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Submit">
-</form>
+    <div class="mb-3">
+      <label for="id_name" class="form-label">Name</label>
+      <input type="text" name="name" class="form-control" id="id_name" aria-describedby="namelHelp" required>
+      <div id="nameHelp" class="form-text">Please enter your name.</div>
+    </div>
+
+    <div class="mb-3">
+      <label for="id_email" class="form-label">Email address</label>
+      <input type="email" name="email" class="form-control" id="id_email" aria-describedby="emailHelp" required>
+      <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+    </div>
+    
+    <button type="submit" value="Submit" class="btn btn-primary">Submit</button>
+  </form>
+
 </div>
 
 {% endblock %}
