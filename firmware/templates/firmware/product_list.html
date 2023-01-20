@@ -3,6 +3,11 @@
 {% block content %}
 
 <div class="container-md text-center">
+  <div class="row">
+    <div class="col">
+      
+    </div>
+  </div>
   {% for product in products %}
     {% if forloop.counter|divisibleby:3 %}<div class="row">{% endif %}
       <div class="col col-lg expandable-box">
@@ -16,7 +21,7 @@
             {% endif %}
           {% endfor %}
         </h6>
-        <ul class="list-group firmwares d-none">
+        <ul class="list-group firmwares hidden">
             
           {% for version in product.fgs.all.0.version_set.all|dictsortreversed:"number" %}
 
@@ -71,17 +76,19 @@ $(document).ready(function() {
         $('.expandable-box.out').not($(this)).removeClass('out');
         $(this).removeClass('open');
 
-        $(this).find('.firmwares').addClass('d-none')
+
+        $(this).find('.firmwares').addClass('hidden')
 
       } else if($(this).hasClass('out')) {
         console.log("Clicked on something that is hidden")
         return
       } else {
 
-        $(this).find('.firmwares').removeClass('d-none')
+        $(this).find('.firmwares').removeClass('hidden')
         
         $('.expandable-box').not($(this)).addClass('out');
         $(this).addClass('open');
+
 
       }
     });

@@ -25,8 +25,8 @@
   transition: all .3s ease-in-out; */
 }
 
-.firmwares {
-    /* display: 'd-none'; */
+.hidden {
+    display: none;
 }
 
 .open {
@@ -37,6 +37,7 @@
 }
   
 .out {
+    display: none;
     width: 0;
     height: 0;
     overflow: hidden;
