@@ -7,12 +7,12 @@
 */
 
 .navbar {
-  background-color: rgb(201, 216, 216);
+  background-color: #c9d8d8;
 }
 
 
 :root {
-  --bs-body-bg: #e0e0e0;
+  --bs-body-bg: #f1f1f1;
 }
 
 .product {
@@ -44,7 +44,7 @@
 }
 
 .current-firmware {
-  background-color: rgb(201, 216, 216);
+  background-color: #c9d8d8;
 }
 
 .discontinued-firmware {
@@ -58,17 +58,9 @@
 .open {
     border-color: #424141;
     width: 96%;
-    /* height: 180px; */
     margin: 0;
 }
   
 .out {
     display: none;
-    width: 0;
-    height: 0;
-    overflow: hidden;
-    border: none;
-    padding: 0;
-    margin: 0;
-    opacity: 0;
 }

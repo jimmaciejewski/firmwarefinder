@@ -8,9 +8,9 @@
       <br>
     </div>
   </div>
+  <div class="row g-2">
   {% for product in products %}
-    {% if forloop.counter|divisibleby:3 %}<div class="row">{% endif %}
-      <div class="col col-xs expandable-box {% if product.discontinued %}discontinued-firmware{% else %}current-firmware{% endif %}">
+      <div class="col col-3 expandable-box {% if product.discontinued %}discontinued-firmware{% else %}current-firmware{% endif %}">
         <span class="product" title="{{ product.name }} {% if product.discontinued %}*Discontinued*{% endif %}">{{ product.name|truncatechars:20}}</span>
         <h6 class="firmwares hidden">
           {% for fg in product.fgs.all %}
@@ -46,12 +46,13 @@
 
 
       </div>
-      {% if forloop.counter|divisibleby:3 %}</div>{% endif %}
+    
 
 
     {% empty %}
       <h2>Sorry, no products found....</h2>
     {% endfor %}
+    </div>
 </div>
 
 
