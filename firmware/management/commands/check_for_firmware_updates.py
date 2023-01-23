@@ -215,10 +215,9 @@ class Command(BaseCommand):
     def send_emails(self, new_found_firmwares):
         ### Email updates
         for sub in SubscribedUser.objects.all():
-            my_name = "Firmware Finder"
             firmware_html = ""
             for firmware in new_found_firmwares:
-                firmware_html = firmware_html + f"<li>{firmware.name} --> {firmware.number}</li>"
+                firmware_html = firmware_html + f"<li>{firmware.name} --> {firmware.number} --> {firmware.download_url}</li>"
             
             if firmware_html == "":
                 content = f"""
@@ -229,6 +228,8 @@ class Command(BaseCommand):
                 Thanks,</br>
                 Turkish Johnny!</br>
                 """
+                if sub.send_no_updates_found:
+                    self.add_email_to_queue(sub, content)
             else:
                 content = f"""
                 Dear {sub.name},</br>
@@ -241,18 +242,22 @@ class Command(BaseCommand):
                 Thanks,</br>
                 Turkish Johnny!</br>
                 """
+                self.add_email_to_queue(sub, content)
 
-            msg = MailerMessage()
-            msg.subject = "Updated Firmwares"
-            msg.to_address = sub.email
 
-            # For sender names to be displayed correctly on mail clients, simply put your name first
-            # and the actual email in angle brackets 
-            # The below example results in "Dave Johnston <dave@example.com>"
-            msg.from_address = '{} <{}>'.format(my_name, 'firmware_finder@ornear.com')
+    def add_email_to_queue(self, subscriber, content):
+        my_name = "Firmware Finder"
+        msg = MailerMessage()
+        msg.subject = "Updated Firmwares"
+        msg.to_address = subscriber.email
 
-            # As this is only an example, we place the text content in both the plaintext version (content) 
-            # and HTML version (html_content).
-            msg.content = content
-            msg.html_content = content
-            msg.save()
+        # For sender names to be displayed correctly on mail clients, simply put your name first
+        # and the actual email in angle brackets 
+        # The below example results in "Dave Johnston <dave@example.com>"
+        msg.from_address = '{} <{}>'.format(my_name, 'firmware_finder@ornear.com')
+
+        # As this is only an example, we place the text content in both the plaintext version (content) 
+        # and HTML version (html_content).
+        msg.content = content
+        msg.html_content = content
+        msg.save()
