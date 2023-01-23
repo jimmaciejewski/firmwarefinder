@@ -1,70 +1,25 @@
 {% extends "firmware/base.html" %}
-
+{% load static %}
 {% block content %}
-
-<div class="container-md text-center">
-  <div class="row">
-    <div class="col">
-      <br>
-    </div>
-  </div>
-  <div class="row g-2">
-  {% for product in products %}
-      <div class="col col-3 expandable-box {% if product.discontinued %}discontinued-firmware{% else %}current-firmware{% endif %}">
-        <span class="product" title="{{ product.name }} {% if product.discontinued %}*Discontinued*{% endif %}">{{ product.name|truncatechars:20}}</span>
-        <h6 class="firmwares hidden">
-          {% for fg in product.fgs.all %}
-            {% if forloop.last %}
-              {{fg}}
-            {% else %}
-              {{fg}},
-            {% endif %}
-          {% endfor %}
-        </h6>
-        <ul class="list-group firmwares hidden">
-            
-          {% for version in product.fgs.all.0.version_set.all|dictsortreversed:"number" %}
-
-          <a href="{% if not version.hotfix %}{{ product.brand.base_url }}{% endif %}{{ version.download_page }}" target="_blank" class="list-group-item list-group-item-action flex-column align-items-start list-group-item {% if version.hotfix %}list-group-item-warning{% else %}list-group-item-success{% endif %}">
-            <div class="d-flex w-120 justify-content-between">
-              <h5 class="mb-1">{{version.number}}   {{version.name}}</h5>
-              <small>Last Seen: {{ version.date_last_seen|date:"d-M-Y" }}</small>
-            </div>
-          </a>
-            <div class="d-flex w-120 justify-content-between">
-              {% if version.read_me %}
-                {% if version.read_me != "Unable to find readme" %}
-                  <textarea style="min-width: 100%;" rows="6">{{version.read_me}}</textarea>
-                {% endif %}
-              {% endif %}
-            </div>
- 
-            
-          {% endfor %}
-
-        </ul>
-
-
-      </div>
-    
-
-
-    {% empty %}
-      <h2>Sorry, no products found....</h2>
-    {% endfor %}
-    </div>
+<div id="products-div">
+  
 </div>
-
-
 
 {% endblock %}
 
 {% block extrajs %}
 <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 
+<script src="{% static 'firmware/js/suggestive_search.js' %}"> </script>
+
 <script>
 $(document).ready(function() {
-    $('.firmwares').click(function(e){
+  $.getJSON('/products-search')
+		.done(response => {
+				product_div.html(response['html_from_view'])
+		})
+ 
+   $('.firmwares').click(function(e){
       // Don't act on clicks in read_me
       e.stopPropagation()
       return
