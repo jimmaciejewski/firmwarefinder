@@ -21,49 +21,22 @@ class BrandDetailView(DetailView):
     model = Brand
 
 
-class DiscontinuedProductListView(ListView):
-    model = Product
-    context_object_name = 'products'
-    ordering = ['name']
-
-    def get_context_data(self, **kwargs):
-        context = super(DiscontinuedProductListView, self).get_context_data(**kwargs)
-        context['active'] = "discontinued"
-        context['search'] = self.request.GET.get('q')
-        return context
-
-    def get_queryset(self):
-        """My attempt at getting the intersection of product fg and version fg 
-           I suspect this could be written more efficiently
-        """
-        products_with_versions = []
-        for product in Product.objects.filter(discontinued=True):
-            if Version.objects.filter(fgs__in=FG.objects.filter(product=product)):
-                products_with_versions.append(product.id)
-        queryset = Product.objects.filter(discontinued=True, id__in=products_with_versions).order_by('name')
-        query = self.request.GET.get('q')
-        if not query:
-            return queryset
-        # To search the read_me in the firmware versions -- first get the fgs with the search result
-        versions_fgs = Version.objects.filter(read_me__icontains=query).values_list('fgs')
-        versions_names_fgs = Version.objects.filter(name__icontains=query).values_list('fgs')
-        
-        # Then check if the fgs are in the product
-        products = queryset.filter(
-            Q(name__icontains=query) | Q(fgs__number__icontains=query) | Q(fgs__in=versions_fgs) | Q(fgs__in=versions_names_fgs)
-        )
-        return products
-
-
 class ProductSearchView(ListView):
     model = Product
     context_object_name = 'products'
     ordering = ['name']
+    discontinued = False
 
     def get_context_data(self, **kwargs):
         context = super(ProductSearchView, self).get_context_data(**kwargs)
-        context['active'] = "products"
+        if self.discontinued:
+            context['active'] = "discontinued"
+        else:
+            context['active'] = "products"
         context['search'] = self.request.GET.get('q')
+        if context['search'] is not None:
+            # Since we search both current and discontinued product, don't highlight the NAV bar when results are shown...
+            context['active'] = ""
         return context
     
     def get_queryset(self):
@@ -71,23 +44,29 @@ class ProductSearchView(ListView):
            I suspect this could be written more efficiently
         """
         products_with_versions = []
-        for product in Product.objects.filter(discontinued=False):
-            if Version.objects.filter(fgs__in=FG.objects.filter(product=product)):
-                products_with_versions.append(product.id)
-        queryset = Product.objects.filter(discontinued=False, id__in=products_with_versions).order_by('name')
         query = self.request.GET.get('q')
-        if not query:
-            return queryset
-        # To search the read_me in the firmware versions -- first get the fgs with the search result
-        versions_fgs = Version.objects.filter(read_me__icontains=query).values_list('fgs')
-        versions_names_fgs = Version.objects.filter(name__icontains=query).values_list('fgs')
         
-        # Then check if the fgs are in the product
-        products = queryset.filter(
-            Q(name__icontains=query) | Q(fgs__number__icontains=query) | Q(fgs__in=versions_fgs) | Q(fgs__in=versions_names_fgs)
-        )
-        return products
-
+        if query is not None:
+            # If we are searching, search current and discontinued products
+            for product in Product.objects.all():
+                if Version.objects.filter(fgs__in=FG.objects.filter(product=product)):
+                    products_with_versions.append(product.id)
+            queryset = Product.objects.filter(id__in=products_with_versions).order_by('name')
+            # To search the read_me in the firmware versions -- first get the fgs with the search result
+            versions_fgs = Version.objects.filter(read_me__icontains=query).values_list('fgs')
+            versions_names_fgs = Version.objects.filter(name__icontains=query).values_list('fgs')
+        
+            # Then check if the fgs are in the product
+            return queryset.filter(Q(name__icontains=query) | 
+                                   Q(fgs__number__icontains=query) |
+                                   Q(fgs__in=versions_fgs) |
+                                   Q(fgs__in=versions_names_fgs))
+        else:
+            # Regular list here, just need to limit it to current or discontinued 
+            for product in Product.objects.filter(discontinued=self.discontinued):
+                if Version.objects.filter(fgs__in=FG.objects.filter(product=product)):
+                    products_with_versions.append(product.id)
+            return Product.objects.filter(discontinued=self.discontinued, id__in=products_with_versions).order_by('name')
 
 class ProductDetailView(DetailView):
     model = Product
