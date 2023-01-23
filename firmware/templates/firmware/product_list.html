@@ -11,7 +11,7 @@
   <div class="row g-2">
   {% for product in products %}
       <div class="col col-3 expandable-box {% if product.discontinued %}discontinued-firmware{% else %}current-firmware{% endif %}">
-        <span class="product" title="{{ product.name }} {% if product.discontinued %}*Discontinued*{% endif %}">{{ product.name|truncatechars:20}}</span>
+        <span class="product" title="{{ product.name }} {% if product.discontinued %}*Discontinued*{% endif %}">{{ product.name}}</span>
         <h6 class="firmwares hidden">
           {% for fg in product.fgs.all %}
             {% if forloop.last %}
