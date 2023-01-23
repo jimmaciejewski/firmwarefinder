@@ -4,15 +4,16 @@
   color: #ee6f30;
   color: #f35337;
 }
-/* * */
+*/
+
 .navbar {
   background-color: rgb(201, 216, 216);
 }
 
 
-/* :root {
-  --bs-body-bg: #d3d3d3;
-} */
+:root {
+  --bs-body-bg: #e0e0e0;
+}
 
 .product {
   font-size: calc(.75rem + 1.5vw); 
@@ -28,7 +29,7 @@
   width: 30%;
   /* background-color: #7f5d35; */
   /* min-height: 100px;  */
-  min-height: 7rem;
+  min-height: calc(7rem + 1.5vw);
   float: left;
   margin: 0 3% 20px 0;
   border: 1px solid #999;
