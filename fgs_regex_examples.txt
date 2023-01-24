@@ -1,0 +1,325 @@
+
+FG Numbers
+FG numbers are regionalized to include the appropriate power cord based on region
+
+
+
+
+Black, Acendo Vibe 2100 Series
+
+
+
+FG4121-00BL-UA, ACV-2100BL-UA: UA Version - Type B and I power cords for USA, Canada, Japan, Philippines, Thailand, Australia, and New Zealand
+FG4121-00BL-EK, ACV-2100BL-EK: EK Version - Type E/Power cord for EU countries, Indonesia, Singapore, Vietnam, Malaysia, Thailand, Cambodia, and Magnolia
+
+
+
+
+
+Gray, Acendo Vibe 2100 Series
+
+
+
+FG4121-00GR-UA, ACV-2100GR-UA: UA Version - Type B and I power cords for USA, Canada, Japan, Philippines, Thailand, Australia, and New Zealand
+FG4121-00GR-EK, ACV-2100GR-EK: EK Version - Type E/Power cord for EU countries, Indonesia, Singapore, Vietnam, Malaysia, Thailand, Cambodia, and Magnolia
+
+
+
+
+
+
+
+FG Numbers
+FG numbers are regionalized to include the appropriate power cord based on region
+
+
+
+
+Black, Acendo Vibe 5100 Series
+
+
+
+FG4151-00BL-UA, ACV-5100BL-UA: UA Version - Type B and I power cords for USA, Canada, Japan, Philippines, Thailand, Australia, and New Zealand
+FG4151-00BL-EK, ACV-5100BL-EK: EK Version - Type E/F and type G power cords for EU countries, Indonesia, Singapore, Vietnam, Malaysia, Thailand, Cambodia, and Mongolia
+
+
+
+
+
+Gray, Acendo Vibe 5100 Series
+
+
+
+FG4151-00GR-UA, ACV-5100GR-UA: UA Version - Type B and I power cords for USA, Canada, Japan, Philippines, Thailand, Australia, and New Zealand
+FG4151-00GR-EK, ACV-5100GR-EK: EK Version - Type E/F and type G power cords for EU countries, Indonesia, Singapore, Vietnam, Malaysia, Thailand, Cambodia, and Mongolia
+
+
+
+
+
+
+
+FG Numbers
+FG1010-910
+
+
+FG Numbers
+FG1010-710
+
+
+FG Numbers
+FG1061-16
+
+
+FG Numbers
+FG1061-32
+
+
+FG Numbers
+FG1061-64
+
+
+FG Numbers
+FG1061-08
+
+
+FG Numbers
+FG1906-07 (2x25W, 8-Ohms)
+FG1906-09 (75W, 70/100V) (Discontinued)
+
+
+FG Numbers
+FG1906-12 (2x25W, 8-Ohms)
+FG1906-14 (75W, 70/100V)
+
+
+FG Numbers
+FG1906-15 (2x25W, 8-Ohm) (Discontinued)
+FG1906-17 (75W, 70/100V)
+
+
+FG Numbers
+FG1906-16 (2x25W, 8-Ohm) (Discontinued)
+FG1906-18 (75W, 70/100V)
+
+
+FG Numbers
+FG1906-22 (2x25W, 8-Ohm)
+FG1906-24 (75W, 70/100V) (Discontinued)
+
+
+FG Numbers
+AMX-FG1906-0202  (TAA version)
+FG1906-0201  (non-TAA version)
+
+
+FG Numbers
+AMX-FG1906-0402  (TAA version)
+FG1906-0401  (non-TAA version)
+
+
+FG Numbers
+DXFP-RX-4K60 (FG1010-565-01)DXFP-RX-4K60-TAA (FG1010-565-02)
+
+
+FG Numbers
+DXFP-TX-4K60 (FG1010-365-01)
+DXFP-TX-4K60-TAA (FG1010-365-02)
+
+
+FG Numbers
+FG1010-510
+
+
+FG Numbers
+FG1010-512-01FG1010-512-02 (TAA)
+
+
+FG Numbers
+FG1010-312-01FG1010-312-02 (TAA)
+
+
+FG Numbers
+FG1010-562
+
+
+FG Numbers
+FG1010-563
+
+
+FG Numbers
+FG1010-362
+
+
+FG Numbers
+FG1010-363
+
+
+FG Numbers
+FG1010-360
+
+
+FG Numbers
+FG1010-361
+
+
+FG Numbers
+FG1010-320-BL (Black)
+FG1010-320-WH (White)
+
+
+FG Numbers
+FG2100-22
+
+
+FG Numbers
+FG2100-21
+
+
+FG Numbers
+FG2100-23
+
+
+FG Numbers
+FG2100-26
+
+
+FG Numbers
+FG2100-20
+
+
+FG Numbers
+FG5793-02-WH (White)FG5793-02-BL (Black)
+
+
+FG Numbers
+FG5793-01-WH (White)FG5793-01-BL (Black)
+
+
+FG Numbers
+FG5793-03-WH (White)FG5793-03-BL (Black)
+
+
+FG Numbers
+FG5793-06P-W (Portrait, White)FG5793-06P-BL (Portrait, Black)FG5793-06L-W (Landscape, White)FG5793-06L-BL (Landscape, Black)
+
+
+FG Numbers
+FG5793-08L-W (Landscape, White)FG5793-08L-BL (MKP-108L-B, Landscape, Black)
+
+
+FG Numbers
+FG2102-06P-BL (Portrait, Black)FG2102-06P-W (Portrait, White)FG2102-06L-BL (Landscape, Black)FG2102-06L-W (Landscape, White)
+
+
+FG Numbers
+FG2102-08-BL (Black)FG2102-08-W (White)
+
+
+FG Numbers
+FG5969-49BL
+
+
+FG Numbers
+FG5969-53
+
+
+FG Numbers
+FG5969-47
+
+
+FG Numbers
+FG5969-55BL
+
+
+FG Numbers
+FGN8307-SD
+
+
+FG Numbers
+FGN8307-ST
+
+
+FG Numbers
+FG1901-10
+
+
+FG Numbers
+FG1901-12
+
+
+FG Numbers
+FG2106-04
+
+
+FG Numbers
+FG2106-03
+
+
+FG Numbers
+FG2106-02
+
+
+FG Numbers
+FG2106-01
+
+
+FG Numbers
+AMX-PR-0402
+
+
+FG Numbers
+AMX-PR-0404
+
+
+FG Numbers
+AMX-PR-0602
+
+
+FG Numbers
+AMX-PR-0808
+
+
+FG Numbers
+AMX-PR-WP-412
+
+
+FG Numbers
+FG1020-800
+
+
+FG Numbers
+FG1020-050
+
+
+FG Numbers
+FGN8002
+
+
+FG Numbers
+FGN8012
+
+
+FG Numbers
+FGN6123
+
+
+FG Numbers
+FG1010-314
+
+
+FG Numbers
+FG1010-355
+
+
+FG Numbers
+AMX-UVC1-4K
+
+
+FG Numbers
+FG1010-354
+
+
+FG Numbers
+FG1010-357
+

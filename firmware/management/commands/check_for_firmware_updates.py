@@ -58,7 +58,7 @@ class Command(BaseCommand):
             try:
                 for download in download_fields:
                     download_link = soup("div", {"id": download})[0]("div")[0].find("a")['href']
-                    regex = r"_[v,V]?(?P<version>\d{1,3}[\.,_]\d{1,3}[\.,_]?\d{0,8}-?\d?).*\.zip"
+                    regex = r"_[v,V]?(?P<version>(\d{1,3}[\.,_]){2,}\d{0,8}-?\d?).*\.zip"
                     version_number = re.search(regex, download_link).group('version')
                     
                     if version_number is None:
