@@ -2,21 +2,43 @@ const user_input = $("#search-box")
 const search_icon = $('#search-icon')
 const product_div = $('#products-div')
 const endpoint = '/products-search'
-const delay_by_in_ms = 200
+const delay_by_in_ms = 700
 let scheduled_function = false
 
 let ajax_call = function (endpoint, request_parameters) {
 	$.getJSON(endpoint, request_parameters)
 		.done(response => {
-			// fade out the products_div, then:
-			product_div.promise().then(() => {
-			// 	// replace the HTML contents
-				product_div.html(response['html_from_view'])
-				// fade-in the div with new contents
-				// product_div.fadeTo('slow', 1)
-				// // stop animating search icon
-				// search_icon.removeClass('blink')
-			})
+			product_div.html(response['html_from_view'])
+			$('.firmwares').click(function(e){
+				// Don't act on clicks in read_me
+				e.stopPropagation()
+				return
+			  })
+	  
+			  $('.expandable-box').click(function(e) {
+	  
+	  
+				if($(this).hasClass('open')) {
+				  $('.expandable-box.out').not($(this)).removeClass('out');
+				  $(this).removeClass('open');
+	  
+	  
+				  $(this).find('.firmwares').addClass('hidden')
+	  
+				} else if($(this).hasClass('out')) {
+				  console.log("Clicked on something that is hidden")
+				  return
+				} else {
+	  
+				  $(this).find('.firmwares').removeClass('hidden')
+				  
+				  $('.expandable-box').not($(this)).addClass('out');
+				  $(this).addClass('open');
+	  
+	  
+				}
+			  });
+			
 		})
 }
 

@@ -22,37 +22,38 @@ $(document).ready(function() {
   $.getJSON('/products-search', {'discontinued': discontinued})
 		.done(response => {
 				product_div.html(response['html_from_view'])
+        $('.firmwares').click(function(e){
+          // Don't act on clicks in read_me
+          e.stopPropagation()
+          return
+        })
+
+        $('.expandable-box').click(function(e) {
+
+
+          if($(this).hasClass('open')) {
+            $('.expandable-box.out').not($(this)).removeClass('out');
+            $(this).removeClass('open');
+
+
+            $(this).find('.firmwares').addClass('hidden')
+
+          } else if($(this).hasClass('out')) {
+            console.log("Clicked on something that is hidden")
+            return
+          } else {
+
+            $(this).find('.firmwares').removeClass('hidden')
+            
+            $('.expandable-box').not($(this)).addClass('out');
+            $(this).addClass('open');
+
+
+          }
+        });
 		})
  
-   $('.firmwares').click(function(e){
-      // Don't act on clicks in read_me
-      e.stopPropagation()
-      return
-    })
-
-    $('.expandable-box').click(function(e) {
-
-
-      if($(this).hasClass('open')) {
-        $('.expandable-box.out').not($(this)).removeClass('out');
-        $(this).removeClass('open');
-
-
-        $(this).find('.firmwares').addClass('hidden')
-
-      } else if($(this).hasClass('out')) {
-        console.log("Clicked on something that is hidden")
-        return
-      } else {
-
-        $(this).find('.firmwares').removeClass('hidden')
-        
-        $('.expandable-box').not($(this)).addClass('out');
-        $(this).addClass('open');
-
-
-      }
-    });
+    
   });
 </script>
 {% endblock %}
