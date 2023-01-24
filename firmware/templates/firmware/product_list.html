@@ -14,7 +14,12 @@
 
 <script>
 $(document).ready(function() {
-  $.getJSON('/products-search')
+  var discontinued = false
+  if (window.location.pathname === '/discontinued-products') {
+    discontinued = true
+  }
+
+  $.getJSON('/products-search', {'discontinued': discontinued})
 		.done(response => {
 				product_div.html(response['html_from_view'])
 		})

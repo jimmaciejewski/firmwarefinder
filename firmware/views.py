@@ -88,6 +88,11 @@ class SubscribeForm(FormView):
 def products_search(request):
     products_with_versions = []
     query = request.GET.get('q')
+    if request.GET.get('discontinued') == 'false':
+        discontinued = False
+    else:
+        discontinued = True
+
     
     if query is not None:
         # If we are searching, search current and discontinued products
@@ -105,12 +110,12 @@ def products_search(request):
                                 Q(fgs__in=versions_fgs) |
                                 Q(fgs__in=versions_names_fgs))
     else:
-        # # Regular list here, just need to limit it to current or discontinued 
-        # for product in Product.objects.filter(discontinued=discontinued):
-        #     if Version.objects.filter(fgs__in=FG.objects.filter(product=product)):
-        #         products_with_versions.append(product.id)
-        # return Product.objects.filter(discontinued=discontinued, id__in=products_with_versions).order_by('name')
-        products = Product.objects.all()
+        # Regular list here, just need to limit it to current or discontinued 
+        for product in Product.objects.filter(discontinued=discontinued):
+            if Version.objects.filter(fgs__in=FG.objects.filter(product=product)):
+                products_with_versions.append(product.id)
+        products = Product.objects.filter(discontinued=discontinued, id__in=products_with_versions).order_by('name')
+
     html = render_to_string(
         template_name="firmware/prod_list.html",
         context={"products": products}
