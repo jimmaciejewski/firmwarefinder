@@ -94,7 +94,7 @@ def products_search(request):
         discontinued = True
 
     
-    if query is not None:
+    if query:
         # If we are searching, search current and discontinued products
         for product in Product.objects.all():
             if Version.objects.filter(fgs__in=FG.objects.filter(product=product)):
@@ -106,9 +106,10 @@ def products_search(request):
     
         # Then check if the fgs are in the product
         products = queryset.filter(Q(name__icontains=query) | 
-                                Q(fgs__number__icontains=query) |
-                                Q(fgs__in=versions_fgs) |
-                                Q(fgs__in=versions_names_fgs))
+                                   Q(associated_names__name__icontains=query) |
+                                   Q(fgs__number__icontains=query) |
+                                   Q(fgs__in=versions_fgs) |
+                                   Q(fgs__in=versions_names_fgs)).distinct()
     else:
         # Regular list here, just need to limit it to current or discontinued 
         for product in Product.objects.filter(discontinued=discontinued):

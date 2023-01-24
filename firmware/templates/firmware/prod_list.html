@@ -8,7 +8,17 @@
   {% for product in products %}
       <div class="col col-3 expandable-box {% if product.discontinued %}discontinued-firmware{% else %}current-firmware{% endif %}">
         <span class="product" title="{{ product.name }} {% if product.discontinued %}*Discontinued*{% endif %}">{{ product.name}}</span>
-        <h6 class="firmwares hidden">
+        <div class="firmwares hidden">
+          <small class="text-left">
+            {% for associated_name in product.associated_names.all %}
+            {% if forloop.last %}
+              {{associated_name}}
+            {% else %}
+              {{associated_name}},
+            {% endif %}
+          {% endfor %}
+          </small>
+          <p>
           {% for fg in product.fgs.all %}
             {% if forloop.last %}
               {{fg}}
@@ -16,9 +26,10 @@
               {{fg}},
             {% endif %}
           {% endfor %}
-        </h6>
+          </p>
+        </div>
         <ul class="list-group firmwares hidden">
-            
+          
           {% for version in product.fgs.all.0.version_set.all|dictsortreversed:"number" %}
  
           <a href="{% if not version.hotfix %}{{ product.brand.base_url }}{% endif %}{{ version.download_page }}" target="_blank" title="{% if version.hotfix %}Hotfix Firmware{% else %}Release Firmware{% endif %}" class="list-group-item list-group-item-action flex-column align-items-start list-group-item {% if version.hotfix %}list-group-item-warning{% else %}list-group-item-success{% endif %}">

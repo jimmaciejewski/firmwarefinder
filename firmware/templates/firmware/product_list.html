@@ -1,59 +1,23 @@
 {% extends "firmware/base.html" %}
 {% load static %}
 {% block content %}
-<div id="products-div">
-  
+
+<div class="d-flex justify-content-center">
+  <div id="spinner" class="spinner-border spinner" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
 </div>
+
+<div id="products-div">
+</div>
+
 
 {% endblock %}
 
 {% block extrajs %}
+
 <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 
-<script src="{% static 'firmware/js/suggestive_search.js' %}"> </script>
+<script src="{% static 'firmware/js/suggestive_search.js' %}"></script>
 
-<script>
-$(document).ready(function() {
-  var discontinued = false
-  if (window.location.pathname === '/discontinued-products') {
-    discontinued = true
-  }
-
-  $.getJSON('/products-search', {'discontinued': discontinued})
-		.done(response => {
-				product_div.html(response['html_from_view'])
-        $('.firmwares').click(function(e){
-          // Don't act on clicks in read_me
-          e.stopPropagation()
-          return
-        })
-
-        $('.expandable-box').click(function(e) {
-
-
-          if($(this).hasClass('open')) {
-            $('.expandable-box.out').not($(this)).removeClass('out');
-            $(this).removeClass('open');
-
-
-            $(this).find('.firmwares').addClass('hidden')
-
-          } else if($(this).hasClass('out')) {
-            console.log("Clicked on something that is hidden")
-            return
-          } else {
-
-            $(this).find('.firmwares').removeClass('hidden')
-            
-            $('.expandable-box').not($(this)).addClass('out');
-            $(this).addClass('open');
-
-
-          }
-        });
-		})
- 
-    
-  });
-</script>
 {% endblock %}
