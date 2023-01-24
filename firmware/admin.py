@@ -11,16 +11,23 @@ class ProductAdmin(admin.ModelAdmin):
         return str(len(obj.fgs.all()))
 
 class FGAdmin(admin.ModelAdmin):
-    list_display = ["number", "count", "products"]
+    list_display = ["number", "related_product_count", "products", "related_version_count", "versions"]
 
-    def count(self, obj):
+    def related_product_count(self, obj):
         product_list = obj.product_set.all()
         return str(len(product_list))
 
+    def related_version_count(self, obj):
+        version_list = obj.version_set.all()
+        return str(len(version_list))
 
     def products(self, obj):
         product_list = obj.product_set.all()
         return [product.name for product in product_list]
+
+    def versions(self, obj):
+        version_list = obj.version_set.all()
+        return [version.name for version in version_list]
 
 class AssociatedNameAdmin(admin.ModelAdmin):
     list_display = ["name", "count", "products"]
