@@ -72,27 +72,10 @@ There are some arbitrary names for concepts used in the system.
 2. Gets a product from the "Related Products" column
 3. Creates a product in the database using the product name _NX-1200_
 
-### Management Bootstrap Command _get_amx_product_pages_
-
-1. Goes to every Product in the database
-2. Goes to the specific Product page https://www.amx.com/en/products/nx-1200
-3. Looks for the "Firmware" section
-4. Creates a Firmware Version for each firmware found, setting the firmware name, and download link
-5. Looks for the "Specifications" section
-6. Attempts to extract the FG Numbers, and create an FG number for each found.
-7. Associates the Product with these FG Numbers
-8. Adds and associated names found to the Product
-
 ### Management Bootstrap Command _get_discontinued_products_
 
 1. Goes to https://www.amx.com/en-US/discontinued_products
 2. Creates a product with an FG relation
-
-### Management Bootstrap Command _get_hotfix_firmwares_
-
-1. Uses Sharepoint api to pull https://help.harmanpro.com/docs?t=Hotfix%20firmware
-2. Only checks firmwares named AMX
-2. Adds versions for firmwares listed under Downloads, including links
 
 ### Management Bootstrap Command _get_all_firmwares_
     
@@ -120,11 +103,22 @@ There are some arbitrary names for concepts used in the system.
 
 ### Management Command _check_for_firmware_updates_
 
-1. Used to check if there are any updates on firmwares
-2. For hotfixes, it does the same steps as _get_hotfix_firmware_ then checks that we already have seen these.
-3. Checks individual pages like _get_amx_product_pages_ then checks that we already have the firmware.
-4. If we find the existing firmware, we update the _last_seen_ 
-5. If we don't find the firmware, we create a new version and send an email to subscribers
+
+1. Uses Sharepoint api to pull https://help.harmanpro.com/docs?t=Hotfix%20firmware
+2. Only checks firmwares named AMX
+3. Adds versions for firmwares listed under Downloads, including links
+
+4. Goes to every Product in the database
+5. Goes to the specific Product page https://www.amx.com/en/products/nx-1200
+6. Looks for the "Firmware" section
+7. Creates a Firmware Version for each firmware found, setting the firmware name, and download link
+8. Looks for the "Specifications" section
+9. Attempts to extract the FG Numbers, and create an FG number for each found.
+10. Associates the Product with these FG Numbers
+11. Adds and associated names found to the Product
+
+12. If we find the existing firmware, we update the _last_seen_ 
+13. If we don't find the firmware, we create a new version and send an email to subscribers
 
 
 

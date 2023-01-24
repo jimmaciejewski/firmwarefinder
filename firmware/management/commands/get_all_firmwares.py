@@ -1,11 +1,5 @@
-from django.core.management.base import BaseCommand, CommandError
-from firmware.models import Product, Brand, Version, FG, AssociatedName
-from django.utils import timezone
-from django.db.utils import IntegrityError
-
-import requests
-
-
+from django.core.management.base import BaseCommand
+from firmware.models import Version
 
 
 class Command(BaseCommand):
@@ -16,5 +10,3 @@ class Command(BaseCommand):
             if not version.local_file:
                 self.stdout.write(self.style.SUCCESS(f'Downloading a firmware version: {version.name}'))
                 version.download_firmware()
-            else:
-                self.stdout.write(self.style.WARNING(f'Skipping Already Downloaded: {version.name}'))

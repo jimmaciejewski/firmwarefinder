@@ -65,9 +65,10 @@ class Command(BaseCommand):
                         print(f"Unable to get a version number! {download_link}")
                         return
                     version_number = version_number.replace("_", ".")
-                    new_version, created = Version.objects.get_or_create(name=f"{hotfix_page['Title']}", number=version_number)
-                    new_version.download_page = f"https://help.harmanpro.com{hotfix_page['PageURL']}"
-                    new_version.download_url = f"https://help.harmanpro.com{download_link}"
+                    new_version, created = Version.objects.get_or_create(name=f"{hotfix_page['Title']}",
+                                                                         number=version_number,
+                                                                         download_page = f"https://help.harmanpro.com{hotfix_page['PageURL']}",
+                                                                         download_url=f"https://help.harmanpro.com{download_link}")
                     new_version.hotfix = True
                     new_version.date_last_seen = timezone.now()
                     new_version.save()
