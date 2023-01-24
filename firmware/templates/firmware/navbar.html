@@ -16,9 +16,9 @@
             <a class="nav-link {% if active == 'subscribe' %}active{% endif %}" aria-current="page" href="{% url 'firmware:subscribe' %}">Subscribe</a>
           </li>
         </ul>
-        <form method="get" class="d-flex" role="search">
-          <input id="search-box" name="q" class="form-control me-2" type="search" placeholder="Search" aria-label="Search" value="{% if search %}{{search}}{% endif %}">
-        </form>
+        <div class="d-flex" role="search">
+          <input id="search-box" title="Searches all products, and all firmware README files" name="q" class="form-control me-2" type="search" placeholder="Search" aria-label="Search" value="{% if search %}{{search}}{% endif %}">
+        </div>
       </div>
     </div>
   </nav>

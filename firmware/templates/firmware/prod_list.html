@@ -20,8 +20,8 @@
         <ul class="list-group firmwares hidden">
             
           {% for version in product.fgs.all.0.version_set.all|dictsortreversed:"number" %}
-
-          <a href="{% if not version.hotfix %}{{ product.brand.base_url }}{% endif %}{{ version.download_page }}" target="_blank" class="list-group-item list-group-item-action flex-column align-items-start list-group-item {% if version.hotfix %}list-group-item-warning{% else %}list-group-item-success{% endif %}">
+ 
+          <a href="{% if not version.hotfix %}{{ product.brand.base_url }}{% endif %}{{ version.download_page }}" target="_blank" title="{% if version.hotfix %}Hotfix Firmware{% else %}Release Firmware{% endif %}" class="list-group-item list-group-item-action flex-column align-items-start list-group-item {% if version.hotfix %}list-group-item-warning{% else %}list-group-item-success{% endif %}">
             <div class="d-flex w-120 justify-content-between">
               <h5 class="mb-1">{{version.number}}   {{version.name}}</h5>
               <small>Last Seen: {{ version.date_last_seen|date:"d-M-Y" }}</small>

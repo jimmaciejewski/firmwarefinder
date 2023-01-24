@@ -1,13 +1,16 @@
-/* .theme {
-  color: #7f5d35;
-  color: #fff153;
-  color: #ee6f30;
-  color: #f35337;
+:root {
+  --theme-color: #F6FFF8;
+  --discontinued-color: #EAF4F4;
+  --border-color: #CCE3DE;
+  /* -- : #A4C3B2; */
+  --nav-color: #6B9080;
+
+  --current-color: var(--nav-color);
+
 }
-*/
 
 .navbar {
-  background-color: #c9d8d8;
+  background-color: var(--nav-color)
 }
 
 @keyframes blinker {
@@ -25,7 +28,7 @@
 }
 
 :root {
-  --bs-body-bg: #f1f1f1;
+  --bs-body-bg: var(--theme-color)
 }
 
 .product {
@@ -40,12 +43,10 @@
 
 .expandable-box {
   width: 30%;
-  /* background-color: #7f5d35; */
-  /* min-height: 100px;  */
   min-height: calc(7rem + 1.5vw);
   float: left;
   margin: 0 3% 20px 0;
-  border: 1px solid #999;
+  border: 5px solid var(--border-color);
   border-radius: 12px;
   padding: 10px;
   box-sizing: border-box;
@@ -57,11 +58,11 @@
 }
 
 .current-firmware {
-  background-color: #c9d8d8;
+  background-color: var(--current-color)
 }
 
 .discontinued-firmware {
-  background-color: #929292;
+  background-color: var(--discontinued-color)
 }
 
 .hidden {
@@ -69,7 +70,6 @@
 }
 
 .open {
-    border-color: #424141;
     width: 96%;
     margin: 0;
 }
