@@ -20,32 +20,41 @@ let ajax_call = function (endpoint, request_parameters) {
 				// Don't act on clicks in read_me
 				e.stopPropagation()
 				return
-			  })
+			})
+			$('.readme').click(function(e){
+				// Don't act on clicks in read_me
+				e.stopPropagation()
+				return
+			})
 	  
-			  $('.expandable-box').click(function(e) {
-	  
-	  
-				if($(this).hasClass('open')) {
-				  $('.expandable-box.out').not($(this)).removeClass('out');
-				  $(this).removeClass('open');
-	  
-	  
-				  $(this).find('.firmwares').addClass('hidden')
-	  
-				} else if($(this).hasClass('out')) {
-				  console.log("Clicked on something that is hidden")
-				  return
-				} else {
-	  
-				  $(this).find('.firmwares').removeClass('hidden')
-				  
-				  $('.expandable-box').not($(this)).addClass('out');
-				  $(this).addClass('open');
-	  
-	  
-				}
-			  });
-			
+			$('.expandable-box').click(function(e) {
+			if($(this).hasClass('open')) {
+				$('.expandable-box.out').not($(this)).removeClass('out');
+				$(this).removeClass('open');
+				$(this).find('.firmwares').addClass('hidden');
+	
+			} else if($(this).hasClass('out')) {
+				// console.log("Clicked on something that is hidden");
+				return
+			} else {
+				$(this).find('.firmwares').removeClass('hidden')
+				$('.expandable-box').not($(this)).addClass('out');
+				$(this).addClass('open');
+			}
+			});
+
+			$('.download-button').click(function(e) {
+				var url = $(this).data('url');
+				// console.log("you clicked download", url)
+				window.open(url, 'download')
+				//Stop here so we don't open readme
+				e.stopPropagation()
+				return
+			})
+
+			$('.readme-button').click(function(e) {
+				$(this).find('.readme').toggle()
+			});
 		})
 }
 
@@ -55,7 +64,6 @@ search_box.on('keyup', function () {
 	const request_parameters = {
 		q: $(this).val() // value of user_input: the HTML element with ID user-input
 	}
-
 	request_parameters['discontinued'] = discontinued
 
 	// start animating the search icon with the CSS class

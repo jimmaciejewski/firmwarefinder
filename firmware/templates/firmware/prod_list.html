@@ -34,39 +34,32 @@
         <ul class="list-group firmwares hidden">
           
           {% for version in product.fgs.all.0.version_set.all|dictsortreversed:"number" %}
- 
-          <a href="{% if not version.hotfix %}{{ product.brand.base_url }}{% endif %}{{ version.download_page }}" target="_blank" 
-            title="{% if version.hotfix %}Hotfix Firmware{% else %}Release Firmware{% endif %}" 
-            class="list-group-item list-group-item-action flex-column align-items-start list-group-item
-                      {% if version.hotfix %}
-                        list-group-item-warning
-                      {% else %}
-                        list-group-item-success
-                      {% endif %}">
-                      
-            <div class="d-flex w-120 justify-content-between">
-              <h5 class="mb-1">{{version.number}}   {{version.name}}</h5>
+          <li title="{% if version.hotfix %}Hotfix Firmware{% else %}Release Firmware{% endif %}" 
+              class="list-group-item list-group-item-action flex-column align-items-start list-group-item readme-button
+                        {% if version.hotfix %}
+                          list-group-item-warning
+                        {% else %}
+                          list-group-item-success
+                        {% endif %}">
+                        
+            <div class="d-flex justify-content-between">
+              <h5 class="mb-1">{{version.name}} {{version.number}}</h5>
+              <button type="button" data-url="{% if not version.hotfix %}{{ product.brand.base_url }}{% endif %}{{ version.download_page }}" class="btn btn-outline-success btn-sm download-button">Download</button>
+            </div>
+            <div class="d-flex justify-content-between">
               <small>Last Seen: {{ version.date_last_seen|date:"d-M-Y" }}</small>
             </div>
-          </a>
-            <div class="d-flex w-120 justify-content-between">
-              {% if version.read_me %}
-                {% if version.read_me != "Unable to find readme" %}
-                  <textarea style="min-width: 100%;" rows="6">{{version.read_me}}</textarea>
-                {% endif %}
+            {% if version.read_me %}
+              {% if version.read_me != "Unable to find readme" %}
+                <textarea class="readme" rows="20">{{version.read_me}}</textarea>
+              {% else %}
+                <textarea class="readme" rows="1">{{version.read_me}}</textarea>
               {% endif %}
-            </div>
- 
-            
+            {% endif %}
+          </li>
           {% endfor %}
-
         </ul>
-
-
       </div>
-    
-
-
     {% empty %}
       <h2>Sorry, no products found....</h2>
     {% endfor %}
