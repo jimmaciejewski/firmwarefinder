@@ -99,4 +99,5 @@
 .readme {
   min-width: 100%;
   display: none;
+  background-color: var(--theme-color);
 }

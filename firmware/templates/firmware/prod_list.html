@@ -43,8 +43,11 @@
                         {% endif %}">
                         
             <div class="d-flex justify-content-between">
-              <h5 class="mb-1">{{version.name}} {{version.number}}</h5>
-              <button type="button" data-url="{% if not version.hotfix %}{{ product.brand.base_url }}{% endif %}{{ version.download_page }}" class="btn btn-outline-success btn-sm download-button">Download</button>
+              <h5 class="mb-1">{{version.name}}</h5>
+
+                
+              <button type="button" data-url="{% if not version.hotfix %}{{ product.brand.base_url }}{% endif %}{{ version.download_page }}" class="btn btn-outline-success download-button">Download <span class="badge rounded-pill bg-secondary">{{version.number}}</span></button>
+
             </div>
             <div class="d-flex justify-content-between">
               <small>Last Seen: {{ version.date_last_seen|date:"d-M-Y" }}</small>
