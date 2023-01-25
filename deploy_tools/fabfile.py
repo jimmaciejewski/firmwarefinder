@@ -85,11 +85,11 @@ def _update_virtualenv(c, source_folder):
 
 
 def _update_static_files(c, source_folder): 
-    c.run(f'cd {source_folder} && ../virtualenv/bin/python manage.py collectstatic --noinput')
+    c.run(f"cd {source_folder} && export $(grep -v '^#' ../.env | xargs) && ../virtualenv/bin/python manage.py collectstatic --noinput")
 
 
 def _update_database(c, source_folder):
-    c.run(f'cd {source_folder} && ../virtualenv/bin/python manage.py migrate --noinput')
+    c.run(f"cd {source_folder} && export $(grep -v '^#' ../.env | xargs) && ../virtualenv/bin/python manage.py migrate --noinput")
 
 
 def _add_service(c, source_folder, force=False):
