@@ -50,7 +50,7 @@
 
             </div>
             <div class="d-flex justify-content-between">
-              <small>Last Seen: {{ version.date_last_seen|date:"d-M-Y" }}</small>
+              <small>Last Checked: {{ version.date_last_seen|date:"d-M-Y" }}</small>
             </div>
             {% if version.read_me %}
               {% if version.read_me != "Unable to find readme" %}

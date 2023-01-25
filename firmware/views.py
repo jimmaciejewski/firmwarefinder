@@ -3,6 +3,9 @@ from django.views.generic import ListView, DetailView, FormView
 from django.db.models import Q
 from django.template.loader import render_to_string
 from django.http import JsonResponse
+
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
+
 from .models import Brand, Product, Version, FG
 from .forms import SubscribeForm
 
@@ -103,13 +106,34 @@ def products_search(request):
         # To search the read_me in the firmware versions -- first get the fgs with the search result
         versions_fgs = Version.objects.filter(read_me__icontains=query).values_list('fgs')
         versions_names_fgs = Version.objects.filter(name__icontains=query).values_list('fgs')
-    
-        # Then check if the fgs are in the product
-        products = queryset.filter(Q(name__icontains=query) | 
+        # versions_fgs = Version.objects.annotate(search=SearchVector('read_me', 'name')).filter(search=query).values_list('fgs')
+
+        queryset = queryset.filter(Q(name__icontains=query) | 
                                    Q(associated_names__name__icontains=query) |
                                    Q(fgs__number__icontains=query) |
                                    Q(fgs__in=versions_fgs) |
                                    Q(fgs__in=versions_names_fgs)).distinct()
+    
+        # Then check if the fgs are in the product
+        vector = SearchVector('name', 'associated_names__name')
+        search_query = SearchQuery(query)
+        products = queryset.annotate(rank=SearchRank(vector, search_query)).order_by('-rank')
+
+
+
+
+        #    Q(fgs__in=versions_fgs)).distinct()
+
+        
+        # vector = SearchVector('name')
+        
+        # products = queryset.annotate(rank=SearchRank(vector, search_query)).order_by('-rank')
+
+        # products = queryset.filter(Q(name__icontains=query) | 
+        #                            Q(associated_names__name__icontains=query) |
+        #                            Q(fgs__number__icontains=query) |
+        #                            Q(fgs__in=versions_fgs) |
+        #                            Q(fgs__in=versions_names_fgs)).distinct()
     else:
         # Regular list here, just need to limit it to current or discontinued 
         for product in Product.objects.filter(discontinued=discontinued):
