@@ -2,7 +2,7 @@
   --theme-color: #F6FFF8;
   --discontinued-color: #EAF4F4;
   --border-color: #CCE3DE;
-  /* -- : #A4C3B2; */
+  --clickable-color : #A4C3B2;
   --nav-color: #6B9080;
 
   --current-color: var(--nav-color);
@@ -43,7 +43,7 @@
 
 .expandable-box {
   width: 30%;
-  min-height: calc(7rem + 1.5vw);
+  min-height: calc(4rem + 1.5vw); 
   float: left;
   margin: 0 3% 20px 0;
   border: 5px solid var(--border-color);
@@ -89,4 +89,9 @@
   right: 50%; /* or: left: 50%; */
   margin-top: calc(8rem * -0.5); 
   margin-right: calc(8rem * -0.5); 
+}
+
+.clickable {
+  background-color: var(--clickable-color);
+  border-radius: 12px;
 }
