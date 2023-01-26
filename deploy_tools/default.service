@@ -1,0 +1,14 @@
+[Unit]
+Description=Service For **SERVER NAME**
+After=network.target
+
+[Service]
+Restart=on-failure
+User=**USER NAME**
+WorkingDirectory=/home/**USER NAME**/sites/**SITE NAME**/source
+EnvironmentFile=/home/**USER NAME**/sites/**SITE NAME**/.env
+ExecStart=/home/**USER NAME**/sites/**SITE NAME**/virtualenv/bin/gunicorn --bind unix:/tmp/**SERVER NAME**.socket **PROJECT NAME**.wsgi:application
+
+
+[Install]
+WantedBy=multi-user.target
