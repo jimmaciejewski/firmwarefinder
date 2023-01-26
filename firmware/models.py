@@ -22,7 +22,7 @@ class Brand(models.Model):
 
 class FG(models.Model):
     """ An FG number
-        It is related to a spectific product (and variations of that product color/ amp size)
+        It is related to a specific product (and variations of that product color/ amp size)
         It is also related to all useable firmware versions
     """
     number = models.CharField(max_length=120, unique=True)
@@ -45,7 +45,7 @@ class AssociatedName(models.Model):
         return f"{self.name}"
 
 class Product(models.Model):
-    """ This is the offical name of the product
+    """ This is the official name of the product
         For example: NMX-ENC-2412A
         We will only use this name on our site
     """
@@ -175,3 +175,12 @@ class Version(models.Model):
     def __str__(self):
         return f"{self.name} v{self.number} "
 
+
+
+class SubscribedUser(models.Model):
+    email = models.CharField(unique=True, max_length=200)
+    name = models.CharField(max_length=200)
+    send_no_updates_found = models.BooleanField(default=False)
+
+    def __str__(self) -> str:
+        return f"{self.email} --> {self.name}"

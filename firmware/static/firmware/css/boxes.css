@@ -1,0 +1,103 @@
+:root {
+  --theme-color: #F6FFF8;
+  --discontinued-color: #EAF4F4;
+  --border-color: #CCE3DE;
+  --clickable-color : #A4C3B2;
+  --nav-color: #6B9080;
+
+  --current-color: var(--nav-color);
+
+}
+
+.navbar {
+  background-color: var(--nav-color)
+}
+
+@keyframes blinker {
+  from {opacity: 1.0;}
+  to {opacity: 0.0;}
+}
+
+.blink {
+  text-decoration: blink;
+  animation-name: blinker;
+  animation-duration: 0.6s;
+  animation-iteration-count:infinite;
+  animation-timing-function:ease-in-out;
+  animation-direction: alternate;
+}
+
+:root {
+  --bs-body-bg: var(--theme-color)
+}
+
+.product {
+  font-size: calc(.75rem + 1.5vw); 
+  font-weight: 300;
+  line-height: 1.2;
+}
+
+.expandable-boxes {
+  position: relative;
+}
+
+.expandable-box {
+  width: 30%;
+  min-height: calc(4rem + 1.5vw); 
+  float: left;
+  margin: 0 3% 20px 0;
+  border: 5px solid var(--border-color);
+  border-radius: 12px;
+  padding: 10px;
+  box-sizing: border-box;
+  -webkit-transition: all .3s ease-in-out;
+  -moz-transition: all .3s ease-in-out;
+  -o-transition: all .3s ease-in-out;
+  -ms-transition: all .3s ease-in-out;
+  transition: all .3s ease-in-out;
+}
+
+.current-firmware {
+  background-color: var(--current-color)
+}
+
+.discontinued-firmware {
+  background-color: var(--discontinued-color)
+}
+
+.hidden {
+    display: none;
+}
+
+.open {
+    width: 96%;
+    margin: 0;
+}
+  
+.out {
+    display: none;
+}
+
+
+.spinner {
+  width: calc(8rem + 1.5vw);
+  height: calc(8rem + 1.5vw);
+  display: none;
+  position: fixed;
+  z-index: 1031; /* High z-index so it is on top of the page */
+  top: 50%;
+  right: 50%; /* or: left: 50%; */
+  margin-top: calc(8rem * -0.5); 
+  margin-right: calc(8rem * -0.5); 
+}
+
+.clickable {
+  background-color: var(--clickable-color);
+  border-radius: 12px;
+}
+
+.readme {
+  min-width: 100%;
+  display: none;
+  background-color: var(--theme-color);
+}

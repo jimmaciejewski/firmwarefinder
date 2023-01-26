@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 
-from .models import Brand, AssociatedName, Product, FG, Version
+from .models import Brand, AssociatedName, Product, FG, Version, SubscribedUser
 
 
 class ProductAdmin(admin.ModelAdmin):
@@ -11,16 +11,23 @@ class ProductAdmin(admin.ModelAdmin):
         return str(len(obj.fgs.all()))
 
 class FGAdmin(admin.ModelAdmin):
-    list_display = ["number", "count", "products"]
+    list_display = ["number", "related_product_count", "products", "related_version_count", "versions"]
 
-    def count(self, obj):
+    def related_product_count(self, obj):
         product_list = obj.product_set.all()
         return str(len(product_list))
 
+    def related_version_count(self, obj):
+        version_list = obj.version_set.all()
+        return str(len(version_list))
 
     def products(self, obj):
         product_list = obj.product_set.all()
         return [product.name for product in product_list]
+
+    def versions(self, obj):
+        version_list = obj.version_set.all()
+        return [version.name for version in version_list]
 
 class AssociatedNameAdmin(admin.ModelAdmin):
     list_display = ["name", "count", "products"]
@@ -50,9 +57,13 @@ class VersionAdmin(admin.ModelAdmin):
     def fg_count(self, obj):
         return str(len(obj.fgs.all()))
 
+class SubscribedUserAdmin(admin.ModelAdmin):
+    list_display = ["name", "email", "send_no_updates_found"]
+
 
 admin.site.register(Brand)
 admin.site.register(AssociatedName, AssociatedNameAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(FG, FGAdmin)
 admin.site.register(Version, VersionAdmin)
+admin.site.register(SubscribedUser, SubscribedUserAdmin)
