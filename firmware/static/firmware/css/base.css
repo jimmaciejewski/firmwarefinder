@@ -101,3 +101,52 @@
   display: none;
   background-color: var(--theme-color);
 }
+
+.alert_container {
+  width: max-content;
+  margin-top: 2vw;
+  margin-bottom: 2vw;
+  min-height: 4vw;
+  /*text-align: center;*/
+}
+
+.alert-box {
+  margin: auto;
+  text-align: center;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  min-width: 50vw;
+  height: 4vw;
+  font-size: 2.5vw;
+}
+.success {
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+    display: none;
+}
+
+.failure {
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+    display: none;
+}
+
+.warning {
+    color: #8a6d3b;
+    background-color: #fcf8e3;
+    border-color: #faebcc;
+    display: none;
+}
+
+.danger {
+  color: #df2f17;
+  background-color: #fcf8e3;
+  border-color: #faebcc;
+  display: none;
+}
+
+.tj {
+  border-radius: 5vw;
+}
