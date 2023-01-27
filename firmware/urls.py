@@ -20,5 +20,6 @@ urlpatterns = [
     # path('<int:question_id>/vote/', views.vote, name='vote'),
     path('subscribe/', views.SubscribeForm.as_view(), name='subscribe'),
     # path('validate/', views.validate_email, name='validate_email'),
-    path('products-search', views.products_search, name='products-search')
+    path('products-search', views.products_search, name='products-search'),
+    path('thanks/', views.thanks, name='thanks')
 ]

@@ -6,11 +6,11 @@ from django.http import JsonResponse
 
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 
-from .models import Brand, Product, Version, FG
+from .models import Brand, Product, Version, FG, SubscribedUser
 from .forms import SubscribeForm
 
-# def welcome(request):
-#     return redirect("/")
+def thanks(request):
+    return render(request, "firmware/thanks.html")
 
 def lines(request):
     context = {}
@@ -78,7 +78,7 @@ class ProductDetailView(DetailView):
 class SubscribeForm(FormView):
     template_name = 'firmware/subscribe.html'
     form_class = SubscribeForm
-    success_url = '/'
+    success_url = '/thanks/'
 
     def get_context_data(self, **kwargs):
         context = super(SubscribeForm, self).get_context_data(**kwargs)
@@ -86,6 +86,10 @@ class SubscribeForm(FormView):
         return context
 
     def form_valid(self, form):
+        new_subscriber, created = SubscribedUser.objects.get_or_create(email=form.cleaned_data['email'], name=form.cleaned_data['name'])
+        if not created:
+            print('already exists')
+            return
         return super().form_valid(form)
 
 def products_search(request):
