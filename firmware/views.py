@@ -9,8 +9,8 @@ from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from .models import Brand, Product, Version, FG
 from .forms import SubscribeForm
 
-def welcome(request):
-    return redirect("/products")
+# def welcome(request):
+#     return redirect("/")
 
 def lines(request):
     context = {}
@@ -104,20 +104,37 @@ def products_search(request):
                 products_with_versions.append(product.id)
         queryset = Product.objects.filter(id__in=products_with_versions).order_by('name')
         # To search the read_me in the firmware versions -- first get the fgs with the search result
-        versions_fgs = Version.objects.filter(read_me__icontains=query).values_list('fgs')
-        versions_names_fgs = Version.objects.filter(name__icontains=query).values_list('fgs')
-        # versions_fgs = Version.objects.annotate(search=SearchVector('read_me', 'name')).filter(search=query).values_list('fgs')
 
-        queryset = queryset.filter(Q(name__icontains=query) | 
-                                   Q(associated_names__name__icontains=query) |
-                                   Q(fgs__number__icontains=query) |
-                                   Q(fgs__in=versions_fgs) |
-                                   Q(fgs__in=versions_names_fgs)).distinct()
+        search_query = SearchQuery(query)
+        search_vector = SearchVector('read_me') + SearchVector('name')
+        versions_fgs_list = Version.objects.annotate(search=search_vector).filter(search=search_query).values_list('fgs')
+
+        # versions_fgs = Version.objects.filter(read_me__icontains=query).values_list('fgs')
+        # versions_names_fgs = Version.objects.filter(name__icontains=query).values_list('fgs')
+        # # versions_fgs = Version.objects.annotate(search=SearchVector('read_me', 'name')).filter(search=query).values_list('fgs')
+
+        queryset = queryset.filter(Q(fgs__in=versions_fgs_list)).distinct()
+            
+        # Q(name__icontains=query) | 
+        #                            Q(associated_names__name__icontains=query) |
+        #                            Q(fgs__number__icontains=query) |
+        
     
         # Then check if the fgs are in the product
-        vector = SearchVector('name', 'associated_names__name')
+        vector = (SearchVector('name', weight='A') +
+                  SearchVector('associated_names', weight='B') +
+                  SearchVector('fgs__number', weight='C')
+                  )
         search_query = SearchQuery(query)
-        products = queryset.annotate(rank=SearchRank(vector, search_query)).order_by('-rank')
+        rate = SearchRank(vector, query)
+        products = queryset.annotate(rate=rate).annotate(search=vector).distinct('name', 'rate').order_by('-rate', 'name')
+
+
+        # search_vector = SearchVector('name', weight='A') + SearchVector('associated_names__name', weight='B') + SearchVector('fgs__number')
+        
+        # products = queryset.annotate(
+        #     search=search_vector, rank=SearchRank(search_vector, search_query)).filter(search=search_query).distinct('rank', 'name').order_by('-rank', 'name')
+         
 
 
 
