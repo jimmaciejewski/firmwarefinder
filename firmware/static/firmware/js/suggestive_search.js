@@ -3,6 +3,7 @@ const spinner = $('#spinner')
 const product_div = $('#products-div')
 const endpoint = '/products-search'
 const delay_by_in_ms = 700
+let scheduled_scroll = false
 let scheduled_function = false
 
 var discontinued = false
@@ -28,19 +29,30 @@ let ajax_call = function (endpoint, request_parameters) {
 			})
 	  
 			$('.expandable-box').click(function(e) {
-			if($(this).hasClass('open')) {
-				$('.expandable-box.out').not($(this)).removeClass('out');
-				$(this).removeClass('open');
-				$(this).find('.firmwares').addClass('hidden');
-	
-			} else if($(this).hasClass('out')) {
-				// console.log("Clicked on something that is hidden");
-				return
-			} else {
-				$(this).find('.firmwares').removeClass('hidden')
-				$('.expandable-box').not($(this)).addClass('out');
-				$(this).addClass('open');
-			}
+				if($(this).hasClass('open')) {
+					$('.expandable-box.out').not($(this)).removeClass('out');
+					$(this).removeClass('open');
+					$(this).find('.firmwares').addClass('hidden');
+		
+				} else if($(this).hasClass('out')) {
+					// console.log("Clicked on something that is hidden");
+					return
+				} else {
+					$(this).find('.firmwares').removeClass('hidden')
+					$('.expandable-box').not($(this)).addClass('out');
+					$(this).addClass('open');
+				}
+				if (scheduled_scroll) {
+					clearTimeout(scheduled_scroll)
+				}
+			
+				// setTimeout returns the ID of the function to be executed
+				const yOffset = -100; 
+				const y = $(this)[0].getBoundingClientRect().top + window.pageYOffset + yOffset;
+
+				
+				scheduled_scroll = setTimeout(window.scrollTo({top: y, behavior: 'smooth'}), 1000)
+				
 			});
 
 			$('.download-button').click(function(e) {
