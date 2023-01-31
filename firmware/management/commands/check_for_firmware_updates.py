@@ -221,11 +221,22 @@ class Command(BaseCommand):
                 firmware_html = firmware_html + f"<li>{firmware.name} --> {firmware.number} --> {firmware.download_url}</li>"
             
             if firmware_html == "":
+                failed_searches = ''
+                try:
+                    with open('failed_searches.txt', 'r') as f:
+                        failed_searches = f.read()
+                except Exception as error:
+                    print("Unable to open failed_searches")
+
                 content = f"""
                 Dear {sub.name},</br>
                 </br>
                 I didn't find any firmware today :(</br>
                 </br>
+                {failed_searches}
+                </br>
+
+
                 Thanks,</br>
                 Turkish Johnny!</br>
                 """

@@ -3,6 +3,7 @@ from django.views.generic import ListView, DetailView, FormView
 from django.db.models import Q
 from django.template.loader import render_to_string
 from django.http import JsonResponse
+from django.utils import timezone
 
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 
@@ -119,6 +120,13 @@ def products_search(request):
         rate = SearchRank(vector, search_query)
         products = queryset.annotate(rate=rate).annotate(search=vector).distinct('name', 'rate').order_by('-rate', 'name')
 
+        if not products:
+            # Lets log any searches that don't find anything...
+            try:
+                with open('failed_searches.txt', 'a') as f:
+                    f.write(f'{timezone.now().isoformat()} :: {query}\r</br>')
+            except Exception as error:
+                print(f"Unable to log query: {error}")
 
     else:
         # Regular list here, just need to limit it to current or discontinued 
