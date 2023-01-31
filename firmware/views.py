@@ -1,10 +1,13 @@
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import render
 from django.views.generic import ListView, DetailView, FormView
 from django.db.models import Q
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
+
+import operator
+from functools import reduce
 
 from .models import Brand, Product, Version, FG, SubscribedUser
 from .forms import SubscribeForm
@@ -77,26 +80,45 @@ def products_search(request):
 
     
     if query:
+        query = query.strip()
         # If we are searching, search current and discontinued products
         for product in Product.objects.all():
             if Version.objects.filter(fgs__in=FG.objects.filter(product=product)):
                 products_with_versions.append(product.id)
         queryset = Product.objects.filter(id__in=products_with_versions).order_by('name')
-        # To search the read_me in the firmware versions -- first get the fgs with the search result
 
-        search_query = SearchQuery(query)
-        search_vector = SearchVector('read_me') + SearchVector('name')
-        versions_fgs_list = Version.objects.annotate(search=search_vector).filter(search=search_query).values_list('fgs')
+        versions_readme_fgs = Version.objects.filter(read_me__icontains=query).values_list('fgs')
+        versions_names_fgs = Version.objects.filter(name__icontains=query).values_list('fgs')
 
-        queryset = queryset.filter(Q(fgs__in=versions_fgs_list))
-            
-        vector = (SearchVector('name') +
-                  SearchVector('associated_names') +
-                  SearchVector('fgs__number')
-                  )
+        # Trying again... here is the plan
+        # We need to modify the search passed in to better match the products we are searching for
+        # Example 1: query="DX RX"
+        #   Here we should search for "DX RX", additionally search for "DXRX" "DX-RX"
+        # Example 2: query="DX-RX"
+        #   Here we should search for "DX-RX", additionally search for "DXRX" "DX RX"
+
+        query_list = [query]
+        if "-" in query:
+            query_list.append(query.replace('-', ''))
+            query_list.append(query.replace('-', ' '))
+        if " " in query:
+            query_list.append(query.replace(' ', ''))
+            query_list.append(query.replace(' ', '-'))
+            ''
+        # Take the results of all these queries search add them together, and distinct() 
+        field_list = ['name__icontains', 'associated_names__name__icontains', 'fgs__number__icontains']
+        q_set = [Q(fgs__in=versions_readme_fgs),Q(fgs__in=versions_names_fgs)]
+        for item in query_list:
+            for field in field_list:
+                q_set.append(Q(**{field: item}))
+        combined_query = reduce(operator.or_, q_set)
+        queryset = queryset.filter(combined_query).distinct()
+        # Then we want to rank them based on quality of match using annotate
         search_query = SearchQuery(query)
-        rate = SearchRank(vector, query)
+        vector = SearchVector('name') + SearchVector('fgs__number')
+        rate = SearchRank(vector, search_query)
         products = queryset.annotate(rate=rate).annotate(search=vector).distinct('name', 'rate').order_by('-rate', 'name')
+
 
     else:
         # Regular list here, just need to limit it to current or discontinued 
