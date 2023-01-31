@@ -51,10 +51,22 @@ class Product(models.Model):
     """
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
     fgs = models.ManyToManyField(FG)
-    associated_names = models.ManyToManyField(AssociatedName)
+    associated_names = models.ManyToManyField(AssociatedName, blank=True)
     discontinued = models.BooleanField(default=False)
 
     name = models.CharField(max_length=200, unique=True)
+
+    def create_dashless_associated_name(self):
+        """Used for search for example DX-TX will create an associated name DXTX"""
+        dashless_name = self.name.replace('-', '')
+        new_associated_name, _ = AssociatedName.objects.get_or_create(name=dashless_name)
+        return new_associated_name
+
+    
+    def save(self, *args, **kwargs):
+        new_name = self.create_dashless_associated_name()
+        self.associated_names.add(new_name)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.name}"
