@@ -41,7 +41,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if options['test_email']:
             test_ver = Version.objects.first()
-            self.send_emails([test_ver])
+            self.send_emails([test_ver], testing=True)
             return
         new_found_firmwares = []
         url = "https://help.harmanpro.com/_api/web/lists/getbytitle('Pages')/Items?$top=1000&$orderby=Title&$select=PublishingPageContent,PageURL,Title,FileRef,Brand/Title, Brand/ID, Model/Title, Family/Title, DocType/Title,CaseType0/Title,FaultCategory/Title&$expand=Family,Model,CaseType0,Brand,FaultCategory,DocType&$filter=DocType/Title eq 'Hotfix firmware'"
@@ -252,7 +252,7 @@ class Command(BaseCommand):
             print(f"Unable to archive_searches: {error}")
 
 
-    def send_emails(self, new_found_firmwares):
+    def send_emails(self, new_found_firmwares, testing=False):
         """ Email updates """
 
         # Create HTML email
@@ -266,9 +266,14 @@ class Command(BaseCommand):
                 template_name="firmware/email.html",
                 context=context
             )
+            if testing:
+                if sub.send_no_updates_found:
+                    self.add_email_to_queue(sub, content)
+            else:
+                self.add_email_to_queue(sub, content)
 
-            self.add_email_to_queue(sub, content)
-        self.archive_searches()
+        if not testing:
+            self.archive_searches()
 
 
     def add_email_to_queue(self, subscriber, content):
