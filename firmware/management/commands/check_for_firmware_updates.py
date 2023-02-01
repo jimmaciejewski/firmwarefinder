@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand, CommandError
 from firmware.models import Brand, Product, FG, Version, AssociatedName, SubscribedUser
 from django.utils import timezone
 from django.db.utils import IntegrityError
+from django.template.loader import render_to_string
 
 import requests
 from dataclasses import dataclass, field
@@ -29,7 +30,19 @@ class Captured:
 class Command(BaseCommand):
     help = 'Checks for updates'
 
+    def add_arguments(self, parser):
+        # Named (optional) arguments
+        parser.add_argument(
+            '--test_email',
+            action='store_true',
+            help='Dont actually check, but send an test email anyway',
+        )
+
     def handle(self, *args, **options):
+        if options['test_email']:
+            test_ver = Version.objects.first()
+            self.send_emails([test_ver])
+            return
         new_found_firmwares = []
         url = "https://help.harmanpro.com/_api/web/lists/getbytitle('Pages')/Items?$top=1000&$orderby=Title&$select=PublishingPageContent,PageURL,Title,FileRef,Brand/Title, Brand/ID, Model/Title, Family/Title, DocType/Title,CaseType0/Title,FaultCategory/Title&$expand=Family,Model,CaseType0,Brand,FaultCategory,DocType&$filter=DocType/Title eq 'Hotfix firmware'"
         
@@ -212,56 +225,50 @@ class Command(BaseCommand):
             return None
             
 
+    def get_failed_searches(self):
+        failed_searches = []
+        try:
+            with open('failed_searches.txt', 'r') as f:
+                searches = f.read()
+                for search in searches.split('\n'):
+                    cleaned = search.strip()
+                    if cleaned:
+                        failed_searches.append(cleaned)
+        except Exception as error:
+            print(f"Unable to open failed_searches: {error}")
+        
+        return failed_searches
+
+    def archive_searches(self):
+        try:
+            with open('failed_searches.txt', 'r') as f:
+                failed_searches = f.read()
+            with open('archived_searches.txt', 'a') as f:
+                f.write(failed_searches)
+            with open('failed_searches.txt', 'w') as f:
+                # clear file
+                pass
+        except Exception as error:
+            print(f"Unable to archive_searches: {error}")
+
 
     def send_emails(self, new_found_firmwares):
-        ### Email updates
+        """ Email updates """
+
+        # Create HTML email
+        context = {'versions': new_found_firmwares, 'searches': self.get_failed_searches()}
+
         for sub in SubscribedUser.objects.all():
-            firmware_html = ""
-            for firmware in new_found_firmwares:
-                firmware_html = firmware_html + f"<li>{firmware.name} --> {firmware.number} --> {firmware.download_url}</li>"
-            
-            if firmware_html == "":
-                failed_searches = ''
-                try:
-                    with open('failed_searches.txt', 'r') as f:
-                        failed_searches = f.read()
-                    with open('archived_searches.txt', 'a') as f:
-                        f.write(failed_searches)
-                    with open('failed_searches.txt', 'w') as f:
-                        # clear file
-                        f.write("")
-                        
 
-                except Exception as error:
-                    print("Unable to open failed_searches")
+            context['developer'] = sub.send_no_updates_found
+            context['name'] = sub.name
+            content = render_to_string(
+                template_name="firmware/email.html",
+                context=context
+            )
 
-                content = f"""
-                Dear {sub.name},</br>
-                </br>
-                I didn't find any firmware today :(</br>
-                </br>
-                {failed_searches}
-                </br>
-
-
-                Thanks,</br>
-                Turkish Johnny!</br>
-                """
-                if sub.send_no_updates_found:
-                    self.add_email_to_queue(sub, content)
-            else:
-                content = f"""
-                Dear {sub.name},</br>
-                </br>
-                I found new firmware today!</br>
-                <ul>
-                    {firmware_html}
-                </ul>
-                </br>
-                Thanks,</br>
-                Turkish Johnny!</br>
-                """
-                self.add_email_to_queue(sub, content)
+            self.add_email_to_queue(sub, content)
+        self.archive_searches()
 
 
     def add_email_to_queue(self, subscriber, content):

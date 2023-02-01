@@ -1,0 +1,33 @@
+Dear {{ name }},
+</br>
+{% if versions %}
+I found new firmware today!
+</br>
+  <ul>
+    {% for version in versions %} 
+      <li>{{version.name}} --> {{version.number}} --> {{version.download_url}}   {{version.download_page}}</li>
+    {% endfor %}
+  </ul>
+</br>
+{% else %}
+I didn't find any firmware today :(
+</br>
+{% endif %}
+
+{% if searches %}
+  {% if developer %}
+    Failed Searches:
+    <ul>  
+      {% for search in searches %}
+      <li>{{ search }}</li>
+      {% endfor %}
+    </ul>
+  </br>
+  {% endif %}
+{% endif %}
+
+
+Thanks,
+</br>
+<i>Turkish Johnny!</i>
+</br>

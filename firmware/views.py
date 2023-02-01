@@ -124,7 +124,7 @@ def products_search(request):
             # Lets log any searches that don't find anything...
             try:
                 with open('failed_searches.txt', 'a') as f:
-                    f.write(f'{timezone.now().isoformat()} :: {query}\r</br>')
+                    f.write(f'{timezone.now().isoformat()} :: {query}\r')
             except Exception as error:
                 print(f"Unable to log query: {error}")
 
