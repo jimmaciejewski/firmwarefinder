@@ -225,6 +225,13 @@ class Command(BaseCommand):
                 try:
                     with open('failed_searches.txt', 'r') as f:
                         failed_searches = f.read()
+                    with open('archived_searches.txt', 'a') as f:
+                        f.write(failed_searches)
+                    with open('failed_searches.txt', 'w') as f:
+                        # clear file
+                        f.write("")
+                        
+
                 except Exception as error:
                     print("Unable to open failed_searches")
 
