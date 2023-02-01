@@ -1,0 +1,42 @@
+Dear {{ name }},
+<br>
+<br>
+{% if testing %}
+<h1>This is a TEST MESSAGE please disregard!</h1>
+<br>
+{% endif %}
+{% if versions %}
+I found new firmware today!
+  <ul>
+    {% for version in versions %} 
+      <li>{{version.name}} --> {{version.number}}
+        <ul>
+          <li>Page: {{version.download_page}}</li>
+          <li>Download: {{version.download_url}}</li>
+        <ul>
+      </li>
+      <br>
+    {% endfor %}
+  </ul>
+{% else %}
+I didn't find any firmware today :(
+<br>
+{% endif %}
+<br>
+{% if searches %}
+  {% if developer %}
+Failed Searches:
+<ul>  
+  {% for search in searches %}
+  <li>{{ search }}</li>
+  {% endfor %}
+</ul>
+  {% endif %}
+{% endif %}
+<br>
+Thanks,
+<br>
+<i>Turkish Johnny</i>
+<br>
+<small>Keeping firmware minty fresh!</small>
+<br>

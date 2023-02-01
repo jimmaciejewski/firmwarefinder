@@ -5,12 +5,12 @@ from . import views
 app_name = 'firmware'
 
 urlpatterns = [
-    path('', views.welcome, name='home'),
+    # path('home', views.welcome, name='home'),
     path('lines', views.lines, name='lines'),
     # path('', views.tree, name='tree'),
     path('sites', views.BrandListView.as_view(), name='brand-list'),
     path('brand/<int:pk>/', views.BrandDetailView.as_view(), name='brand-detail'),
-    path('products', views.ProductSearchView.as_view(discontinued=False), name='product-list'),
+    path('', views.ProductSearchView.as_view(discontinued=False), name='product-list'),
     path('discontinued-products', views.ProductSearchView.as_view(discontinued=True), name='discontinued-product-list'),
     # path('products/', views.ProductListView.as_view(), name='product-list'),
     path('product/<int:pk>/', views.ProductDetailView.as_view(), name='product-detail'),
@@ -20,5 +20,6 @@ urlpatterns = [
     # path('<int:question_id>/vote/', views.vote, name='vote'),
     path('subscribe/', views.SubscribeForm.as_view(), name='subscribe'),
     # path('validate/', views.validate_email, name='validate_email'),
-    path('products-search', views.products_search, name='products-search')
+    path('products-search', views.products_search, name='products-search'),
+    path('thanks/', views.thanks, name='thanks')
 ]
