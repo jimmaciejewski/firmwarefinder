@@ -40,8 +40,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if options['test_email']:
-            test_ver = Version.objects.first()
-            self.send_emails([test_ver], testing=True)
+            test_ver1 = Version.objects.first()
+            test_ver2 = Version.objects.get(name="SVSI N2400 Series Windowing Processor Firmware Updater")
+            self.send_emails([test_ver1, test_ver2], testing=True)
+            self.send_emails([], testing=True)
             return
         new_found_firmwares = []
         url = "https://help.harmanpro.com/_api/web/lists/getbytitle('Pages')/Items?$top=1000&$orderby=Title&$select=PublishingPageContent,PageURL,Title,FileRef,Brand/Title, Brand/ID, Model/Title, Family/Title, DocType/Title,CaseType0/Title,FaultCategory/Title&$expand=Family,Model,CaseType0,Brand,FaultCategory,DocType&$filter=DocType/Title eq 'Hotfix firmware'"
@@ -256,7 +258,7 @@ class Command(BaseCommand):
         """ Email updates """
 
         # Create HTML email
-        context = {'versions': new_found_firmwares, 'searches': self.get_failed_searches()}
+        context = {'versions': new_found_firmwares, 'searches': self.get_failed_searches(), 'testing': testing}
 
         for sub in SubscribedUser.objects.all():
 
