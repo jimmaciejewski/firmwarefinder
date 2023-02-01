@@ -11,7 +11,7 @@ I found new firmware today!
     {% for version in versions %} 
       <li>{{version.name}} --> {{version.number}}
         <ul>
-          <li>Page: {{version.download_page}}</li>
+          <li>Page: {% if not version.hotfix %}https://www.amx.com{% endif %}{{ version.download_page }}</li>
           <li>Download: {{version.download_url}}</li>
         <ul>
       </li>

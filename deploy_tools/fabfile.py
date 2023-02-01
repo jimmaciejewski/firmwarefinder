@@ -45,6 +45,7 @@ def _get_latest_source(c, source_folder):
         print("Found git fetching")
         c.run(f'cd {source_folder} && git fetch')
     c.run(f'cd {source_folder} && git pull')
+    c.run(f'cd {source_folder} && git reset --hard')
     
 
 def _create_or_update_dotenv(c, source_folder):
