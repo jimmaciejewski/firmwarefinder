@@ -43,8 +43,9 @@ def _get_latest_source(c, source_folder):
     else:
         print("Found git fetching")
         c.run(f'cd {source_folder} && git fetch')
-    c.run(f'cd {source_folder} && git pull')
     c.run(f'cd {source_folder} && git reset --hard')
+    c.run(f'cd {source_folder} && git pull')
+    
 
 def _create_or_update_dotenv(c, source_folder):
     if c.run(f'test -f {source_folder}/../.env', warn=True).failed:
