@@ -4,6 +4,7 @@
   --border-color: #CCE3DE;
   --clickable-color : #A4C3B2;
   --nav-color: #6B9080;
+  --last-clicked-color:#04f1f1;
 
   --current-color: var(--nav-color);
 
@@ -12,6 +13,13 @@
 .navbar {
   background-color: var(--nav-color)
 }
+
+/* Show it is fixed to the top */
+body {
+  min-height: 75rem;
+  padding-top: 4.5rem;
+}
+
 
 @keyframes blinker {
   from {opacity: 1.0;}
@@ -33,7 +41,7 @@
 
 .product {
   font-size: calc(.75rem + 1.5vw); 
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.2;
 }
 
@@ -150,4 +158,9 @@
 
 .tj {
   border-radius: 5vw;
+}
+
+.last-clicked {
+
+  border-color: var(--last-clicked-color);
 }
