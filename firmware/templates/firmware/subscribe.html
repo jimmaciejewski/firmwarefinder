@@ -5,50 +5,5 @@
 {% block content %}
 
 <div class="container">
-  {% if form.errors %}
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-      <strong>Holy guacamole!</strong> You should check in on some of those fields below.
-      <ul>
-        {% for error_field, error_message in form.errors.items %}
-            {{ error_field|striptags }}: {{ error_message|striptags }}
-        {% endfor %}
-      </ul>
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-  {% endif %}
-  <br>
-  <br>
-  <form method="post">
-    {% csrf_token %}
-    <div class="mb-3">
-      <label for="id_name" class="form-label">Your Name</label>
-      <input type="text" name="name" class="form-control" id="id_name" aria-describedby="namelHelp" value="{{ form.name.value|default:'' }}" required>
-      <div id="nameHelp" class="form-text">Please enter your name.</div>
-    </div>
-
-    <div class="mb-3">
-      <label for="id_email" class="form-label">Email address</label>
-      <input type="email" name="email" class="form-control" id="id_email" aria-describedby="emailHelp" value="{{ form.email.value|default:'' }}" required>
-      <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
-    </div>
-    
-    <button type="submit" value="Submit" class="btn btn-outline-success download-button">Submit</button>
-  </form>
-
+<h1>Coming soon</h1>
 </div>
-
-{% endblock %}
-
-{% block extrajs %}
-{% if form.errors %}
-<script type="text/javascript">
-  {% for field in form %}
-    var field_input = document.getElementById("{{ field.auto_id }}");
-    if (field_input) {
-      field_input.classList.add("is-{% if field.errors %}in{% endif %}valid");
-    }
-  {% endfor %}
-</script>  
-{% endif %}
-
-{% endblock %}
