@@ -1,16 +1,19 @@
-from django.shortcuts import render
-from django.views.generic import ListView, DetailView, FormView
+from django.shortcuts import render, redirect
+from django.views.generic import ListView, DetailView
 from django.db.models import Q
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.utils import timezone
+from django.conf import settings
 
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
+
+import requests
 
 import operator
 from functools import reduce
 
-from .models import Brand, Product, Version, FG, SubscribedUser
+from .models import Brand, Product, Version, FG
 from .forms import SubscribeForm
 
 def thanks(request):
@@ -54,22 +57,23 @@ class ProductDetailView(DetailView):
     model = Product
 
 
-class SubscribeForm(FormView):
-    template_name = 'firmware/subscribe.html'
-    form_class = SubscribeForm
-    success_url = '/thanks/'
+def subscribe(request):
+    if request.method == "POST":
+        form = SubscribeForm(request.POST)
+        if form.is_valid():
+            recaptcha_response = request.POST.get('g-recaptcha-response')
+            data = {'secret': settings.CAPTCHA_SECRET_KEY, 'response': recaptcha_response}
+            result = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+            if result.status_code == 200 and result.json()['success']:
+                form.save()
+                return redirect('/thanks/')
+            else:
+                form.add_error(None, "You need to prove you are not a robot!")
+    else:
+        form = SubscribeForm()
 
-    def get_context_data(self, **kwargs):
-        context = super(SubscribeForm, self).get_context_data(**kwargs)
-        context['active'] = "subscribe"
-        return context
+    return render(request, 'firmware/subscribe.html', {'form': form, 'sitekey': settings.CAPTCHA_SITEKEY})
 
-    def form_valid(self, form):
-        new_subscriber, created = SubscribedUser.objects.get_or_create(email=form.cleaned_data['email'], name=form.cleaned_data['name'])
-        if not created:
-            print('already exists')
-            return
-        return super().form_valid(form)
 
 def products_search(request):
     products_with_versions = []

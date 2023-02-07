@@ -149,6 +149,9 @@ if 'DJANGO_DEBUG_FALSE' in os.environ:
     EMAIL_HOST_PASSWORD = os.environ['EMAIL_PASSWORD']
     EMAIL_PORT = 587
 
+CAPTCHA_SITEKEY = os.environ['CAPTCHA_SITEKEY']
+CAPTCHA_SECRET_KEY = os.environ['CAPTCHA_SECRET_KEY']
+
 # Enable the mail queue. If this is set to False, the mail queue will be disabled and emails will be 
 # sent immediately instead.
 MAILQUEUE_QUEUE_UP = True
