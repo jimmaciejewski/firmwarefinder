@@ -193,6 +193,7 @@ class SubscribedUser(models.Model):
     email = models.CharField(unique=True, max_length=200)
     name = models.CharField(max_length=200)
     send_no_updates_found = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return f"{self.email} --> {self.name}"

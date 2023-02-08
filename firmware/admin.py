@@ -58,7 +58,7 @@ class VersionAdmin(admin.ModelAdmin):
         return str(len(obj.fgs.all()))
 
 class SubscribedUserAdmin(admin.ModelAdmin):
-    list_display = ["name", "email", "send_no_updates_found"]
+    list_display = ["name", "email", "is_active", "send_no_updates_found"]
 
 
 admin.site.register(Brand)

@@ -260,12 +260,12 @@ class Command(BaseCommand):
         # Create HTML email
         context = {'versions': new_found_firmwares, 'searches': self.get_failed_searches(), 'testing': testing}
 
-        for sub in SubscribedUser.objects.all():
+        for sub in SubscribedUser.objects.filter(is_active=True):
 
             context['developer'] = sub.send_no_updates_found
             context['name'] = sub.name
             content = render_to_string(
-                template_name="firmware/email.html",
+                template_name="firmware/updates_email.html",
                 context=context
             )
             if testing:

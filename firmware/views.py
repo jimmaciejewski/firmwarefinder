@@ -1,10 +1,12 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView
 from django.db.models import Q
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.utils import timezone
 from django.conf import settings
+
+from django.contrib.auth.decorators import login_required
 
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 
@@ -13,8 +15,8 @@ import requests
 import operator
 from functools import reduce
 
-from .models import Brand, Product, Version, FG
-from .forms import SubscribeForm
+from .models import Brand, Product, Version, FG, SubscribedUser
+from .forms import ActivateUserForm, SubscribeForm
 
 def thanks(request):
     return render(request, "firmware/thanks.html")
@@ -140,13 +142,7 @@ def products_search(request):
         products = Product.objects.filter(discontinued=discontinued, id__in=products_with_versions).order_by('name')
 
 
-    context= {"products": products}
-    client_ip = get_client_ip(request)
-    if client_ip == '127.0.0.1':
-        context['show_local'] = True
-    else:
-        print(f"From ip: {client_ip}")
-
+    context= {"products": products, "show_local": request.user.is_authenticated}
 
     html = render_to_string(
         template_name="firmware/prod_list.html",
@@ -157,10 +153,40 @@ def products_search(request):
     return JsonResponse(data=data_dict, safe=False)
 
 
-def get_client_ip(request):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
+@login_required(login_url='/admin/')
+def activate_user(request, id):
+    user = get_object_or_404(SubscribedUser, id=id)
+
+    if request.method == "POST":
+        form = ActivateUserForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('/thanks/')
     else:
-        ip = request.META.get('REMOTE_ADDR')
-    return ip
+        form = ActivateUserForm(instance=user)
+
+    return render(request, 'firmware/activate_user.html', {'form': form, 'user': user})
+
+
+
+# def register(request):
+#     if request.method == "POST":
+#         form = UserRegisterForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             username = form.cleaned_data.get('username')
+#             email = form.cleaned_data.get('email')
+#             ######################### mail system ####################################
+#             htmly = get_template('user/Email.html')
+#             d = { 'username': username }
+#             subject, from_email, to = 'welcome', 'your_email@gmail.com', email
+#             html_content = htmly.render(d)
+#             msg = EmailMultiAlternatives(subject, html_content, from_email, [to])
+#             msg.attach_alternative(html_content, "text/html")
+#             msg.send()
+#             ##################################################################
+#             messages.success(request, f'Your account has been created ! You are now able to log in')
+#             return redirect('login')
+#     else:
+#         form = UserRegisterForm()
+#     return render(request, 'user/register.html', {'form': form, 'title':'register here'})

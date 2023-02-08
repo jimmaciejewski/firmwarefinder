@@ -21,5 +21,6 @@ urlpatterns = [
     path('subscribe/', views.subscribe, name='subscribe'),
     # path('validate/', views.validate_email, name='validate_email'),
     path('products-search', views.products_search, name='products-search'),
-    path('thanks/', views.thanks, name='thanks')
+    path('thanks/', views.thanks, name='thanks'),
+    path('activate-user/<int:id>/', views.activate_user, name='activate-user')
 ]
