@@ -34,7 +34,7 @@ else:
 # Application definition
 
 INSTALLED_APPS = [
-    'mailqueue',
+    'mailer',
     'firmware.apps.FirmwareConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -140,26 +140,15 @@ MEDIA_ROOT = BASE_DIR / '../media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Only enable email on production
-if 'DJANGO_DEBUG_FALSE' in os.environ:  
-    DEFAULT_FROM_EMAIL =  os.environ['EMAIL_USER']
-    EMAIL_USE_TLS = True
-    EMAIL_HOST = 'smtp.mailgun.org'
-    EMAIL_HOST_USER = os.environ['EMAIL_USER']
-    EMAIL_HOST_PASSWORD = os.environ['EMAIL_PASSWORD']
-    EMAIL_PORT = 587
-
 CAPTCHA_SITEKEY = os.environ['CAPTCHA_SITEKEY']
 CAPTCHA_SECRET_KEY = os.environ['CAPTCHA_SECRET_KEY']
 
-# Enable the mail queue. If this is set to False, the mail queue will be disabled and emails will be 
-# sent immediately instead.
-MAILQUEUE_QUEUE_UP = True
+EMAIL_BACKEND = "mailer.backend.DbBackend"
+DEFAULT_FROM_EMAIL =  os.environ['EMAIL_USER']
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.mailgun.org'
+EMAIL_HOST_USER = os.environ['EMAIL_USER']
+EMAIL_HOST_PASSWORD = os.environ['EMAIL_PASSWORD']
+EMAIL_PORT = 587
 
-# Maximum amount of emails to send during each queue run
-MAILQUEUE_LIMIT = 50
-
-# If MAILQUEUE_STORAGE is set to True, will ignore your default storage settings
-# and use Django's filesystem storage instead (stores them in MAILQUEUE_ATTACHMENT_DIR) 
-MAILQUEUE_STORAGE = False
-MAILQUEUE_ATTACHMENT_DIR = 'mailqueue-attachments'
+LOGIN_REDIRECT_URL = '/'

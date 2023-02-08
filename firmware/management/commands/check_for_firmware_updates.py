@@ -3,13 +3,15 @@ from firmware.models import Brand, Product, FG, Version, AssociatedName, Subscri
 from django.utils import timezone
 from django.db.utils import IntegrityError
 from django.template.loader import render_to_string
+from django.core.mail import send_mail
+from django.contrib.auth.models import User
 
 import requests
 from dataclasses import dataclass, field
 import json
 import re
 from bs4 import BeautifulSoup
-from mailqueue.models import MailerMessage
+
 
 @dataclass
 class FirmwareVersion:
@@ -241,6 +243,7 @@ class Command(BaseCommand):
         
         return failed_searches
 
+
     def archive_searches(self):
         try:
             with open('failed_searches.txt', 'r') as f:
@@ -260,37 +263,33 @@ class Command(BaseCommand):
         # Create HTML email
         context = {'versions': new_found_firmwares, 'searches': self.get_failed_searches(), 'testing': testing}
 
-        for sub in SubscribedUser.objects.filter(is_active=True):
+        for user in User.objects.filter(is_active=True):
 
-            context['developer'] = sub.send_no_updates_found
-            context['name'] = sub.name
+            context['developer'] = user.is_staff
+            context['name'] = f"{user.first_name}"
             content = render_to_string(
                 template_name="firmware/updates_email.html",
                 context=context
             )
-            if testing:
-                if sub.send_no_updates_found:
-                    self.add_email_to_queue(sub, content)
+
+            # Send the email to staff users in all cases
+            if user.is_staff:
+                self.add_email_to_queue(user, content)
             else:
-                self.add_email_to_queue(sub, content)
+                # Non staff members get the email if there are updates and we are not testing
+                if not testing and new_found_firmwares:
+                    self.add_email_to_queue(user, content)
 
         if not testing:
             self.archive_searches()
 
 
-    def add_email_to_queue(self, subscriber, content):
-        my_name = "Firmware Finder"
-        msg = MailerMessage()
-        msg.subject = "Updated Firmwares"
-        msg.to_address = subscriber.email
+    def add_email_to_queue(self, user, content):
+        send_mail(
+            subject="Updated Firmwares",
+            message=content,
+            from_email="Firmware Finder <firmware_finder@ornear.com>",
+            recipient_list=[user.email],
+            html_message=content
+        )
 
-        # For sender names to be displayed correctly on mail clients, simply put your name first
-        # and the actual email in angle brackets 
-        # The below example results in "Dave Johnston <dave@example.com>"
-        msg.from_address = '{} <{}>'.format(my_name, 'firmware_finder@ornear.com')
-
-        # As this is only an example, we place the text content in both the plaintext version (content) 
-        # and HTML version (html_content).
-        msg.content = content
-        msg.html_content = content
-        msg.save()

@@ -1,7 +1,7 @@
 django
 requests
 bs4
-django-mail-queue
+django-mailer
 gunicorn
 fabric
 psycopg2

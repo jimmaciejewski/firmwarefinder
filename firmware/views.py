@@ -5,6 +5,9 @@ from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.utils import timezone
 from django.conf import settings
+from django.contrib.auth.models import User
+from django.contrib.auth import views as auth_views
+from django.contrib import messages
 
 from django.contrib.auth.decorators import login_required
 
@@ -15,8 +18,8 @@ import requests
 import operator
 from functools import reduce
 
-from .models import Brand, Product, Version, FG, SubscribedUser
-from .forms import ActivateUserForm, SubscribeForm
+from .models import Brand, Product, Version, FG
+from .forms import ActivateUserForm, UserProfileForm
 
 def thanks(request):
     return render(request, "firmware/thanks.html")
@@ -59,22 +62,22 @@ class ProductDetailView(DetailView):
     model = Product
 
 
-def subscribe(request):
-    if request.method == "POST":
-        form = SubscribeForm(request.POST)
-        if form.is_valid():
-            recaptcha_response = request.POST.get('g-recaptcha-response')
-            data = {'secret': settings.CAPTCHA_SECRET_KEY, 'response': recaptcha_response}
-            result = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
-            if result.status_code == 200 and result.json()['success']:
-                form.save()
-                return redirect('/thanks/')
-            else:
-                form.add_error(None, "You need to prove you are not a robot!")
-    else:
-        form = SubscribeForm()
+# def subscribe(request):
+#     if request.method == "POST":
+#         form = SubscribeForm(request.POST)
+#         if form.is_valid():
+#             recaptcha_response = request.POST.get('g-recaptcha-response')
+#             data = {'secret': settings.CAPTCHA_SECRET_KEY, 'response': recaptcha_response}
+#             result = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+#             if result.status_code == 200 and result.json()['success']:
+#                 form.save()
+#                 return redirect('/thanks/')
+#             else:
+#                 form.add_error(None, "You need to prove you are not a robot!")
+#     else:
+#         form = SubscribeForm()
 
-    return render(request, 'firmware/subscribe.html', {'form': form, 'sitekey': settings.CAPTCHA_SITEKEY})
+#     return render(request, 'firmware/subscribe.html', {'form': form, 'sitekey': settings.CAPTCHA_SITEKEY})
 
 
 def products_search(request):
@@ -155,7 +158,7 @@ def products_search(request):
 
 @login_required(login_url='/admin/')
 def activate_user(request, id):
-    user = get_object_or_404(SubscribedUser, id=id)
+    user = get_object_or_404(User, id=id)
 
     if request.method == "POST":
         form = ActivateUserForm(request.POST, instance=user)
@@ -168,25 +171,32 @@ def activate_user(request, id):
     return render(request, 'firmware/activate_user.html', {'form': form, 'user': user})
 
 
+class LoginView(auth_views.LoginView):
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({'sitekey': settings.CAPTCHA_SITEKEY})
 
-# def register(request):
-#     if request.method == "POST":
-#         form = UserRegisterForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             username = form.cleaned_data.get('username')
-#             email = form.cleaned_data.get('email')
-#             ######################### mail system ####################################
-#             htmly = get_template('user/Email.html')
-#             d = { 'username': username }
-#             subject, from_email, to = 'welcome', 'your_email@gmail.com', email
-#             html_content = htmly.render(d)
-#             msg = EmailMultiAlternatives(subject, html_content, from_email, [to])
-#             msg.attach_alternative(html_content, "text/html")
-#             msg.send()
-#             ##################################################################
-#             messages.success(request, f'Your account has been created ! You are now able to log in')
-#             return redirect('login')
-#     else:
-#         form = UserRegisterForm()
-#     return render(request, 'user/register.html', {'form': form, 'title':'register here'})
+    def form_valid(self, form):
+        recaptcha_response = self.request.POST.get('g-recaptcha-response')
+        data = {'secret': settings.CAPTCHA_SECRET_KEY, 'response': recaptcha_response}
+        result = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+        if result.status_code == 200 and result.json()['success']:
+             return super().form_valid(form)
+        else:
+            form.add_error(None, "You need to prove you are not a robot!")
+            return super().form_invalid(form)
+
+@login_required(login_url='/accounts/login')
+def profile(request):
+
+    if request.method == "POST":
+        form = UserProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.info(request, f"Updated Email to {form.cleaned_data['email']}")
+            return redirect('/profile')
+    else:
+        form = UserProfileForm(instance=request.user)
+
+    return render(request, 'registration/profile_change_form.html', {'form': form, 'user': request.user})

@@ -22,15 +22,21 @@
   <title>AMX Firmware</title>
 
 </head>
-
 <body>
 
+<div class="container">
+
 {% include 'firmware/navbar.html' %}
-<main class="container">
+{% include 'firmware/messages.html' %}
+
 {% block content %}
 {% endblock %}
-</main>
+
+</div>
+
 </body>
+
+
 
 {% block extrajs %}
 {% endblock %}
