@@ -213,6 +213,8 @@ def register_request(request):
             if result.status_code == 200 and result.json()['success']:
                 user = form.save()
                 user.is_active = False
+                new_subscriber = Subscriber(user=user)
+                new_subscriber.save()
                 user.save()
                 for staff_user in User.objects.filter(is_staff=True):
                     context = {'name': staff_user.username, 'new_user': user}
