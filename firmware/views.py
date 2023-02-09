@@ -166,7 +166,7 @@ def activate_user(request, id):
     else:
         form = ActivateUserForm(instance=user)
 
-    return render(request, 'firmware/activate_user.html', {'form': form, 'user': user})
+    return render(request, 'registration/activate_user.html', {'form': form, 'user': user})
 
 
 class LoginView(auth_views.LoginView):
@@ -217,7 +217,7 @@ def register_request(request):
                 for staff_user in User.objects.filter(is_staff=True):
                     context = {'name': staff_user.username, 'new_user': user}
                     content = render_to_string(
-                        template_name="firmware/admin_user_verification_email.html",
+                        template_name="registration/admin_user_verification_email.html",
                         context=context
                     )
                     send_mail(
