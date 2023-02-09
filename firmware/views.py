@@ -152,7 +152,7 @@ def activate_user(request, id):
             form.save()
             context = {'new_user': user}
             content = render_to_string(
-                template_name="registration/welcome_email.html",
+                template_name="registration/user_welcome_email.html",
                 context=context
             )
             send_mail(
