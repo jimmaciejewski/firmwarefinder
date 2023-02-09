@@ -158,7 +158,7 @@ def activate_user(request, id):
             send_mail(
                 subject="Welcome to Firmware Monitoring",
                 message=content,
-                from_email="Firmware Finder <firmware_finder@ornear.com>",
+                from_email="firmware_finder@ornear.com",
                 recipient_list=[user.email],
                 html_message=content
             )
@@ -223,7 +223,7 @@ def register_request(request):
                     send_mail(
                         subject="New User Request",
                         message=content,
-                        from_email="Firmware Finder <firmware_finder@ornear.com>",
+                        from_email="firmware_finder@ornear.com",
                         recipient_list=[staff_user.email],
                         html_message=content
                     )
