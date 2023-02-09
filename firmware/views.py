@@ -13,6 +13,7 @@ from django.core.mail import send_mail
 from django.forms import inlineformset_factory
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 
@@ -25,7 +26,7 @@ from .models import Brand, Product, Version, FG, Subscriber
 from .forms import ActivateUserForm, UserProfileForm, NewUserForm, SubscriberForm
 
 def thanks(request):
-    return render(request, "firmware/thanks.html")
+    return render(request, "registration/thanks.html")
 
 def lines(request):
     context = {}
@@ -142,15 +143,15 @@ def products_search(request):
     return JsonResponse(data=data_dict, safe=False)
 
 
-@login_required(login_url='/admin/')
+@staff_member_required(login_url='/admin/')
 def activate_user(request, id):
-    user = get_object_or_404(User, id=id)
+    activate_user = get_object_or_404(User, id=id)
 
     if request.method == "POST":
-        form = ActivateUserForm(request.POST, instance=user)
+        form = ActivateUserForm(request.POST, instance=activate_user)
         if form.is_valid():
             form.save()
-            context = {'new_user': user}
+            context = {'new_user': activate_user}
             content = render_to_string(
                 template_name="registration/user_welcome_email.html",
                 context=context
@@ -159,14 +160,14 @@ def activate_user(request, id):
                 subject="Welcome to Firmware Monitoring",
                 message=content,
                 from_email="firmware_finder@ornear.com",
-                recipient_list=[user.email],
+                recipient_list=[activate_user.email],
                 html_message=content
             )
             return redirect('/thanks/')
     else:
-        form = ActivateUserForm(instance=user)
+        form = ActivateUserForm(instance=activate_user)
 
-    return render(request, 'registration/activate_user.html', {'form': form, 'user': user})
+    return render(request, 'registration/activate_user.html', {'form': form, 'activate_user': activate_user})
 
 
 class LoginView(auth_views.LoginView):

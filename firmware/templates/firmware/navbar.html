@@ -26,7 +26,7 @@
             <a class="nav-link dropdown-toggle show" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="true">
               <i class="bi bi-person-square"></i>
               {% if user.is_authenticated %}
-                {{ user.first_name }}
+                {{ user.username }}
               {% endif %} 
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown" data-bs-popper="none">
