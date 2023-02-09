@@ -1,42 +1,40 @@
-from django.forms import ModelForm
+from django import forms
 
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.template.loader import render_to_string
+from django.forms import inlineformset_factory
 
-from django.core.mail import send_mail
-
-# class SubscribeForm(ModelForm):
-#     class Meta:
-#         model = User
-#         fields = ['email', 'name']
-
-#     def save(self, commit=True):
-#         new_user = super(SubscribeForm, self).save(commit=commit)
-#         if commit:
-#             # Send an email for verification
-#             for staff_user in User.objects.filter(is_staff=True):
-#                 context = {'name': staff_user.username, 'new_user': new_user}
-#                 content = render_to_string(
-#                     template_name="firmware/subscription_verification_email.html",
-#                     context=context
-#                 )
-#                 send_mail(
-#                     subject="New Subscriber Request",
-#                     message=content,
-#                     from_email="Firmware Finder <firmware_finder@ornear.com>",
-#                     recipient_list=[staff_user.email],
-#                     html_message=content
-#                 )
+from .models import Subscriber
 
 
-
-class ActivateUserForm(ModelForm):
+class ActivateUserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['is_active']
 
 
-class UserProfileForm(ModelForm):
+class UserProfileForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['email']
+
+
+class NewUserForm(UserCreationForm):
+	email = forms.EmailField(required=True)
+
+	class Meta:
+		model = User
+		fields = ("username", "email", "password1", "password2")
+
+	def save(self, commit=True):
+		user = super(NewUserForm, self).save(commit=False)
+		user.email = self.cleaned_data['email']
+		if commit:
+			user.save()
+		return user
+
+class SubscriberForm(forms.ModelForm):
+	class Meta:
+		model = Subscriber
+		fields = ['send_email']
+	

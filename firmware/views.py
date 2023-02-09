@@ -7,7 +7,10 @@ from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth import views as auth_views
+from django.contrib.auth import login
 from django.contrib import messages
+from django.core.mail import send_mail
+from django.forms import inlineformset_factory
 
 from django.contrib.auth.decorators import login_required
 
@@ -18,8 +21,8 @@ import requests
 import operator
 from functools import reduce
 
-from .models import Brand, Product, Version, FG
-from .forms import ActivateUserForm, UserProfileForm
+from .models import Brand, Product, Version, FG, Subscriber
+from .forms import ActivateUserForm, UserProfileForm, NewUserForm, SubscriberForm
 
 def thanks(request):
     return render(request, "firmware/thanks.html")
@@ -61,23 +64,6 @@ class ProductSearchView(ListView):
 class ProductDetailView(DetailView):
     model = Product
 
-
-# def subscribe(request):
-#     if request.method == "POST":
-#         form = SubscribeForm(request.POST)
-#         if form.is_valid():
-#             recaptcha_response = request.POST.get('g-recaptcha-response')
-#             data = {'secret': settings.CAPTCHA_SECRET_KEY, 'response': recaptcha_response}
-#             result = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
-#             if result.status_code == 200 and result.json()['success']:
-#                 form.save()
-#                 return redirect('/thanks/')
-#             else:
-#                 form.add_error(None, "You need to prove you are not a robot!")
-#     else:
-#         form = SubscribeForm()
-
-#     return render(request, 'firmware/subscribe.html', {'form': form, 'sitekey': settings.CAPTCHA_SITEKEY})
 
 
 def products_search(request):
@@ -164,6 +150,18 @@ def activate_user(request, id):
         form = ActivateUserForm(request.POST, instance=user)
         if form.is_valid():
             form.save()
+            context = {'new_user': user}
+            content = render_to_string(
+                template_name="registration/welcome_email.html",
+                context=context
+            )
+            send_mail(
+                subject="Welcome to Firmware Monitoring",
+                message=content,
+                from_email="Firmware Finder <firmware_finder@ornear.com>",
+                recipient_list=[user.email],
+                html_message=content
+            )
             return redirect('/thanks/')
     else:
         form = ActivateUserForm(instance=user)
@@ -189,14 +187,51 @@ class LoginView(auth_views.LoginView):
 
 @login_required(login_url='/accounts/login')
 def profile(request):
-
     if request.method == "POST":
         form = UserProfileForm(request.POST, instance=request.user)
+        form2 = SubscriberForm(request.POST, instance=request.user.subscriber)
+        if form2.is_valid():
+            form2.save()
         if form.is_valid():
             form.save()
-            messages.info(request, f"Updated Email to {form.cleaned_data['email']}")
+            messages.info(request, f"Profile updated")
             return redirect('/profile')
     else:
         form = UserProfileForm(instance=request.user)
+        form2 = SubscriberForm(instance=request.user.subscriber)
 
-    return render(request, 'registration/profile_change_form.html', {'form': form, 'user': request.user})
+    return render(request, 'registration/profile_change_form.html', {'form': form, 'form2': form2, 'user': request.user})
+
+
+def register_request(request):
+    if request.method == "POST":
+        form = NewUserForm(request.POST)
+        if form.is_valid():
+            recaptcha_response = request.POST.get('g-recaptcha-response')
+            data = {'secret': settings.CAPTCHA_SECRET_KEY, 'response': recaptcha_response}
+            result = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+            if result.status_code == 200 and result.json()['success']:
+                user = form.save()
+                user.is_active = False
+                user.save()
+                for staff_user in User.objects.filter(is_staff=True):
+                    context = {'name': staff_user.username, 'new_user': user}
+                    content = render_to_string(
+                        template_name="firmware/admin_user_verification_email.html",
+                        context=context
+                    )
+                    send_mail(
+                        subject="New User Request",
+                        message=content,
+                        from_email="Firmware Finder <firmware_finder@ornear.com>",
+                        recipient_list=[staff_user.email],
+                        html_message=content
+                    )
+                return redirect('firmware:thanks')
+            else:
+                form.add_error(None, "You need to prove you are not a robot!")
+                messages.error(request, "You need to prove you are not a robot!")
+    else:
+        form = NewUserForm()
+    return render (request=request, template_name="registration/register.html", context={"form":form, 'active': 'register', 'sitekey': settings.CAPTCHA_SITEKEY})
+

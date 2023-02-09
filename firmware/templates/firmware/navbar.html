@@ -12,6 +12,11 @@
           <li class="nav-item">
             <a class="nav-link {% if active == 'discontinued' %}active{% endif %}" aria-current="page" href="{% url 'firmware:discontinued-product-list' %}">Discontinued</a>
           </li>
+          {% if not user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link {% if active == 'register' %}active{% endif %}" aria-current="page" href="{% url 'firmware:register' %}">Sign Up</a>
+            </li>
+          {% endif %}
         </ul>
         <div class="d-flex" role="search">
           <input id="search-box" title="Searches all products, and all firmware README files" name="q" class="form-control me-2" type="search" placeholder="Search" aria-label="Search" value="{% if search %}{{search}}{% endif %}">

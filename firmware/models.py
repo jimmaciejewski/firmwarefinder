@@ -2,6 +2,8 @@ from django.db import models
 from zipfile import ZipFile, BadZipFile
 from django.core.files import File
 from django.utils.text import slugify
+from django.contrib.auth.models import User
+
 import os
 import requests
 from tempfile import TemporaryFile
@@ -187,3 +189,11 @@ class Version(models.Model):
     def __str__(self):
         return f"{self.name} v{self.number} "
 
+
+class Subscriber(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    send_email = models.BooleanField(default=True)
+
+
+    def __str__(self):
+        return f"{self.user}"

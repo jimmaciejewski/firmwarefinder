@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 
-from .models import Brand, AssociatedName, Product, FG, Version
+from .models import Brand, AssociatedName, Product, FG, Version, Subscriber
 
 
 class ProductAdmin(admin.ModelAdmin):
@@ -57,7 +57,8 @@ class VersionAdmin(admin.ModelAdmin):
     def fg_count(self, obj):
         return str(len(obj.fgs.all()))
 
-
+class SubscriberAdmin(admin.ModelAdmin):
+    list_display = ["user", "send_email"]
 
 
 admin.site.register(Brand)
@@ -65,4 +66,5 @@ admin.site.register(AssociatedName, AssociatedNameAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(FG, FGAdmin)
 admin.site.register(Version, VersionAdmin)
+admin.site.register(Subscriber, SubscriberAdmin)
 

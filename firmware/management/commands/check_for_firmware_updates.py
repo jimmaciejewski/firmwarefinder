@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from firmware.models import Brand, Product, FG, Version, AssociatedName, SubscribedUser
+from firmware.models import Brand, Product, FG, Version, AssociatedName
 from django.utils import timezone
 from django.db.utils import IntegrityError
 from django.template.loader import render_to_string
@@ -263,8 +263,7 @@ class Command(BaseCommand):
         # Create HTML email
         context = {'versions': new_found_firmwares, 'searches': self.get_failed_searches(), 'testing': testing}
 
-        for user in User.objects.filter(is_active=True):
-
+        for user in User.objects.filter(is_active=True, subscriber__send_email=True):
             context['developer'] = user.is_staff
             context['name'] = f"{user.first_name}"
             content = render_to_string(

@@ -1,0 +1,17 @@
+Dear {{ name }},
+<br>
+<br>
+
+{{ new_user.username }} has requested to join the subscriptions list.
+
+They are using email: {{ new_user.email }}
+
+If this looks good, <a href="https://firmware.turkishjohnnys.com{% url 'firmware:activate-user' new_user.id %}">Activate {{ new_user.username }}</a>
+
+<br>
+Thanks,
+<br>
+<i>Turkish Johnny</i>
+<br>
+<small>Keeping firmware minty fresh!</small>
+<br>

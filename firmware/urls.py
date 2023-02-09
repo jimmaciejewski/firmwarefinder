@@ -14,6 +14,7 @@ urlpatterns = [
     # path('product/<int:pk>/', views.ProductDetailView.as_view(), name='product-detail'),
 
     # path('subscribe/', views.subscribe, name='subscribe'),
+    path("register", views.register_request, name="register"),
     path('profile', views.profile, name='profile'),
     path('products-search', views.products_search, name='products-search'),
     path('thanks/', views.thanks, name='thanks'),
