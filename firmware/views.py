@@ -86,6 +86,7 @@ def products_search(request):
 
         versions_readme_fgs = Version.objects.filter(read_me__icontains=query).values_list('fgs')
         versions_names_fgs = Version.objects.filter(name__icontains=query).values_list('fgs')
+        versions_numbers_fgs = Version.objects.filter(number__icontains=query.replace('v', '')).values_list('fgs')
 
         # Trying again... here is the plan
         # We need to modify the search passed in to better match the products we are searching for
@@ -104,7 +105,7 @@ def products_search(request):
             ''
         # Take the results of all these queries search add them together, and distinct() 
         field_list = ['name__icontains', 'associated_names__name__icontains', 'fgs__number__icontains']
-        q_set = [Q(fgs__in=versions_readme_fgs),Q(fgs__in=versions_names_fgs)]
+        q_set = [Q(fgs__in=versions_readme_fgs),Q(fgs__in=versions_names_fgs),Q(fgs__in=versions_numbers_fgs)]
         for item in query_list:
             for field in field_list:
                 q_set.append(Q(**{field: item}))
