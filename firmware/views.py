@@ -220,7 +220,7 @@ def register_request(request):
                 for staff_user in User.objects.filter(is_staff=True):
                     context = {'name': staff_user.username, 'new_user': user}
                     content = render_to_string(
-                        template_name="registration/admin_user_verification_email.html",
+                        template_name="email/admin_user_verification_email.html",
                         context=context
                     )
                     send_mail(
