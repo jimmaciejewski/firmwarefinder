@@ -267,7 +267,7 @@ class Command(BaseCommand):
             context['developer'] = user.is_staff
             context['name'] = f"{user.first_name}"
             content = render_to_string(
-                template_name="firmware/updates_email.html",
+                template_name="email/updates_email.html",
                 context=context
             )
 
