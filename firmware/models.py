@@ -66,9 +66,11 @@ class Product(models.Model):
 
     
     def save(self, *args, **kwargs):
+        product = super().save(*args, **kwargs)
         new_name = self.create_dashless_associated_name()
         self.associated_names.add(new_name)
-        super().save(*args, **kwargs)
+        return product
+        
 
     def __str__(self):
         return f"{self.name}"
@@ -187,7 +189,7 @@ class Version(models.Model):
             self.local_file.save(f"{filename}", File(tf))
 
     def __str__(self):
-        return f"{self.name} v{self.number} "
+        return f"{self.name} v{self.number}"
 
 
 class Subscriber(models.Model):
