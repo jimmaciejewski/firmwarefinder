@@ -2,3 +2,4 @@
 deploy_tools/.env
 geckodriver.log
 .coverage
+test_email.html
