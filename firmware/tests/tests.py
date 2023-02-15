@@ -3,10 +3,39 @@ from django.test import TestCase, RequestFactory
 from django.http import HttpRequest
 from django.core.files.base import File
 from django.contrib.auth.models import User
+from django.template.loader import render_to_string
+from django.core.management import call_command
+from mailer.models import Message
+from io import StringIO
 
 
 from ..views import ProductSearchView  
 from ..models import Brand, FG, AssociatedName, Product, upload_path_name, upload_location, Version, Subscriber
+
+
+
+# email templates
+class EmailTemplateTest(TestCase):
+
+    def create_versions(self):
+        test_ver1 = Version.objects.create(name="SVSI N2400 Series Windowing Processor Firmware Updater", number="1.2.3", download_page="/en-US/softwares/svsi-n2400-series-windowing-processor-firmware-updater-v2-2-40", download_url="https://www.amx.com/en-US/softwares/svsi-n2400-series-windowing-processor-firmware-updater-v2-2-40/download")
+        test_ver2 = Version.objects.create(name="N2410 SVSI Hotfix firmware Updater", number="3.2.1", download_page="https://help.harmanpro.com/Documents/1502/N2410Update_2022-01-13_v2.2.25.zip", download_url="https://help.harmanpro.com/n2410-window-processor-updater-hotfix", hotfix=True)
+        return [test_ver1, test_ver2]
+
+    def test_email_template(self):
+        versions = self.create_versions()
+        context = {'name': 'jim', 'versions': versions}
+        content = render_to_string(template_name="email/updates_email.html", context=context)
+    
+        self.assertIn('SVSI N2400', content)
+
+
+    def test_email_contains_failed_searches(self):
+        versions = self.create_versions()
+        context = {'name': 'jim', 'developer': True, 'versions': versions, "searches": ["2023-02-01T03:20:01.414107+00:00 :: a new failed search", "2023-02-07T00:04:16.678822+00:00 :: asdfasdfasd", "2023-02-07T00:04:45.719079+00:00 :: next failed", "2023-02-07T00:04:47.408940+00:00 :: next failed search", "2023-02-08T02:55:30.895418+00:00 :: failed search on wednesday"]}
+        content = render_to_string(template_name="email/updates_email.html", context=context)
+        with open("test_email.html", "w") as f:
+            f.write(content)
 
 
 # views test

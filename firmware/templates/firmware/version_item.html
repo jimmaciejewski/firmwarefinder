@@ -25,7 +25,9 @@
   <div class="d-flex justify-content-between">
     <small>Last seen on the website: {{ version.date_last_seen|date:"d-M-Y" }}</small>
       {% if show_local %}
-        <button type="button" data-url="{{ version.local_file.url }}" class="btn btn-outline-success download-button m-1">Local Copy</button>
+        {% if version.local_file %}
+          <button type="button" data-url="{{ version.local_file.url }}" class="btn btn-outline-success download-button m-1">Local Copy</button>
+        {% endif %}
       {% endif %}
   </div>
   {% if version.read_me %}

@@ -1,17 +1,17 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
-
-
-import time
-
-MAX_WAIT = 10
+from selenium.webdriver.firefox.options import Options
 
 class FunctionalTest(StaticLiveServerTestCase):
 
     def setUp(self):
-        self.browser = webdriver.Firefox()
+
+        options = Options()
+        options.binary_location = r"C:\\Program Files\\Mozilla Firefox\\firefox.exe"
+        self.browser = webdriver.Firefox(options=options)
         self.browser.maximize_window()
 
 
     def tearDown(self):
-        self.browser.quit()
+        if True:
+            self.browser.quit()

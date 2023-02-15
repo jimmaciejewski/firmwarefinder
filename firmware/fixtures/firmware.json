@@ -1,0 +1,123 @@
+[
+{
+  "model": "firmware.brand",
+  "pk": 1,
+  "fields": {
+    "name": "AMX",
+    "base_url": "https://www.amx.com",
+    "extra_path": ""
+  }
+},
+{
+  "model": "firmware.fg",
+  "pk": 450,
+  "fields": {
+    "number": "FG1"
+  }
+},
+{
+  "model": "firmware.fg",
+  "pk": 451,
+  "fields": {
+    "number": "FG2"
+  }
+},
+{
+  "model": "firmware.associatedname",
+  "pk": 147,
+  "fields": {
+    "name": "Product 1"
+  }
+},
+{
+  "model": "firmware.associatedname",
+  "pk": 148,
+  "fields": {
+    "name": "Product 2"
+  }
+},
+{
+  "model": "firmware.product",
+  "pk": 275,
+  "fields": {
+    "brand": 1,
+    "discontinued": false,
+    "name": "Product 1",
+    "fgs": [
+      450
+    ],
+    "associated_names": [
+      147
+    ]
+  }
+},
+{
+  "model": "firmware.product",
+  "pk": 276,
+  "fields": {
+    "brand": 1,
+    "discontinued": true,
+    "name": "Product 2",
+    "fgs": [
+      451
+    ],
+    "associated_names": [
+      148
+    ]
+  }
+},
+{
+  "model": "firmware.version",
+  "pk": 167,
+  "fields": {
+    "name": "Firmware for product 1",
+    "number": "v1.1.1",
+    "download_page": "",
+    "download_url": "",
+    "local_file": "",
+    "date_last_seen": "2023-02-15T03:27:53Z",
+    "read_me": "Sit sane ista voluptas. Prodest, inquit, mihi eo esse animo. Duo Reges: constructio interrete. Sed quoniam et advesperascit et mihi ad villam revertendum est, nunc quidem hactenus; Num igitur eum postea censes anxio animo aut sollicito fuisse? Non dolere, inquam, istud quam vim habeat postea videro; At quicum ioca seria, ut dicitur, quicum arcana, quicum occulta omnia? Nos commodius agimus.",
+    "read_me_path": "Readme.txt",
+    "hotfix": false,
+    "fgs": [
+      450
+    ]
+  }
+},
+{
+  "model": "firmware.version",
+  "pk": 168,
+  "fields": {
+    "name": "Firmware for product 1",
+    "number": "v1.1.2",
+    "download_page": "",
+    "download_url": "",
+    "local_file": "",
+    "date_last_seen": "2023-02-15T03:28:14Z",
+    "read_me": "Sit sane ista voluptas. Prodest, inquit, mihi eo esse animo. Duo Reges: constructio interrete. Sed quoniam et advesperascit et mihi ad villam revertendum est, nunc quidem hactenus; Num igitur eum postea censes anxio animo aut sollicito fuisse? Non dolere, inquam, istud quam vim habeat postea videro; At quicum ioca seria, ut dicitur, quicum arcana, quicum occulta omnia? Nos commodius agimus.",
+    "read_me_path": "Readme.txt",
+    "hotfix": true,
+    "fgs": [
+      450
+    ]
+  }
+},
+{
+  "model": "firmware.version",
+  "pk": 169,
+  "fields": {
+    "name": "Firmware for product 2",
+    "number": "v2.2.2",
+    "download_page": "",
+    "download_url": "",
+    "local_file": "",
+    "date_last_seen": "2023-02-15T03:28:34Z",
+    "read_me": "Sit sane ista voluptas. Prodest, inquit, mihi eo esse animo. Duo Reges: constructio interrete. Sed quoniam et advesperascit et mihi ad villam revertendum est, nunc quidem hactenus; Num igitur eum postea censes anxio animo aut sollicito fuisse? Non dolere, inquam, istud quam vim habeat postea videro; At quicum ioca seria, ut dicitur, quicum arcana, quicum occulta omnia? Nos commodius agimus.",
+    "read_me_path": "Readme.txt",
+    "hotfix": false,
+    "fgs": [
+      451
+    ]
+  }
+}
+]

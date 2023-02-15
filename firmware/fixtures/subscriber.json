@@ -1,0 +1,10 @@
+[
+{
+  "model": "firmware.subscriber",
+  "pk": 5,
+  "fields": {
+    "user": 5,
+    "send_email": true
+  }
+}
+]

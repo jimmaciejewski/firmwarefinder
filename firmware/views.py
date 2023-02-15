@@ -144,7 +144,7 @@ def products_search(request):
     return JsonResponse(data=data_dict, safe=False)
 
 
-@staff_member_required(login_url='/admin/')
+@staff_member_required(login_url='/accounts/login/', redirect_field_name='next')
 def activate_user(request, id):
     activate_user = get_object_or_404(User, id=id)
 

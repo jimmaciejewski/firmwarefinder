@@ -1,0 +1,38 @@
+[
+{
+  "model": "auth.user",
+  "pk": 4,
+  "fields": {
+    "password": "pbkdf2_sha256$390000$7oXEPeeROuaF6b942Wlc69$OPW3pK1nAvL+N++7/DVuuf/eifwyNSlMmhmas7rQWAY=",
+    "last_login": "2023-02-15T02:18:31.815Z",
+    "is_superuser": false,
+    "username": "edith",
+    "first_name": "",
+    "last_name": "",
+    "email": "edith@ornear.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2023-02-09T03:22:03Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 5,
+  "fields": {
+    "password": "pbkdf2_sha256$390000$Mh0PwixerJEGYeGMXEKxwj$Odv2MVbI6KpiwMOTM96AaKLCO9/Ng70Ar4tcZKRaipQ=",
+    "last_login": null,
+    "is_superuser": true,
+    "username": "admin_edith",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2023-02-15T02:07:01Z",
+    "groups": [],
+    "user_permissions": []
+  }
+}
+]

@@ -1,33 +1,158 @@
-# from .base import FunctionalTest
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.common.keys import Keys
+from .base import FunctionalTest
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 
 
-# class BasicPagesTest(FunctionalTest):
+class BasicPagesTest(FunctionalTest):
+    fixtures = ['user.json', 'subscriber.json', 'firmware.json']
 
-#     def test_can_get_to_home_page(self):
-#         # Edith has heard about a cool new online firmware page. She goes
-#         # to check out its homepage
-#         self.browser.get(self.live_server_url)
+    def test_can_get_to_home_page(self):
+        # Edith has heard about a cool new online firmware page. She goes
+        # to check out its homepage
+        self.browser.get(self.live_server_url)
 
-#         # She notices the page title and header mention AMX Firmware
-#         self.assertIn('AMX Firmware', self.browser.title)
+        # She notices the page title and header mention AMX Firmware
+        self.assertIn('AMX Firmware', self.browser.title)
         
     
-#     def test_can_see_current_products(self):
-#         self.browser.get(self.live_server_url)
-#         # She sees a list of current products on the page
-#         self.browser.implicitly_wait(10) # seconds
-#         products_div = self.browser.find_element(By.ID, 'products-div')  
-#         products = products_div.find_elements(By.CLASS_NAME, 'current-firmware')
-#         self.assertGreater(len(products), 0)
+    def test_can_see_current_products(self):
+        self.browser.get(self.live_server_url)
+        # She sees a list of current products on the page
+        self.browser.implicitly_wait(10) # seconds
+        products_div = self.browser.find_element(By.ID, 'products-div')  
+        products = products_div.find_elements(By.CLASS_NAME, 'current-firmware')
+        self.assertGreater(len(products), 0)
 
-#         # She clicks on a product and it shows a list of firmware versions applicable to that product
-#         products[0].click()
+        # She clicks on a product and it shows a list of firmware versions applicable to that product
+        products[0].click()
 
-#         # She clicks on discontinued and sees discontinued products
-#         self.browser.get(self.live_server_url + '/discontinued-products')
-#         self.browser.implicitly_wait(10) # seconds
-#         products_div = self.browser.find_element(By.ID, 'products-div')  
-#         products = products_div.find_elements(By.CLASS_NAME, 'discontinued-firmware')
-#         self.assertGreater(len(products), 0)
+        # The firmware versions are in two groups, release firmware in numeric order
+        
+        # And hotfix firmware in numeric order
+
+        # When she clicks on a firmware version it expands and shows the readme file
+        elem = self.browser.find_element(By.XPATH, '/html/body/div/div[2]/div[2]/div/ul')
+        elem.click()
+        
+        # When she clicks on the download button it takes her to the correct webpage
+
+        # When she clicks on the product name, it contracts and shows all the products
+        # It also highlights the last selected products
+
+        # She clicks on discontinued and sees discontinued products
+        self.browser.get(self.live_server_url + "/discontinued-products")
+        self.browser.implicitly_wait(10) # seconds
+        products_div = self.browser.find_element(By.ID, 'products-div')  
+        products = products_div.find_elements(By.CLASS_NAME, 'discontinued-firmware')
+        self.assertGreater(len(products), 0)
+
+
+       
+
+    def test_registration(self):
+
+        self.browser.get(self.live_server_url)
+        # Edith wonders if she can be notified of updates, and clicks register 
+        elem = self.browser.find_element(By.LINK_TEXT, 'Sign Up')
+        elem.click()
+
+        # She is presented with a page that shows user registration
+        assert "Register" in self.browser.page_source
+
+    def test_account_creation(self):
+        self.browser.get(self.live_server_url)
+        elem = self.browser.find_element(By.LINK_TEXT, 'Sign Up')
+        elem.click()
+        # She try to create an account, but finds out she is a robot...
+        elem = self.browser.find_element(By.NAME, 'username')
+        elem.send_keys('edith2')
+        elem = self.browser.find_element(By.NAME, 'email')
+        elem.send_keys('edith@ornear.com')
+        elem = self.browser.find_element(By.NAME, 'password1')
+        elem.send_keys('letmein!!')
+        elem = self.browser.find_element(By.NAME, 'password2')
+        elem.send_keys('letmein!!')
+        elem = self.browser.find_element(By.XPATH, '/html/body/div[1]/form/button')
+        elem.click()
+        self.browser.implicitly_wait(10) # seconds
+        assert "You need to prove you are not a robot!" in self.browser.page_source
+
+
+    def test_account_login(self):
+        self.browser.get(self.live_server_url)
+        elem = self.browser.find_element(By.LINK_TEXT, 'Sign Up')
+        elem.click()
+        # She remembers she already has an account and clicks login
+        elem = self.browser.find_element(By.LINK_TEXT, 'login')
+        elem.click()
+        assert "Login" in self.browser.page_source
+
+        # She enters her username and password but gets an error
+        elem = self.browser.find_element(By.NAME, 'username')
+        elem.send_keys('edith')
+        elem = self.browser.find_element(By.NAME, 'password')
+        elem.send_keys('wrong password')
+        elem = self.browser.find_element(By.XPATH, '/html/body/div/form/button')
+        elem.click()
+        self.browser.implicitly_wait(10)
+        assert "Please try again." in self.browser.page_source
+
+        # She clicks lost password and sees the Reset password page
+        elem = self.browser.find_element(By.XPATH, '/html/body/div/p/a')
+        elem.click()
+        assert "Reset Password" in self.browser.page_source
+
+    def test_login_to_server(self):
+        # She remembers her password and goes back to the login page
+        self.browser.get(self.live_server_url + "/accounts/login/")
+        elem = self.browser.find_element(By.NAME, 'username')
+        elem.send_keys('edith')
+        elem = self.browser.find_element(By.NAME, 'password')
+        elem.send_keys('letmein!!')
+        elem = self.browser.find_element(By.XPATH, '/html/body/div/form/button')
+        elem.click()
+        assert "edith" in self.browser.page_source
+        
+        # She takes a look at her profile
+        self.browser.get(self.live_server_url + "/profile")
+        self.browser.implicitly_wait(10)
+        assert "Profile" in self.browser.page_source
+        assert "Send an email when firmware updates are found" in self.browser.page_source
+
+        # She checks the Thanks page is there
+        self.browser.get(self.live_server_url + "/thanks")
+        self.browser.implicitly_wait(10)
+        assert "Thanks for subscribing!" in self.browser.page_source
+        assert "You will receive an email when your account is activated" in self.browser.page_source
+        self.browser.implicitly_wait(10)
+
+
+
+    def test_user_activation(self):
+        self.browser.get(self.live_server_url + "/accounts/login/")
+        elem = self.browser.find_element(By.NAME, 'username')
+        elem.send_keys('edith')
+        elem = self.browser.find_element(By.NAME, 'password')
+        elem.send_keys('letmein!!')
+        elem = self.browser.find_element(By.XPATH, '/html/body/div/form/button')
+        elem.click()
+        assert "edith" in self.browser.page_source
+        # She checks the activate user page is there
+        self.browser.get(self.live_server_url + "/activate-user/1/")
+
+        # She isn't an admin, so she should get the login page
+        assert "Activate" not in self.browser.page_source
+        assert "Your account doesn't have access to this page." in self.browser.page_source
+
+        # She logs in as an admin
+        elem = self.browser.find_element(By.NAME, 'username')
+        elem.send_keys('admin_edith')
+        elem = self.browser.find_element(By.NAME, 'password')
+        elem.send_keys('letmein!!')
+        elem = self.browser.find_element(By.XPATH, '/html/body/div/form/button')
+        elem.click()
+
+        assert "Activate User" in self.browser.page_source
+        assert "Username" in self.browser.page_source
+
+        # Satisfied, she goes back to sleep
