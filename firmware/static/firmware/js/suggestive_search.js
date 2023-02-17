@@ -22,8 +22,15 @@ let ajax_call = function (endpoint, request_parameters) {
 				e.stopPropagation()
 				return
 			})
+			
 			$('.readme').click(function(e){
 				// Don't act on clicks in read_me
+				e.stopPropagation()
+				return
+			})
+
+			$('.download-button').click(function(e) {
+				//Stop here so we don't open readme
 				e.stopPropagation()
 				return
 			})
@@ -60,14 +67,7 @@ let ajax_call = function (endpoint, request_parameters) {
 				
 			});
 
-			$('.download-button').click(function(e) {
-				var url = $(this).data('url');
-				// console.log("you clicked download", url)
-				window.open(url, 'download')
-				//Stop here so we don't open readme
-				e.stopPropagation()
-				return
-			})
+
 
 			$('.readme-button').click(function(e) {
 				$(this).find('.readme').toggle()

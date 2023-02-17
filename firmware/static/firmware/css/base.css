@@ -103,6 +103,7 @@ body {
 .clickable {
   background-color: var(--clickable-color);
   border-radius: 12px;
+  cursor: pointer;
 }
 
 .readme {
@@ -110,6 +111,11 @@ body {
   display: none;
   background-color: var(--theme-color);
 }
+
+.readme-button {
+  cursor: pointer;
+}
+
 
 .alert_container {
   width: max-content;
