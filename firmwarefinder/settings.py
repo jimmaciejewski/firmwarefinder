@@ -171,3 +171,5 @@ else:
     EMAIL_PORT = 587 
 
 LOGIN_REDIRECT_URL = '/'
+
+CSRF_TRUSTED_ORIGINS = ['https://'+ os.environ['SITENAME']]
