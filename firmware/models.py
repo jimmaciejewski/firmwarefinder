@@ -123,7 +123,7 @@ class Version(models.Model):
 
         try:
             storage = AzureMediaStorage()
-            fh = storage.open(self.local_file.path, 'r') 
+            fh = storage.open(self.local_file.name, 'r') 
             with ZipFile(fh) as myzip:
                 # For SVSi firmware
                 for item in myzip.filelist:
