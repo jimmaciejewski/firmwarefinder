@@ -133,8 +133,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-DEFAULT_FILE_STORAGE = 'django_on_azure.backend.AzureMediaStorage'
-STATICFILES_STORAGE  = 'django_on_azure.backend.AzureStaticStorage'
+DEFAULT_FILE_STORAGE = 'firmwarefinder.storage.AzureMediaStorage'
+STATICFILES_STORAGE  = 'firmwarefinder.storage.AzureStaticStorage'
 
 AZURE_STORAGE_KEY = os.environ.get('AZURE_STORAGE_KEY', False)
 AZURE_ACCOUNT_NAME = "firmwaredemo"  # your account name
