@@ -80,6 +80,7 @@ WSGI_APPLICATION = 'firmwarefinder.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.sqlite3',
@@ -90,8 +91,11 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': os.environ['DATABASE_NAME'],
+        'HOST': os.environ['DATABASE_HOST'],
         'USER': os.environ['DATABASE_USER'],
-        'PASSWORD': os.environ['DATABASE_PASSWORD']
+        'PASSWORD': os.environ['DATABASE_PASSWORD'],
+        'PORT': os.environ['DATABASE_PORT'],
+        'OPTIONS': {'sslmode': os.environ['DATABASE_SSL']}
     }
 }
 
@@ -140,15 +144,30 @@ MEDIA_ROOT = BASE_DIR / '../media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CAPTCHA_SITEKEY = os.environ['CAPTCHA_SITEKEY']
-CAPTCHA_SECRET_KEY = os.environ['CAPTCHA_SECRET_KEY']
+if 'DJANGO_DEBUG_FALSE' in os.environ:  
+    CAPTCHA_SITEKEY = os.environ['CAPTCHA_SITEKEY']
+    CAPTCHA_SECRET_KEY = os.environ['CAPTCHA_SECRET_KEY']
+else:
+    # Test credentials from Google: https://developers.google.com/recaptcha/docs/faq
+    CAPTCHA_SITEKEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
+    CAPTCHA_SECRET_KEY = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
 
-EMAIL_BACKEND = "mailer.backend.DbBackend"
-DEFAULT_FROM_EMAIL =  os.environ['EMAIL_USER']
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.mailgun.org'
-EMAIL_HOST_USER = os.environ['EMAIL_USER']
-EMAIL_HOST_PASSWORD = os.environ['EMAIL_PASSWORD']
-EMAIL_PORT = 587
+if 'DJANGO_DEBUG_FALSE' in os.environ:  
+    EMAIL_BACKEND = "mailer.backend.DbBackend"
+    DEFAULT_FROM_EMAIL =  os.environ['EMAIL_USER']
+    EMAIL_USE_TLS = True
+    EMAIL_HOST = 'smtp.mailgun.org'
+    EMAIL_HOST_USER = os.environ['EMAIL_USER']
+    EMAIL_HOST_PASSWORD = os.environ['EMAIL_PASSWORD']
+    EMAIL_PORT = 587
+
+else:
+    EMAIL_BACKEND = "mailer.backend.DbBackend"
+    DEFAULT_FROM_EMAIL =  'test@example.org'
+    EMAIL_USE_TLS = True
+    EMAIL_HOST = 'smtp.mailgun.org'
+    EMAIL_HOST_USER = 'user'
+    EMAIL_HOST_PASSWORD = 'password'
+    EMAIL_PORT = 587 
 
 LOGIN_REDIRECT_URL = '/'
