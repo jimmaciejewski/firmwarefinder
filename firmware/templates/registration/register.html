@@ -21,32 +21,42 @@
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>
 {% endif %}
+
 <form method="post">
   {% csrf_token %}
-  <div class="mb-3">
-    <label for="id_username" class="form-label">Your Username</label>
-    <input type="text" name="username" class="form-control" id="id_username" aria-describedby="usernamelHelp" value="{{ form.username.value|default:'' }}" required>
-    <div id="usernameHelp" class="form-text">Please enter your username.</div>
+  <div class="input-group mb-3">
+    <span class="input-group-text">First and last name</span>
+    <input type="text" name="first_name" id="id_first_name" aria-label="First name" class="form-control" value="{{ form.first_name.value|default:'' }}" required>
+    <input type="text" name="last_name" id="id_last_name" aria-label="Last name" class="form-control" value="{{ form.last_name.value|default:'' }}">
   </div>
   <div class="mb-3">
-    <label for="id_email" class="form-label">Email address</label>
-    <input type="email" name="email" class="form-control" id="id_email" aria-describedby="emailHelp" value="{{ form.email.value|default:'' }}" required>
+    <div class="input-group">
+      <span class="input-group-text">Email address</span>
+      <input type="email" name="email" class="form-control" id="id_email" aria-describedby="emailHelp" value="{{ form.email.value|default:'' }}" required>
+    </div>
     <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
   </div>
   <div class="mb-3">
-    <label for="id_password1" class="form-label">Password</label>
-    <input type="password" name="password1" class="form-control" id="id_password1" aria-describedby="password1Help" value="{{ form.password1.value|default:'' }}" required>
-    <div id="password1Help" class="form-text"><span class="helptext">Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.</span></div>
+    <div class="input-group">
+      <span class="input-group-text">Password</span>
+      <input type="password" name="password1" class="form-control" id="id_password1" aria-describedby="password1Help" value="{{ form.password1.value|default:'' }}" required>
+    </div>
+      <div id="password1Help" class="form-text">
+        <span class="helptext">Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.
+          <ul>
+            <li class="helptext">Your password can’t be too similar to your other personal information.</li>
+            <li class="helptext">Your password must contain at least 8 characters.</li>
+            <li class="helptext">Your password can’t be a commonly used password.</li>
+            <li class="helptext">Your password can’t be entirely numeric.</li>
+          </ul>
+        </span>
+    </div>
   </div>
-  <ul>
-    <li>Your password can’t be too similar to your other personal information.</li>
-    <li>Your password must contain at least 8 characters.</li>
-    <li>Your password can’t be a commonly used password.</li>
-    <li>Your password can’t be entirely numeric.</li>
-  </ul>
   <div class="mb-3">
-    <label for="id_password2" class="form-label">Password Confirmation</label>
-    <input type="password" name="password2" class="form-control" id="id_password2" aria-describedby="password2Help" value="{{ form.password2.value|default:'' }}" required>
+    <div class="input-group">
+      <span class="input-group-text">Password Confirmation</span>
+      <input type="password" name="password2" class="form-control" id="id_password2" aria-describedby="password2Help" value="{{ form.password2.value|default:'' }}" required>
+    </div>
     <div id="password2Help" class="form-text"><span class="helptext">Enter the same password as before, for verification.</span></div>
   </div>
   

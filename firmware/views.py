@@ -215,6 +215,12 @@ def register_request(request):
             if result.status_code == 200 and result.json()['success']:
                 user = form.save()
                 user.is_active = False
+                user.first_name = form.cleaned_data['first_name']
+                user.last_name = form.cleaned_data['last_name']
+                if user.last_name:
+                    user.username = f"{user.first_name.lower()}.{user.last_name.lower()}"
+                else:
+                    user.username = user.first_name
                 new_subscriber = Subscriber(user=user)
                 new_subscriber.save()
                 user.save()

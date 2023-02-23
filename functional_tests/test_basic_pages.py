@@ -1,7 +1,10 @@
 from .base import FunctionalTest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.action_chains import ActionChains
 
 class BasicPagesTest(FunctionalTest):
     fixtures = ['user.json', 'subscriber.json', 'firmware.json']
@@ -33,7 +36,7 @@ class BasicPagesTest(FunctionalTest):
         # When she clicks on a firmware version it expands and shows the readme file
         elem = self.browser.find_element(By.XPATH, '/html/body/div/div[2]/div[2]/div/ul')
         elem.click()
-        
+
         # When she clicks on the download button it takes her to the correct webpage
 
         # When she clicks on the product name, it contracts and shows all the products
@@ -59,23 +62,42 @@ class BasicPagesTest(FunctionalTest):
         # She is presented with a page that shows user registration
         assert "Register" in self.browser.page_source
 
+        # She sees the following fields
+        try:
+            self.browser.find_element(By.NAME, 'first_name')
+            self.browser.find_element(By.NAME, 'last_name')
+            self.browser.find_element(By.NAME, 'password1')
+            self.browser.find_element(By.NAME, 'password2')     
+        except NoSuchElementException as error:
+            self.assertEqual("", str(error))
+
+
     def test_account_creation(self):
         self.browser.get(self.live_server_url)
         elem = self.browser.find_element(By.LINK_TEXT, 'Sign Up')
         elem.click()
+
         # She try to create an account, but finds out she is a robot...
-        elem = self.browser.find_element(By.NAME, 'username')
-        elem.send_keys('edith2')
+        elem = self.browser.find_element(By.NAME, 'first_name')
+        elem.send_keys('Edith')
+        elem = self.browser.find_element(By.NAME, 'last_name')
+        elem.send_keys('Doe')
         elem = self.browser.find_element(By.NAME, 'email')
         elem.send_keys('edith@ornear.com')
         elem = self.browser.find_element(By.NAME, 'password1')
         elem.send_keys('letmein!!')
         elem = self.browser.find_element(By.NAME, 'password2')
         elem.send_keys('letmein!!')
+
+        WebDriverWait(self.browser, 10).until(EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR,"iframe[name^='a-'][src^='https://www.google.com/recaptcha/api2/anchor?']")))
+        WebDriverWait(self.browser, 10).until(EC.element_to_be_clickable((By.XPATH, "//span[@id='recaptcha-anchor']"))).click()
+        self.browser.switch_to.default_content()
+
         elem = self.browser.find_element(By.XPATH, '/html/body/div[1]/form/button')
+        self.browser.execute_script("arguments[0].scrollIntoView();", elem)
+
         elem.click()
-        self.browser.implicitly_wait(10) # seconds
-        assert "You need to prove you are not a robot!" in self.browser.page_source
+        assert "You will receive an email when your account is activated" in self.browser.page_source
 
 
     def test_account_login(self):
@@ -138,7 +160,7 @@ class BasicPagesTest(FunctionalTest):
         elem.click()
         assert "edith" in self.browser.page_source
         # She checks the activate user page is there
-        self.browser.get(self.live_server_url + "/activate-user/1/")
+        self.browser.get(self.live_server_url + "/activate-user/4/")
 
         # She isn't an admin, so she should get the login page
         assert "Activate" not in self.browser.page_source

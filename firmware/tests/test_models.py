@@ -78,11 +78,11 @@ class AssociatedNameTest(TestCase):
 
 class ProductTest(TestCase):
 
-    def create_product(self, name="NX-1200", brand_name="AMX", brand_url="https://amx.com", fg_number="FG-123", associated_name="NX-1200 firmware", discontinued=False):
-        brand_obj = Brand.objects.create(name=brand_name, base_url=brand_url)
-        fg_obj = FG.objects.create(number=fg_number)
-        associated_name_obj = AssociatedName.objects.create(name=associated_name) 
-        product_obj = Product.objects.create(name=name, brand=brand_obj)
+    def create_product(self, name="NX-1201", brand_name="AMX", brand_url="https://amx.com", fg_number="FG-123", associated_name="NX-1200 firmware", discontinued=False):
+        brand_obj, _ = Brand.objects.get_or_create(name=brand_name, base_url=brand_url)
+        fg_obj, _ = FG.objects.get_or_create(number=fg_number)
+        associated_name_obj, _ = AssociatedName.objects.get_or_create(name=associated_name) 
+        product_obj, _ = Product.objects.get_or_create(name=name, brand=brand_obj)
         product_obj.fgs.add(fg_obj)
         product_obj.associated_names.add(associated_name_obj)
         product_obj.save()
@@ -95,7 +95,7 @@ class ProductTest(TestCase):
         
     def test_dashless_name_creation(self):
         prod = self.create_product()
-        self.assertEqual(prod.create_dashless_associated_name().name, 'NX1200')
+        self.assertEqual(prod.create_dashless_associated_name().name, 'NX1201')
 
 
 class UploadTest(TestCase):

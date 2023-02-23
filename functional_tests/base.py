@@ -8,8 +8,10 @@ class FunctionalTest(StaticLiveServerTestCase):
 
         options = Options()
         options.binary_location = r"C:\\Program Files\\Mozilla Firefox\\firefox.exe"
+
         self.browser = webdriver.Firefox(options=options)
         self.browser.maximize_window()
+
 
 
     def tearDown(self):

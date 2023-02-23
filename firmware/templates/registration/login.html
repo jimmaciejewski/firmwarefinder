@@ -23,9 +23,9 @@
 <form method="post" action="{% url 'login' %}">
   {% csrf_token %}
   <div class="mb-3">
-    <label for="id_username" class="form-label">Username</label>
-    <input type="text" name="username" class="form-control" id="id_username" aria-describedby="usernamelHelp" value="{{ form.username.value|default:'' }}" required>
-    <div id="usernameHelp" class="form-text">Please enter your username.</div>
+    <label for="id_email" class="form-label">Email</label>
+    <input type="text" name="email" class="form-control" id="id_email" aria-describedby="emaillHelp" value="{{ form.email.value|default:'' }}" required>
+    <div id="emailHelp" class="form-text">Please enter your email.</div>
   </div>
   <div class="mb-3">
     <label for="id_password" class="form-label">Password</label>
