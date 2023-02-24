@@ -110,14 +110,14 @@ class BasicPagesTest(FunctionalTest):
         assert "Login" in self.browser.page_source
 
         # She enters her username and password but gets an error
-        elem = self.browser.find_element(By.NAME, 'username')
-        elem.send_keys('edith')
+        elem = self.browser.find_element(By.NAME, 'email')
+        elem.send_keys('edith@example.com')
         elem = self.browser.find_element(By.NAME, 'password')
         elem.send_keys('wrong password')
         elem = self.browser.find_element(By.XPATH, '/html/body/div/form/button')
         elem.click()
         self.browser.implicitly_wait(10)
-        assert "Please try again." in self.browser.page_source
+        assert "Email or password is not correct" in self.browser.page_source
 
         # She clicks lost password and sees the Reset password page
         elem = self.browser.find_element(By.XPATH, '/html/body/div/p/a')
@@ -126,15 +126,24 @@ class BasicPagesTest(FunctionalTest):
 
     def test_login_to_server(self):
         # She remembers her password and goes back to the login page
-        self.browser.get(self.live_server_url + "/accounts/login/")
-        elem = self.browser.find_element(By.NAME, 'username')
-        elem.send_keys('edith')
+        self.browser.get(self.live_server_url + "/login")
+        elem = self.browser.find_element(By.NAME, 'email')
+        elem.send_keys('edith@example.com')
         elem = self.browser.find_element(By.NAME, 'password')
         elem.send_keys('letmein!!')
         elem = self.browser.find_element(By.XPATH, '/html/body/div/form/button')
         elem.click()
-        assert "edith" in self.browser.page_source
+        assert "Email or password is not correct" not in self.browser.page_source
         
+
+    def test_can_see_profile(self):
+        self.browser.get(self.live_server_url + "/login")
+        elem = self.browser.find_element(By.NAME, 'email')
+        elem.send_keys('edith@example.com')
+        elem = self.browser.find_element(By.NAME, 'password')
+        elem.send_keys('letmein!!')
+        elem = self.browser.find_element(By.XPATH, '/html/body/div/form/button')
+        elem.click()
         # She takes a look at her profile
         self.browser.get(self.live_server_url + "/profile")
         self.browser.implicitly_wait(10)
@@ -151,9 +160,9 @@ class BasicPagesTest(FunctionalTest):
 
 
     def test_user_activation(self):
-        self.browser.get(self.live_server_url + "/accounts/login/")
-        elem = self.browser.find_element(By.NAME, 'username')
-        elem.send_keys('edith')
+        self.browser.get(self.live_server_url + "/login")
+        elem = self.browser.find_element(By.NAME, 'email')
+        elem.send_keys('edith@example.com')
         elem = self.browser.find_element(By.NAME, 'password')
         elem.send_keys('letmein!!')
         elem = self.browser.find_element(By.XPATH, '/html/body/div/form/button')
@@ -167,8 +176,8 @@ class BasicPagesTest(FunctionalTest):
         assert "Your account doesn't have access to this page." in self.browser.page_source
 
         # She logs in as an admin
-        elem = self.browser.find_element(By.NAME, 'username')
-        elem.send_keys('admin_edith')
+        elem = self.browser.find_element(By.NAME, 'email')
+        elem.send_keys('admin_edith@example.com')
         elem = self.browser.find_element(By.NAME, 'password')
         elem.send_keys('letmein!!')
         elem = self.browser.find_element(By.XPATH, '/html/body/div/form/button')

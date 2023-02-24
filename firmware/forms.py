@@ -38,3 +38,8 @@ class SubscriberForm(forms.ModelForm):
 		model = Subscriber
 		fields = ['send_email']
 	
+class LoginForm(forms.ModelForm):
+
+	class Meta:
+		model = User
+		fields = ("email", "password")

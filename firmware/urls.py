@@ -15,6 +15,7 @@ urlpatterns = [
 
     # path('subscribe/', views.subscribe, name='subscribe'),
     path("register", views.register_request, name="register"),
+    path('login', views.login_page, name='login'),
     path('profile', views.profile, name='profile'),
     path('products-search', views.products_search, name='products-search'),
     path('thanks/', views.thanks, name='thanks'),

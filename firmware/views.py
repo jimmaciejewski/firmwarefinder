@@ -7,7 +7,8 @@ from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth import views as auth_views
-from django.contrib.auth import login
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.forms import inlineformset_factory
@@ -23,7 +24,7 @@ import operator
 from functools import reduce
 
 from .models import Brand, Product, Version, FG, Subscriber
-from .forms import ActivateUserForm, UserProfileForm, NewUserForm, SubscriberForm
+from .forms import ActivateUserForm, UserProfileForm, NewUserForm, SubscriberForm, LoginForm
 
 def thanks(request):
     return render(request, "registration/thanks.html")
@@ -245,3 +246,29 @@ def register_request(request):
         form = NewUserForm()
     return render (request=request, template_name="registration/register.html", context={"form":form, 'active': 'register', 'sitekey': settings.CAPTCHA_SITEKEY})
 
+
+def login_page(request):
+
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+            try:
+                user_obj = User.objects.get(email=email)
+                user = authenticate(username=user_obj.username, password=password)
+            except User.DoesNotExist:
+                user = None
+            if user:
+                if user.is_active:
+                    login(request, user)
+                    next = request.POST.get('next')
+                    if next:
+                        return redirect(next)
+                    else:
+                        return redirect('firmware:product-list')
+            else:
+                messages.error(request, 'Email or password is not correct')
+    else:
+        form = LoginForm()
+    return render(request, template_name="registration/login.html", context={'form': form, 'active': 'login'})
