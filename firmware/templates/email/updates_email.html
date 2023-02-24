@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firmware Finder</title>
+</head>
+<body>
+<p>Dear {{ name }},</p>
+{% if testing %}
+<h1>This is a TEST MESSAGE please disregard!</h1>
+{% endif %}
+{% if versions %}
+<p>I found new firmware today!</p>
+{% for version in versions %} 
+  <ul>
+    <li>{{version.name}} --> {{version.number}}
+      <ul>
+        <li>Page: {% if not version.hotfix %}https://www.amx.com{% endif %}{{ version.download_page }}</li>
+        <li>Download: {{version.download_url}}</li>
+      </ul>
+    </li>
+  </ul>
+{% endfor %}
+
+{% else %}
+  <p>I didn't find any firmware today :(</p>
+{% endif %}
+
+{% if searches %}
+  {% if developer %}
+Failed Searches:
+<ul>  
+  {% for search in searches %}
+  <li>{{ search }}</li>
+  {% endfor %}
+</ul>
+  {% endif %}
+{% endif %}
+
+<p>Thanks,</p>
+<div>
+  <i>Turkish Johnny</i>
+</div>
+<small>Keeping firmware minty fresh!</small>
+</body>
+</html>

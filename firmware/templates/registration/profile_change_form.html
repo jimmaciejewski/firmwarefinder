@@ -1,0 +1,56 @@
+{% extends "firmware/base.html" %}
+{% load static %}
+
+{% block content %}
+
+
+{% if form.errors %}
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <strong>¡Holy guacamole! 🥑</strong><br>
+      You should check in on some of those fields below.
+    <ul>
+      {% for error_field, error_message in form.errors.items %}
+          {{ error_message|striptags }}
+      {% endfor %}
+    </ul>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endif %}
+
+<h1>Profile</h1>
+<form method="post">
+{% csrf_token %}
+  <div class="mb-3">
+    <label for="id_email" class="form-label">Email address</label>
+    <input type="email" name="email" class="form-control" id="id_email" aria-describedby="emailHelp" value="{{ form.email.value|default:'' }}" required>
+    <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+  </div>
+
+  <div class="mb-3">
+    <label for="id_send_email" class="form-check-label">Send an email when firmware updates are found</label>
+    <input type="checkbox" name="send_email" class="form-check-input" id="id_send_email" {% if user.subscriber.send_email %}checked{% endif %}>
+  </div>
+  <button type="submit" value="Submit" class="btn btn-outline-success download-button">Update</button>
+</form>
+
+
+
+
+
+
+{% endblock %}
+
+{% block extrajs %}
+{% if form.errors %}
+<script type="text/javascript">
+
+  {% for field in form %}
+    var field_input = document.getElementById("{{ field.auto_id }}");
+    if (field_input) {
+      field_input.classList.add("is-{% if field.errors %}in{% endif %}valid");
+    }
+  {% endfor %}
+</script>  
+{% endif %}
+
+{% endblock %}

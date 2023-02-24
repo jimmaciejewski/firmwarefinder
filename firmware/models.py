@@ -1,11 +1,11 @@
 from django.db import models
 from zipfile import ZipFile, BadZipFile
 from django.core.files import File
-from django.utils.text import slugify
+from django.contrib.auth.models import User
 import os
 import requests
 from tempfile import TemporaryFile
-from urllib.parse import urlsplit
+
 
 class Brand(models.Model):
     """ The Brand of the product ie AMX BSS Crown
@@ -44,6 +44,7 @@ class AssociatedName(models.Model):
     def __str__(self):
         return f"{self.name}"
 
+
 class Product(models.Model):
     """ This is the official name of the product
         For example: NMX-ENC-2412A
@@ -62,12 +63,12 @@ class Product(models.Model):
         new_associated_name, _ = AssociatedName.objects.get_or_create(name=dashless_name)
         return new_associated_name
 
-    
     def save(self, *args, **kwargs):
+        product = super().save(*args, **kwargs)
         new_name = self.create_dashless_associated_name()
         self.associated_names.add(new_name)
-        super().save(*args, **kwargs)
-
+        return product
+  
     def __str__(self):
         return f"{self.name}"
 
@@ -85,9 +86,11 @@ def upload_path_name(name):
     name.replace('--', '-')
     return name
 
+
 def upload_location(instance, filename):
     my_path = upload_path_name(instance.name)
     return os.path.join(my_path, filename)
+
 
 class Version(models.Model):
     """ This is a specific firmware version
@@ -103,7 +106,6 @@ class Version(models.Model):
     read_me_path = models.CharField(max_length=200, blank=True, default="Readme.txt")
 
     hotfix = models.BooleanField(default=False)
-
 
     def save(self, *args, **kwargs):
         if self.local_file and self.read_me == "":
@@ -162,11 +164,10 @@ class Version(models.Model):
             # Just get head first
             headers = {'user-agent': 'FirmwareTracker'}
             r = requests.head(self.download_url, headers=headers, allow_redirects=True)
-            
+
             filename = os.path.basename(r.url).replace('%20', '_').replace('%2B', '+')
 
             # Check if we have a copy in backup
-
             backup_path = os.path.join("backup_media", upload_path_name(self.name), filename)
             if os.path.exists(backup_path):
                 with open(backup_path, 'rb') as f:
@@ -176,23 +177,22 @@ class Version(models.Model):
                 print(f"Unable to find backup copy: {backup_path}")
 
             r = requests.get(self.download_url, headers=headers, stream=True)
-            
+
             for chunk in r.iter_content(chunk_size=4096):
                 tf.write(chunk)
 
             tf.seek(0)
-            
+
             self.local_file.save(f"{filename}", File(tf))
 
     def __str__(self):
-        return f"{self.name} v{self.number} "
+        return f"{self.name} v{self.number}"
 
 
+class Subscriber(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    
+    send_email = models.BooleanField(default=True)
 
-class SubscribedUser(models.Model):
-    email = models.CharField(unique=True, max_length=200)
-    name = models.CharField(max_length=200)
-    send_no_updates_found = models.BooleanField(default=False)
-
-    def __str__(self) -> str:
-        return f"{self.email} --> {self.name}"
+    def __str__(self):
+        return f"{self.user}"

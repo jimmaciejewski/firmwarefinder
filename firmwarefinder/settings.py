@@ -34,7 +34,7 @@ else:
 # Application definition
 
 INSTALLED_APPS = [
-    'mailqueue',
+    'mailer',
     'firmware.apps.FirmwareConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -80,12 +80,14 @@ WSGI_APPLICATION = 'firmwarefinder.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.sqlite3',
 #         'NAME': BASE_DIR / '../database/db.sqlite3',
 #     }
 # }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -129,6 +131,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
+
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / '../static/'
 
@@ -140,8 +143,16 @@ MEDIA_ROOT = BASE_DIR / '../media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Only enable email on production
 if 'DJANGO_DEBUG_FALSE' in os.environ:  
+    CAPTCHA_SITEKEY = os.environ['CAPTCHA_SITEKEY']
+    CAPTCHA_SECRET_KEY = os.environ['CAPTCHA_SECRET_KEY']
+else:
+    # Test credentials from Google: https://developers.google.com/recaptcha/docs/faq
+    CAPTCHA_SITEKEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
+    CAPTCHA_SECRET_KEY = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
+
+if 'DJANGO_DEBUG_FALSE' in os.environ:  
+    EMAIL_BACKEND = "mailer.backend.DbBackend"
     DEFAULT_FROM_EMAIL =  os.environ['EMAIL_USER']
     EMAIL_USE_TLS = True
     EMAIL_HOST = 'smtp.mailgun.org'
@@ -149,14 +160,15 @@ if 'DJANGO_DEBUG_FALSE' in os.environ:
     EMAIL_HOST_PASSWORD = os.environ['EMAIL_PASSWORD']
     EMAIL_PORT = 587
 
-# Enable the mail queue. If this is set to False, the mail queue will be disabled and emails will be 
-# sent immediately instead.
-MAILQUEUE_QUEUE_UP = True
+else:
+    EMAIL_BACKEND = "mailer.backend.DbBackend"
+    DEFAULT_FROM_EMAIL =  'test@example.org'
+    EMAIL_USE_TLS = True
+    EMAIL_HOST = 'smtp.mailgun.org'
+    EMAIL_HOST_USER = 'user'
+    EMAIL_HOST_PASSWORD = 'password'
+    EMAIL_PORT = 587 
 
-# Maximum amount of emails to send during each queue run
-MAILQUEUE_LIMIT = 50
+LOGIN_REDIRECT_URL = '/'
 
-# If MAILQUEUE_STORAGE is set to True, will ignore your default storage settings
-# and use Django's filesystem storage instead (stores them in MAILQUEUE_ATTACHMENT_DIR) 
-MAILQUEUE_STORAGE = False
-MAILQUEUE_ATTACHMENT_DIR = 'mailqueue-attachments'
+CSRF_TRUSTED_ORIGINS = ['https://'+ os.environ['SITENAME']]

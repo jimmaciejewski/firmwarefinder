@@ -1,2 +1,9 @@
 *.pyc
 deploy_tools/.env
+geckodriver.log
+.coverage
+test_email.html
+.deployment
+db.sqlite3
+test-reports/report.xml
+firmware/tests/test-reports/report.xml

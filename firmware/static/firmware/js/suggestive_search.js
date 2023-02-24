@@ -22,24 +22,35 @@ let ajax_call = function (endpoint, request_parameters) {
 				e.stopPropagation()
 				return
 			})
+			
 			$('.readme').click(function(e){
 				// Don't act on clicks in read_me
+				e.stopPropagation()
+				return
+			})
+
+			$('.download-button').click(function(e) {
+				//Stop here so we don't open readme
 				e.stopPropagation()
 				return
 			})
 	  
 			$('.expandable-box').click(function(e) {
 				if($(this).hasClass('open')) {
+					// Contract
 					$('.expandable-box.out').not($(this)).removeClass('out');
 					$(this).removeClass('open');
 					$(this).find('.firmwares').addClass('hidden');
+					$(this).addClass('last-clicked')
 		
 				} else if($(this).hasClass('out')) {
 					// console.log("Clicked on something that is hidden");
 					return
 				} else {
+					// Expand
 					$(this).find('.firmwares').removeClass('hidden')
 					$('.expandable-box').not($(this)).addClass('out');
+					$('.expandable-box').removeClass('last-clicked')
 					$(this).addClass('open');
 				}
 				if (scheduled_scroll) {
@@ -47,7 +58,8 @@ let ajax_call = function (endpoint, request_parameters) {
 				}
 			
 				// setTimeout returns the ID of the function to be executed
-				const yOffset = -100; 
+
+				const yOffset = -150; 
 				const y = $(this)[0].getBoundingClientRect().top + window.pageYOffset + yOffset;
 
 				
@@ -55,14 +67,7 @@ let ajax_call = function (endpoint, request_parameters) {
 				
 			});
 
-			$('.download-button').click(function(e) {
-				var url = $(this).data('url');
-				// console.log("you clicked download", url)
-				window.open(url, 'download')
-				//Stop here so we don't open readme
-				e.stopPropagation()
-				return
-			})
+
 
 			$('.readme-button').click(function(e) {
 				$(this).find('.readme').toggle()

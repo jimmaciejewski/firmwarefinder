@@ -1,0 +1,46 @@
+{% extends "firmware/base.html" %}
+{% load static %}
+
+{% block content %}
+
+
+{% if form.errors %}
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <strong>¡Holy guacamole! 🥑</strong><br>
+      You should check in on some of those fields below.
+    <ul>
+      {% for error_field, error_message in form.errors.items %}
+          {{ error_message|striptags }}
+      {% endfor %}
+    </ul>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endif %}
+<h1>Activate User</h1>
+<h2>Username: {{ activate_user.username }}</h2>
+<h2>Email: {{ activate_user.email }} </h2>
+<form method="post">
+  {% csrf_token %}
+  <div class="mb-3">
+    <label for="id_is_active" class="form-check-label">Activate User</label>
+    <input type="checkbox" name="is_active" class="form-check-input" id="id_is_active" {% if activate_user.is_active %}checked{% endif %}>
+  </div>
+  <button type="submit" value="Submit" class="btn btn-outline-success download-button">Submit</button>
+</form>
+
+
+{% endblock %}
+
+{% block extrajs %}
+{% if form.errors %}
+<script type="text/javascript">
+  {% for field in form %}
+    var field_input = document.getElementById("{{ field.auto_id }}");
+    if (field_input) {
+      field_input.classList.add("is-{% if field.errors %}in{% endif %}valid");
+    }
+  {% endfor %}
+</script>  
+{% endif %}
+
+{% endblock %}

@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg">
+<nav class="navbar fixed-top navbar-expand-lg">
     <div class="container-fluid">
       <a class="navbar-brand" href="{% url 'firmware:product-list' %}">Turkish Johnnys</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -12,13 +12,34 @@
           <li class="nav-item">
             <a class="nav-link {% if active == 'discontinued' %}active{% endif %}" aria-current="page" href="{% url 'firmware:discontinued-product-list' %}">Discontinued</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link {% if active == 'subscribe' %}active{% endif %}" aria-current="page" href="{% url 'firmware:subscribe' %}">Subscribe</a>
-          </li>
+          {% if not user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link {% if active == 'register' %}active{% endif %}" aria-current="page" href="{% url 'firmware:register' %}">Sign Up</a>
+            </li>
+          {% endif %}
         </ul>
         <div class="d-flex" role="search">
           <input id="search-box" title="Searches all products, and all firmware README files" name="q" class="form-control me-2" type="search" placeholder="Search" aria-label="Search" value="{% if search %}{{search}}{% endif %}">
         </div>
+        <ul class="navbar-nav mb-2 mb-lg-0">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle show" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="true">
+              <i class="bi bi-person-square"></i>
+              {% if user.is_authenticated %}
+                {{ user.username }}
+              {% endif %} 
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown" data-bs-popper="none">
+              {% if user.is_authenticated %}
+                <li><a class="dropdown-item" href="{% url 'firmware:profile' %}">Profile</a></li>
+                <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+              {% else %}
+                <li><a class="dropdown-item" href="{% url 'firmware:login' %}">Login</a></li>
+              {% endif %} 
+            </ul>
+          </li>
+        </ul>
       </div>
     </div>
   </nav>
+

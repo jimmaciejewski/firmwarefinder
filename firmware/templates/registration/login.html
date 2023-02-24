@@ -1,0 +1,60 @@
+{% extends "firmware/base.html" %}
+
+{% block extra_head %}
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+{% endblock %}
+
+
+{% block content %}
+
+{% if form.errors %}
+<p>Your email and password didn't match. Please try again.</p>
+{% endif %}
+
+{% if next %}
+    {% if user.is_authenticated %}
+    <p>Your account doesn't have access to this page. To proceed,
+    please login with an account that has access.</p>
+    {% else %}
+    <p>Please login to see this page.</p>
+    {% endif %}
+{% endif %}
+<h1>Login</h1>
+<form method="post" action="{% url 'firmware:login' %}">
+  {% csrf_token %}
+  <div class="mb-3">
+    <label for="id_email" class="form-label">Email</label>
+    <input type="text" name="email" class="form-control" id="id_email" aria-describedby="emaillHelp" value="{{ form.email.value|default:'' }}" required>
+    <div id="emailHelp" class="form-text">Please enter your email.</div>
+  </div>
+  <div class="mb-3">
+    <label for="id_password" class="form-label">Password</label>
+    <input type="password" name="password" class="form-control" id="id_password" aria-describedby="passwordlHelp" value="{{ form.password.value|default:'' }}" required>
+    <div id="passwordHelp" class="form-text">Please enter your password.</div>
+  </div>
+  <div class="mb-3">
+    <div class="g-recaptcha" data-sitekey="{{ sitekey }}"></div>
+  </div>
+  <button type="submit" value="login" class="btn btn-outline-success download-button">Submit</button>
+  <input type="hidden" name="next" value="{{ next }}">
+</form>
+
+{# Assumes you set up the password_reset view in your URLconf #}
+<p class="text-center"><a href="{% url 'password_reset' %}">Lost password?</a></p>
+
+
+{% endblock %}
+
+{% block extrajs %}
+{% if form.errors %}
+<script type="text/javascript">
+  {% for field in form %}
+    var field_input = document.getElementById("{{ field.auto_id }}");
+    if (field_input) {
+      field_input.classList.add("is-{% if field.errors %}in{% endif %}valid");
+    }
+  {% endfor %}
+</script>  
+{% endif %}
+
+{% endblock %}

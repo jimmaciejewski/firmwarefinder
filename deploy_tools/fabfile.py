@@ -41,10 +41,11 @@ def _get_latest_source(c, source_folder):
         print("No .git found")
         c.run(f'git clone {REPO_URL} {source_folder}')
     else:
+        c.run(f'cd {source_folder} && git reset --hard')
         print("Found git fetching")
         c.run(f'cd {source_folder} && git fetch')
-    c.run(f'cd {source_folder} && git reset --hard')
     c.run(f'cd {source_folder} && git pull')
+    c.run(f'cd {source_folder} && git reset --hard')
     
 
 def _create_or_update_dotenv(c, source_folder):
