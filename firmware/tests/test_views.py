@@ -56,3 +56,10 @@ class TestLogInWithEmail(TestCase):
         user = auth.get_user(self.client)
 
         self.assertTrue(user.is_authenticated)
+
+
+class TestRedirectsToCorrectLoginPage(TestCase):
+
+    def test_logout_template_redirects_to_login(self):
+        response = self.client.get('/accounts/logout/')
+        self.assertContains(response, '<a href="/login">Log in again</a>', html=True)
