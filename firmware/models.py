@@ -2,7 +2,6 @@ from django.db import models
 from zipfile import ZipFile, BadZipFile
 from django.core.files import File
 from django.contrib.auth.models import User
-from firmwarefinder.storage import AzureMediaStorage
 import os
 import requests
 from tempfile import TemporaryFile
@@ -122,9 +121,7 @@ class Version(models.Model):
         possible_encodings = ['utf-8', 'Windows-1252']
 
         try:
-            storage = AzureMediaStorage()
-            fh = storage.open(self.local_file.name, 'r') 
-            with ZipFile(fh) as myzip:
+            with ZipFile(self.local_file.path) as myzip:
                 # For SVSi firmware
                 for item in myzip.filelist:
                     if 'readme' in item.filename.lower():

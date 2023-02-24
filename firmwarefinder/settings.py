@@ -87,15 +87,13 @@ WSGI_APPLICATION = 'firmwarefinder.wsgi.application'
 #         'NAME': BASE_DIR / '../database/db.sqlite3',
 #     }
 # }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': os.environ['DATABASE_NAME'],
-        'HOST': os.environ['DATABASE_HOST'],
         'USER': os.environ['DATABASE_USER'],
-        'PASSWORD': os.environ['DATABASE_PASSWORD'],
-        'PORT': os.environ['DATABASE_PORT'],
-        'OPTIONS': {'sslmode': os.environ['DATABASE_SSL']}
+        'PASSWORD': os.environ['DATABASE_PASSWORD']
     }
 }
 
@@ -133,25 +131,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-DEFAULT_FILE_STORAGE = 'firmwarefinder.storage.AzureMediaStorage'
-STATICFILES_STORAGE  = 'firmwarefinder.storage.AzureStaticStorage'
 
-AZURE_STORAGE_KEY = os.environ.get('AZURE_STORAGE_KEY', False)
-AZURE_ACCOUNT_NAME = "firmwaredemo"  # your account name
-AZURE_MEDIA_CONTAINER = os.environ.get('AZURE_MEDIA_CONTAINER', 'media')
-AZURE_STATIC_CONTAINER = os.environ.get('AZURE_STATIC_CONTAINER', 'static')
+STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / '../static/'
 
-# AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.azureedge.net'  # CDN URL
-AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'  # Files URL
-
-STATIC_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{AZURE_STATIC_CONTAINER}/'
-MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{AZURE_MEDIA_CONTAINER}/'
-
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-# any static paths you want to publish
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, 'demo', 'static')
-# ]
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / '../media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
