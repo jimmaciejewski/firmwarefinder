@@ -27,8 +27,6 @@ from functools import reduce
 from .models import Brand, Product, Version, FG, Subscriber
 from .forms import ActivateUserForm, UserProfileForm, NewUserForm, SubscriberForm, LoginForm
 
-def thanks(request):
-    return render(request, "registration/thanks.html")
 
 def lines(request):
     context = {}
@@ -156,17 +154,17 @@ def activate_user(request, id):
             form.save()
             context = {'new_user': activate_user}
             content = render_to_string(
-                template_name="registration/user_welcome_email.html",
+                template_name="email/user_welcome_email.html",
                 context=context
             )
             send_mail(
                 subject="Welcome to Firmware Monitoring",
                 message=content,
-                from_email="firmware_finder@ornear.com",
+                from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[activate_user.email],
                 html_message=content
             )
-            return redirect('/thanks/')
+            return render(request, 'registration/thanks.html', {'title': f'Thanks for activating!', 'message': f'You have helped out {activate_user.email}'})
     else:
         form = ActivateUserForm(instance=activate_user)
 
@@ -235,11 +233,11 @@ def register_request(request):
                     send_mail(
                         subject="New User Request",
                         message=content,
-                        from_email="firmware_finder@ornear.com",
+                        from_email=settings.DEFAULT_FROM_EMAIL,
                         recipient_list=[staff_user.email],
                         html_message=content
                     )
-                return redirect('firmware:thanks')
+                return render(request, 'registration/thanks.html', {'title': f'Thanks for subscribing!', 'message': f'You will receive an email when your account is activated'})
             else:
                 form.add_error(None, "You need to prove you are not a robot!")
                 messages.error(request, "You need to prove you are not a robot!")
