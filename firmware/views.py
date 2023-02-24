@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView
 from django.db.models import Q
 from django.template.loader import render_to_string
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse, Http404
 from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -19,6 +19,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 
 import requests
+import os
 
 import operator
 from functools import reduce
@@ -188,7 +189,7 @@ class LoginView(auth_views.LoginView):
             form.add_error(None, "You need to prove you are not a robot!")
             return super().form_invalid(form)
 
-@login_required(login_url='/accounts/login')
+@login_required(login_url='/login')
 def profile(request):
     if request.method == "POST":
         form = UserProfileForm(request.POST, instance=request.user)
@@ -272,3 +273,14 @@ def login_page(request):
     else:
         form = LoginForm()
     return render(request, template_name="registration/login.html", context={'form': form, 'active': 'login'})
+
+
+@login_required(login_url='/login')
+def download_local_file(request, id):
+    version = get_object_or_404(Version, id=id)
+    if os.path.exists(version.local_file.path):
+        with open(version.local_file.path, 'rb') as fh:
+            response = HttpResponse(fh.read(), content_type="application/zip")
+            response['Content-Disposition'] = 'inline; filename=' + os.path.basename(version.local_file.path)
+            return response
+    raise Http404

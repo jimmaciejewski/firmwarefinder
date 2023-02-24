@@ -17,8 +17,9 @@ urlpatterns = [
     path("register", views.register_request, name="register"),
     path('login', views.login_page, name='login'),
     path('profile', views.profile, name='profile'),
+    path('download/<int:id>', views.download_local_file, name='download'),
     path('products-search', views.products_search, name='products-search'),
-    path('thanks/', views.thanks, name='thanks'),
-    path('activate-user/<int:id>/', views.activate_user, name='activate-user'),
+    path('thanks', views.thanks, name='thanks'),
+    path('activate-user/<int:id>', views.activate_user, name='activate-user'),
 
 ]
