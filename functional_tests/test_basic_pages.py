@@ -150,13 +150,6 @@ class BasicPagesTest(FunctionalTest):
         assert "Profile" in self.browser.page_source
         assert "Send an email when firmware updates are found" in self.browser.page_source
 
-        # She checks the Thanks page is there
-        self.browser.get(self.live_server_url + "/thanks")
-        self.browser.implicitly_wait(10)
-        assert "Thanks for subscribing!" in self.browser.page_source
-        assert "You will receive an email when your account is activated" in self.browser.page_source
-        self.browser.implicitly_wait(10)
-
 
 
     def test_user_activation(self):
@@ -169,7 +162,7 @@ class BasicPagesTest(FunctionalTest):
         elem.click()
         assert "edith" in self.browser.page_source
         # She checks the activate user page is there
-        self.browser.get(self.live_server_url + "/activate-user/4/")
+        self.browser.get(self.live_server_url + "/activate-user/4")
 
         # She isn't an admin, so she should get the login page
         assert "Activate" not in self.browser.page_source

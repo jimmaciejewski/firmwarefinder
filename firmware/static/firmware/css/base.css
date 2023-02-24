@@ -166,6 +166,26 @@ body {
   border-radius: 5vw;
 }
 
+.tj_nod {
+  animation: nod 2s linear;
+}
+
+/* Keyframes */
+@keyframes nod {
+  0%, 7% {
+    transform: rotateZ(0);
+  }
+  15% {
+    transform: rotateZ(25deg);
+  }
+  50% {
+    transform: rotateZ(25deg);
+  }
+  60%, 100% {
+    transform: rotateZ(0);
+  }
+}
+
 .last-clicked {
 
   border-color: var(--last-clicked-color);
