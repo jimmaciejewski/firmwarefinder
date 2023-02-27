@@ -105,6 +105,7 @@ else:
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': os.environ['DATABASE_NAME'],
+            'HOST': os.environ['DATABASE_HOST'],
             'USER': os.environ['DATABASE_USER'],
             'PASSWORD': os.environ['DATABASE_PASSWORD']
         }
@@ -165,6 +166,8 @@ if 'AZURE' in os.environ:
     # ]
 
 else:
+    AZURE_ACCOUNT_NAME = None
+    AZURE_STORAGE_KEY= None
     STATIC_URL = 'static/'
     STATIC_ROOT = BASE_DIR / '../static/'
 

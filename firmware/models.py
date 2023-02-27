@@ -2,8 +2,11 @@ from django.db import models
 from zipfile import ZipFile, BadZipFile
 from django.core.files import File
 from django.contrib.auth.models import User
-from firmwarefinder.storage import AzureMediaStorage
 import os
+
+if 'AZURE' in os.environ:
+    from firmwarefinder.storage import AzureMediaStorage
+
 import requests
 from tempfile import TemporaryFile
 
