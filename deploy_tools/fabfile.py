@@ -8,7 +8,7 @@ PROJECT_NAME = 'firmwarefinder'
 # Git name
 REPO_NAME = 'firmware_finder'
 
-REPO_URL = f'git@bitbucket.org:itsmagic/{REPO_NAME}.git'
+REPO_URL = f'git@github.com:jimmaciejewski/{REPO_NAME}.git'
 
 @task
 def deploy(c):
