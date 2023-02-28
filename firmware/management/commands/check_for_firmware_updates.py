@@ -58,6 +58,8 @@ class Command(BaseCommand):
 
             if hotfix_page['Brand'][0]['Title'] != 'AMX':
                 continue
+            if hotfix_page['Title'] != 'N1x33A SVSI Hotfix Firmware Updater':
+                continue
             new_name, _ = AssociatedName.objects.get_or_create(name=hotfix_page['Title'])
             # Get download page
             page_resp = requests.get(f"https://help.harmanpro.com/{hotfix_page['PageURL']}") 
@@ -75,7 +77,7 @@ class Command(BaseCommand):
             try:
                 for download in download_fields:
                     download_link = soup("div", {"id": download})[0]("div")[0].find("a")['href']
-                    regex = r"_[v,V]?(?P<version>(\d{1,3}[\.,_]){2,}\d{0,8}-?\d?).*\.zip"
+                    regex = r"[_,-][v,V]?(?P<version>(\d{1,3}[\.,_]){2,}\d{0,8}-?\d?).*\.zip"
                     version_number = re.search(regex, download_link).group('version')
                     
                     if version_number is None:
@@ -91,7 +93,7 @@ class Command(BaseCommand):
                     new_version.save()
 
                     if created:
-                        self.stdout.write(self.style.SUCCESS(f'Created: {new_version.name}'))
+                        self.stdout.write(self.style.SUCCESS(f'Created: {new_version.name} --> {new_version.number}'))
                         new_found_firmwares.append(new_version)
 
                     # Don't print anything if the firmware already exists...
@@ -99,9 +101,13 @@ class Command(BaseCommand):
                     #     self.stdout.write(self.style.NOTICE(f'Already Exists: {new_version.name}'))
 
             except (IndexError, TypeError):
-                pass
+                continue
+            except AttributeError:
+                # This happens when we cannot find the version
+                print(f"Unable to get a version number! {download_link}")
+                continue
             except Exception as error:
-                pass
+                continue
 
         ### Check for AMX.com updates
         brand = Brand.objects.get(name='AMX')
