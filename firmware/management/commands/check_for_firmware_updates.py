@@ -75,12 +75,17 @@ class Command(BaseCommand):
             try:
                 for download in download_fields:
                     download_link = soup("div", {"id": download})[0]("div")[0].find("a")['href']
-                    regex = r"[_,-][v,V]?(?P<version>(\d{1,3}[\.,_]){2,}\d{0,8}-?\d?).*\.zip"
-                    version_number = re.search(regex, download_link).group('version')
+                    if download_link[-4:] in ['.tsk', '.pdf', '.AXW'] or 'CPRMS1078.zip' in download_link or '7in%20Touch%20Panel.zip' in download_link:
+                        # Skipping these
+                        continue
+                    regex = r"([_,-]|%20|[v,V])(?P<version>(\d{1,3}[\.,_]){1,}\d{0,8}-?\d).*\.zip"
+                    matches = self.match_regex(regex=regex, text=download_link)
+                    if not hasattr(matches, 'group'):
+                        regex = r"_(?P<version>(\d{2,4}[_,-]\d{2}[_,-]\d{2,4})).*\.zip"
+                        matches = self.match_regex(regex=regex, text=download_link)
+                    version_number = matches.group('version')
                     
-                    if version_number is None:
-                        print(f"Unable to get a version number! {download_link}")
-                        return
+
                     version_number = version_number.replace("_", ".")
                     new_version, created = Version.objects.get_or_create(name=f"{hotfix_page['Title']}",
                                                                          number=version_number,
@@ -122,6 +127,10 @@ class Command(BaseCommand):
                 new_found_firmwares.append(version)
 
         self.send_emails(new_found_firmwares)
+
+    def match_regex(self, regex, text):
+        matches = re.search(regex, text)
+        return matches
 
     def parse_page(self, html: str, brand: Brand, product: Product):
         new_versions = []
