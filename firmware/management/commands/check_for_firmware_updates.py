@@ -58,8 +58,6 @@ class Command(BaseCommand):
 
             if hotfix_page['Brand'][0]['Title'] != 'AMX':
                 continue
-            if hotfix_page['Title'] != 'N1x33A SVSI Hotfix Firmware Updater':
-                continue
             new_name, _ = AssociatedName.objects.get_or_create(name=hotfix_page['Title'])
             # Get download page
             page_resp = requests.get(f"https://help.harmanpro.com/{hotfix_page['PageURL']}") 
