@@ -22,7 +22,8 @@ class RegexTest(TestCase):
                 '850/SW0148_11B_MIOR3_v3_08.tsk': '3_08',
                 '836/Build%203_01_47.zip': '3_01_47',
                 '3246/PR-WP-412_v2.11.zip': '2.11',
-                '807/RMS%20Transporter%201.2.25.zip': '1.2.25'}
+                '807/RMS%20Transporter%201.2.25.zip': '1.2.25',
+                '2712/N24xx_Updater_2023-02-08-v1.5.119_build1285.zip': '1.5.119'}
                 
 
     tricky_examples = {'3034/N-AbleSetup_x64_2023-02-06.zip': '2023-02-06',
