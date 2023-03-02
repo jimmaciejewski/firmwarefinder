@@ -30,7 +30,7 @@ class RegisterTest(TestCase):
                                                   'password1': 'letmein!!',
                                                   'password2': 'letmein!!'})
         
-        self.assertRedirects(response, '/thanks')
+        self.assertInHTML('Thanks for subscribing!', response.content.decode())
         new_user = User.objects.get(username='test.example')
         self.assertEqual(new_user.username, 'test.example')
         self.assertEqual(new_user.first_name, 'Test')
