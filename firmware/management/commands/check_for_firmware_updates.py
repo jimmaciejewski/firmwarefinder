@@ -6,6 +6,7 @@ from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
 
+import os
 import requests
 from dataclasses import dataclass, field
 import json
@@ -300,7 +301,7 @@ class Command(BaseCommand):
         send_mail(
             subject="Updated Firmwares",
             message=content,
-            from_email="Firmware Finder <firmware_finder@ornear.com>",
+            from_email=os.environ['EMAIL_DEFAULT_USER'],
             recipient_list=[user.email],
             html_message=content
         )
