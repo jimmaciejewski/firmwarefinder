@@ -5,8 +5,8 @@ from django.db.utils import IntegrityError
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
+from django.conf import settings
 
-import os
 import requests
 from dataclasses import dataclass, field
 import json
@@ -301,7 +301,7 @@ class Command(BaseCommand):
         send_mail(
             subject="Updated Firmwares",
             message=content,
-            from_email=os.environ['EMAIL_DEFAULT_USER'],
+            from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[user.email],
             html_message=content
         )
