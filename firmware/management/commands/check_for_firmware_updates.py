@@ -301,7 +301,7 @@ class Command(BaseCommand):
         send_mail(
             subject="Updated Firmwares",
             message=content,
-            from_email=settings.DEFAULT_FROM_EMAIL,
+            from_email=f"Firmware Finder <{settings.DEFAULT_FROM_EMAIL}>",
             recipient_list=[user.email],
             html_message=content
         )
