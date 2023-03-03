@@ -59,3 +59,51 @@ class RegexTest(TestCase):
             if not hasattr(result, 'group'):
                 print(key)
             self.assertEquals(result.group('version'), self.tricky_examples[key])
+
+
+
+class CheckFirmwareTest(TestCase):
+
+    # Given a hotfix url we need to do the following
+    # Download the page
+
+    # Get or create an associated name
+    # Get or create FG's that are listed on the page
+    #  # Regex FGs
+    # Get or create versions on page
+    # Link FGs to versions
+    # send email to subscribers about new versions
+
+
+    def test_create_fgs_from_readme(self):
+        '''Given some HTML get FGS from readme'''
+        page_readme = '''Product Name: N-Series N1x33 Video Encoder/Decoder
+                         FG #: FGN1133-SA (NMX-ENC-1133)
+                            FGN1233-SA (NMX-DEC-1233)
+                            FGN1133-CD (NMX-ENC-1133-C)
+                            FGN1233-CD (NMX-DEC-1233-C)
+
+                         Version: v1.15.61
+                         Release Date: 2/02/2023'''
+        fgs = Command.create_fgs_from_readme(None, read_me=page_readme)
+        self.assertEqual(len(fgs), 4)
+        self.assertEqual(fgs[0].number, 'FGN1133-SA')
+
+        page_readme = ''
+        fgs = Command.create_fgs_from_readme(None, read_me=page_readme)
+        self.assertEqual(len(fgs), 0)
+
+
+    def test_get_version_number_from_download_field(self):
+        '''Given a download field and html creates a version'''
+        import requests
+        from bs4 import BeautifulSoup
+        page_resp = requests.get(f"https://help.harmanpro.com/n1x33-updater")
+        soup = BeautifulSoup(page_resp.text, 'html.parser')
+        download_fields = ["ctl00_PlaceHolderMain_ctl03__ControlWrapper_RichLinkField", "ctl00_PlaceHolderMain_ctl04__ControlWrapper_RichLinkField"]
+        version_number = Command.get_version_number_from_download_field(None, soup, download_fields[0])
+        self.assertEqual(version_number, '1.15.57')
+        version_number = Command.get_version_number_from_download_field(None, soup, download_fields[1])
+        self.assertEqual(version_number, '1.15.61')
+
+
