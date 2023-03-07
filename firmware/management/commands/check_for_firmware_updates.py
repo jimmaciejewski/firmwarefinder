@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from firmware.models import Brand, Product, FG, Version, AssociatedName
+from firmware.models import Brand, Product, FG, Version, AssociatedName, Subscriber
 from django.utils import timezone
 from django.db.utils import IntegrityError
 from django.template.loader import render_to_string
@@ -219,7 +219,7 @@ class Command(BaseCommand):
         # Create HTML email
         context = {'versions': new_found_firmwares, 'searches': self.get_failed_searches(), 'testing': testing}
 
-        for user in User.objects.filter(is_active=True, subscriber__send_email=True):
+        for user in User.objects.filter(is_active=True):
             context['developer'] = user.is_staff
             context['name'] = f"{user.first_name}"
             content = render_to_string(
@@ -227,16 +227,21 @@ class Command(BaseCommand):
                 context=context
             )
 
-            # Send the email to staff users in all cases
-            if user.is_staff:
-                self.add_email_to_queue(user, content)
-            else:
-                # Non staff members get the email if there are updates and we are not testing
-                if not testing and new_found_firmwares:
+            if testing:
+                # if we are testing only send email to staff users
+                if user.is_staff:
                     self.add_email_to_queue(user, content)
-
-        if not testing:
-            self.archive_searches()
+            else:
+                sub = Subscriber.objects.get(user=user)
+                # If we have new firmware send it to subs that have requested it
+                if new_found_firmwares:
+                    if sub.send_email:
+                        self.add_email_to_queue(user, content)
+                else:
+                    # We don't have new firmware send the update to subs that have requested it
+                    if sub.send_email_even_if_none_found:
+                        self.add_email_to_queue(user, content)
+                self.archive_searches()
 
     def add_email_to_queue(self, user, content):
         send_mail(

@@ -36,7 +36,7 @@ class NewUserForm(UserCreationForm):
 class SubscriberForm(forms.ModelForm):
 	class Meta:
 		model = Subscriber
-		fields = ['send_email']
+		fields = ['send_email', 'send_email_even_if_none_found']
 	
 class LoginForm(forms.ModelForm):
 

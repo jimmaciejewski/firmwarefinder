@@ -59,6 +59,35 @@ class TestLogInWithEmail(TestCase):
         self.assertTrue(user.is_authenticated)
 
 
+    def test_subscribe_to_emails_enable_disable(self):
+        new_user = User.objects.create(username="test user", email="test@example.com", is_active=True)
+        new_user.set_password('letmein!!')
+        new_user.save()
+        Subscriber.objects.create(user=new_user)
+        self.assertTrue(new_user.is_active)
+        self.assertTrue(new_user.username == "test user")
+        self.assertTrue(new_user.email == "test@example.com")
+        response = self.client.post("/login", {'email': 'test@example.com',
+                                               'password': 'letmein!!'})
+        self.assertNotIn("Email or password is not correct", response.content.decode())
+        user = auth.get_user(self.client)
+
+        self.assertTrue(user.is_authenticated)
+        response = self.client.get('/profile')
+        self.assertContains(response, '<label class="form-check-label" for="id_send_email">Send an email when firmware updates are found</label>', html=True)
+        # Check that they get emails by default
+        self.assertContains(response, '<input class="form-check-input" type="checkbox" role="switch" name="send_email" id="id_send_email" checked="">', html=True)
+        # Check that they do not get send emails when no firmware is found
+        self.assertContains(response, '<label class="form-check-label" for="id_send_email_even_if_none_found">Send an email even if I don\'t find any updated firmware?</label>', html=True)
+        # Lets click one and check the database gets updated
+        response = self.client.post('/profile', {'email': 'test@example.com'})
+        response = self.client.get('/profile')
+        self.assertContains(response, '<input class="form-check-input" type="checkbox" role="switch" name="send_email" id="id_send_email">', html=True)
+        response = self.client.post('/profile', {'email': 'test@example.com', 'send_email': False, 'send_email_even_if_none_found': True})
+        response = self.client.get('/profile')
+        self.assertContains(response, '<input class="form-check-input" type="checkbox" role="switch" name="send_email_even_if_none_found" id="id_send_email_even_if_none_found" checked="">', html=True)
+
+
 class TestRedirectsToCorrectLoginPage(TestCase):
 
     def test_logout_template_redirects_to_login(self):

@@ -26,17 +26,18 @@
     <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
   </div>
 
-  <div class="mb-3">
-    <label for="id_send_email" class="form-check-label">Send an email when firmware updates are found</label>
-    <input type="checkbox" name="send_email" class="form-check-input" id="id_send_email" {% if user.subscriber.send_email %}checked{% endif %}>
+  <div class="mb-3 form-check form-switch">
+    <input class="form-check-input" type="checkbox" role="switch" name="send_email" id="id_send_email" {% if user.subscriber.send_email %}checked{% endif %}>
+    <label class="form-check-label" for="id_send_email">Send an email when firmware updates are found</label>
   </div>
+
+  <div class="mb-3 form-check form-switch">
+    <input class="form-check-input" type="checkbox" role="switch" name="send_email_even_if_none_found" id="id_send_email_even_if_none_found" {% if user.subscriber.send_email_even_if_none_found %}checked{% endif %}>
+    <label class="form-check-label" for="id_send_email_even_if_none_found">Send an email even if I don't find any updated firmware?</label>
+  </div>
+
   <button type="submit" value="Submit" class="btn btn-outline-success download-button">Update</button>
 </form>
-
-
-
-
-
 
 {% endblock %}
 
@@ -50,6 +51,7 @@
       field_input.classList.add("is-{% if field.errors %}in{% endif %}valid");
     }
   {% endfor %}
+
 </script>  
 {% endif %}
 

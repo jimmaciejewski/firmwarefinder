@@ -202,6 +202,7 @@ class Subscriber(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     
     send_email = models.BooleanField(default=True)
+    send_email_even_if_none_found = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user}"
