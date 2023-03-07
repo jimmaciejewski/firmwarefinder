@@ -93,8 +93,8 @@ class Command(BaseCommand):
         for name, version_number, download_page in firmwares:
             new_version, created = Version.objects.get_or_create(name=name,
                                                                  number=version_number,
-                                                                 download_page=download_page,
-                                                                 download_url=f"{download_page}/download")
+                                                                 download_page=f"{brand.base_url}{download_page}",
+                                                                 download_url=f"{brand.base_url}{download_page}/download")
             new_version.date_last_seen = timezone.now()
             if created:
                 created_versions.append(new_version)

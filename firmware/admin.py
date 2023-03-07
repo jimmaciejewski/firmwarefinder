@@ -58,7 +58,13 @@ class VersionAdmin(admin.ModelAdmin):
         return str(len(obj.fgs.all()))
 
 class SubscriberAdmin(admin.ModelAdmin):
-    list_display = ["user", "send_email"]
+    list_display = ["user", 'get_email_address', "send_email", "send_email_even_if_none_found"]
+
+    def get_email_address(self, obj):
+        return obj.user.email
+    
+    get_email_address.admin_order_field = 'user'
+    get_email_address.short_description = 'Email Address'
 
 
 admin.site.register(Brand)
