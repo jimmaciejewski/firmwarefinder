@@ -1,8 +1,9 @@
 
 from django.test import TestCase
 from ..management.commands.check_for_firmware_updates import Command
+from bs4 import BeautifulSoup
 
-import os
+import re
 
 class RegexTest(TestCase):
 
@@ -47,7 +48,7 @@ class RegexTest(TestCase):
     def test_simple_examples(self):
         for key in self.examples:
             regex = r"([_,-]|%20|[v,V])(?P<version>(\d{1,3}[\.,_]){1,}\d{0,8}-?\d).*\.(zip|tsk)"
-            result = Command.match_regex(None, regex=regex, text=key)
+            result = re.search(regex, key)
             if not hasattr(result, 'group'):
                 print(key)
             self.assertEquals(result.group('version'), self.examples[key])
@@ -55,7 +56,7 @@ class RegexTest(TestCase):
     def test_tricky_examples(self):
         for key in self.tricky_examples:
             regex = r"_(?P<version>(\d{2,4}[_,-]\d{2}[_,-]\d{2,4})).*\.zip"
-            result = Command.match_regex(None, regex=regex, text=key)
+            result = re.search(regex, key)
             if not hasattr(result, 'group'):
                 print(key)
             self.assertEquals(result.group('version'), self.tricky_examples[key])
@@ -77,14 +78,7 @@ class CheckFirmwareTest(TestCase):
 
     def test_create_fgs_from_readme(self):
         '''Given some HTML get FGS from readme'''
-        page_readme = '''Product Name: N-Series N1x33 Video Encoder/Decoder
-                         FG #: FGN1133-SA (NMX-ENC-1133)
-                            FGN1233-SA (NMX-DEC-1233)
-                            FGN1133-CD (NMX-ENC-1133-C)
-                            FGN1233-CD (NMX-DEC-1233-C)
-
-                         Version: v1.15.61
-                         Release Date: 2/02/2023'''
+        from .html_examples import page_readme
         fgs = Command.create_fgs_from_readme(None, read_me=page_readme)
         self.assertEqual(len(fgs), 4)
         self.assertEqual(fgs[0].number, 'FGN1133-SA')
@@ -96,14 +90,29 @@ class CheckFirmwareTest(TestCase):
 
     def test_get_version_number_from_download_field(self):
         '''Given a download field and html creates a version'''
-        import requests
-        from bs4 import BeautifulSoup
-        page_resp = requests.get(f"https://help.harmanpro.com/n1x33-updater")
-        soup = BeautifulSoup(page_resp.text, 'html.parser')
+        from .html_examples import n1x33_updater
+        soup = BeautifulSoup(n1x33_updater, 'html.parser')
         download_fields = ["ctl00_PlaceHolderMain_ctl03__ControlWrapper_RichLinkField", "ctl00_PlaceHolderMain_ctl04__ControlWrapper_RichLinkField"]
         version_number = Command.get_version_number_from_download_field(None, soup, download_fields[0])
         self.assertEqual(version_number, '1.15.57')
         version_number = Command.get_version_number_from_download_field(None, soup, download_fields[1])
         self.assertEqual(version_number, '1.15.61')
 
+
+    def test_get_fgs_from_specs_table(self):
+        from .html_examples import nx1200
+        soup = BeautifulSoup(nx1200, 'html.parser')
+        fgs = Command.get_fgs_from_specs_table(None, soup)
+        self.assertEqual(fgs, ['FG2106-01'])
+
+    def test_get_firmware_values_from_html_table(self):
+        from .html_examples import nx1200
+        soup = BeautifulSoup(nx1200, 'html.parser')
+        firmwares = Command.get_firmware_values_from_html_table(None, soup)
+        self.assertEqual(firmwares, [('NX Series (X200) NX/DVX/DGX Device Firmware',
+                                      '1.1.48',
+                                      '/en-US/softwares/nx-series-x200-nx-dvx-dgx-device-firmware-v1-1-48'),
+                                     ('NX Series (X200) NX/MCP/DGX Controller Firmware',
+                                      '1.6.179',
+                                      '/en-US/softwares/nx-series-x200-nx-mcp-dgx-controller-firmware-v1-6-179')])
 
