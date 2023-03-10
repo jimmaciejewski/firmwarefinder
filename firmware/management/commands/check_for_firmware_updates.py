@@ -30,6 +30,17 @@ class Command(BaseCommand):
             action='store_true',
             help='Print extra debug information',
         )
+        parser.add_argument(
+            '--release_only',
+            action='store_true',
+            help='Only AMX pages',
+        )
+        parser.add_argument(
+            '--hotfix_only',
+            action='store_true',
+            help='Only Hotfix pages',
+        )
+
 
     def handle(self, *args, **options):
         self.debug = options['debug']
@@ -40,36 +51,37 @@ class Command(BaseCommand):
             self.send_emails([], testing=True)
             return
 
-        url = "https://help.harmanpro.com/_api/web/lists/getbytitle('Pages')/Items?$top=1000&$orderby=Title&$select=PublishingPageContent,PageURL,Title,FileRef,Brand/Title, Brand/ID, Model/Title, Family/Title, DocType/Title,CaseType0/Title,FaultCategory/Title&$expand=Family,Model,CaseType0,Brand,FaultCategory,DocType&$filter=DocType/Title eq 'Hotfix firmware'"
-        
-        headers = {'user-agent': 'FirmwareTracker', "accept": "application/json"}
-        response = requests.get(url, headers=headers)
-        my_json = json.loads(response.text)
-
-        for hotfix_page in my_json['value']:
-
-            if hotfix_page['Brand'][0]['Title'] != 'AMX':
-                continue
+        if not options['release_only']:
+            url = "https://help.harmanpro.com/_api/web/lists/getbytitle('Pages')/Items?$top=1000&$orderby=Title&$select=PublishingPageContent,PageURL,Title,FileRef,Brand/Title, Brand/ID, Model/Title, Family/Title, DocType/Title,CaseType0/Title,FaultCategory/Title&$expand=Family,Model,CaseType0,Brand,FaultCategory,DocType&$filter=DocType/Title eq 'Hotfix firmware'"
             
+            headers = {'user-agent': 'FirmwareTracker', "accept": "application/json"}
+            response = requests.get(url, headers=headers)
+            my_json = json.loads(response.text)
+
+            for hotfix_page in my_json['value']:
+
+                if hotfix_page['Brand'][0]['Title'] != 'AMX':
+                    continue
+                
+                if self.debug:
+                    self.stdout.write(self.style.SUCCESS(f"Checking help.harmanpro.com: {hotfix_page['Title']}"))
+                new_versions = self.process_hotfix_page(hotfix_page)
+                for version in new_versions:
+                    self.new_found_versions.append(version)
+
+        if not options['hotfix_only']:
+            ### Check for AMX.com updates
+            brand = Brand.objects.get(name='AMX')
+            for product in Product.objects.filter(brand=brand):
+                if self.debug:
+                    self.stdout.write(self.style.SUCCESS(f"Checking amx.com: {product.name}"))
+                new_versions = self.parse_amx_page(product)
+                for version in new_versions:
+                    self.new_found_versions.append(version)
+
             if self.debug:
-                self.stdout.write(self.style.SUCCESS(f"Checking help.harmanpro.com: {hotfix_page['Title']}"))
-            new_versions = self.process_hotfix_page(hotfix_page)
-            for version in new_versions:
-                self.new_found_versions.append(version)
-
-
-        ### Check for AMX.com updates
-        brand = Brand.objects.get(name='AMX')
-        for product in Product.objects.filter(brand=brand):
-            if self.debug:
-                self.stdout.write(self.style.SUCCESS(f"Checking amx.com: {product.name}"))
-            new_versions = self.parse_amx_page(product)
-            for version in new_versions:
-                self.new_found_versions.append(version)
-
-        if self.debug:
-            self.stdout.write(self.style.SUCCESS(f"Sending email with updates for: {self.new_found_versions}"))
-        self.send_emails(self.new_found_versions)
+                self.stdout.write(self.style.SUCCESS(f"Sending email with updates for: {self.new_found_versions}"))
+            self.send_emails(self.new_found_versions)
 
 
     def parse_amx_page(self, product: Product) -> list[Version]:
