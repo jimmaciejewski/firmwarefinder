@@ -139,10 +139,12 @@ class Command(BaseCommand):
         # Get version files
         download_fields = ["ctl00_PlaceHolderMain_ctl03__ControlWrapper_RichLinkField", "ctl00_PlaceHolderMain_ctl04__ControlWrapper_RichLinkField"]
         for download_field in download_fields:
-            version_number = self.get_version_number_from_download_field(soup, download_field)
-            if version_number:
-                # Repeating myself for fun..
-                download_link = soup("div", {"id": download_field})[0]("div")[0].find("a")['href']
+            download_link = self.get_download_link_from_download_field(soup, download_field)
+            version_number = self.regex_download_link(download_link)
+            if not version_number:
+                print(f"Unable to get a version number! {download_link}")
+                continue
+            else:
                 new_version, created = Version.objects.get_or_create(name=f"{hotfix_page['Title']}",
                                                                      number=version_number,
                                                                      download_page = f"https://help.harmanpro.com{hotfix_page['PageURL']}",
@@ -280,11 +282,14 @@ class Command(BaseCommand):
         '''Given a download field parse the soup'''
         pass
 
-    def get_version_number_from_download_field(self, soup, download_field):
+    def get_download_link_from_download_field(self, soup, download_field):
         '''Given a download field parse the soup for version numbers'''
-        version_number = None
         try:
             download_link = soup("div", {"id": download_field})[0]("div")[0].find("a")['href']
+            if download_link[-4:] in ['.tsk', '.pdf', '.AXW'] or 'CPRMS1078.zip' in download_link or '7in%20Touch%20Panel.zip' in download_link:
+                return None
+            return download_link
+          
         except TypeError:
             if self.debug:
                 if download_field == "ctl00_PlaceHolderMain_ctl04__ControlWrapper_RichLinkField":
@@ -292,16 +297,27 @@ class Command(BaseCommand):
                 else:
                     self.stdout.write(self.style.WARNING(f'Unable to find download field! {download_field}'))
             return None
-        if download_link[-4:] in ['.tsk', '.pdf', '.AXW'] or 'CPRMS1078.zip' in download_link or '7in%20Touch%20Panel.zip' in download_link:
-            return None
-        regex = r"([_,-]|%20|[v,V])(?P<version>(\d{1,3}[\.,_]){1,}\d{0,8}-?\d).*\.zip"
-        matches = re.search(regex, download_link)
-        if not hasattr(matches, 'group'):
-            regex = r"_(?P<version>(\d{2,4}[_,-]\d{2}[_,-]\d{2,4})).*\.zip"
+
+    def regex_download_link(self, download_link):
+        '''Uses regex to get the version number from a download link'''
+        # Strategy regex most likely first, edge cases last check for valid before returning
+        # 1. Versions with dots ie v1.14.5
+        # 2. Versions with dashes ie v1_14_5
+        # 3. Versions with dates ie 2020-10-23 or 23-10-2020
+        searches = [r"([_,-]|%20|[v,V])(?P<version>(\d{1,3}\.){1,}\d{0,8}-?\d).*\.zip",
+                    r"(%20|[v,V])(?P<version>(\d{1,3}_){1,}\d{0,8}-?\d).*\.zip",
+                    r"_(?P<version>(\d{2,4}[_,-]\d{2}[_,-]\d{2,4})).*\.zip"]
+        for i, regex in enumerate(searches):
             matches = re.search(regex, download_link)
-        if hasattr(matches, 'group'):
-            version_number = matches.group('version')
-            version_number = version_number.replace("_", ".")
-        if not version_number:
-            print(f"Unable to get a version number! {download_link}")
-        return version_number
+            if hasattr(matches, 'group'):
+                version_number = matches.group('version')
+                if i == 2:
+                    # Dates have dashes 
+                    return version_number
+                else:
+                    # Clean up versions to have dots
+                    version_number = version_number.replace("_", ".")
+                return version_number
+            
+        return None
+    
