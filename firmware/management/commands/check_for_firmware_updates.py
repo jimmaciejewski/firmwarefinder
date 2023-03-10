@@ -140,6 +140,8 @@ class Command(BaseCommand):
         download_fields = ["ctl00_PlaceHolderMain_ctl03__ControlWrapper_RichLinkField", "ctl00_PlaceHolderMain_ctl04__ControlWrapper_RichLinkField"]
         for download_field in download_fields:
             download_link = self.get_download_link_from_download_field(soup, download_field)
+            if not download_link:
+                continue
             version_number = self.regex_download_link(download_link)
             if not version_number:
                 print(f"Unable to get a version number! {download_link}")
