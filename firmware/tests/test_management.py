@@ -11,7 +11,8 @@ class RegexTest(TestCase):
         import os 
         with open(os.path.join('firmware_finder', 'firmware', 'tests', 'version_regex_examples.txt'), 'r') as f:
             for line in f.readlines():
-                if line.strip() == '':
+                # Ignore blank and header lines
+                if line.strip() == '' or "Solution" in line:
                     continue
                 download_link, correct_version = line.split()
                 if correct_version == 'None':
