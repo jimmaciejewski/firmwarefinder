@@ -315,7 +315,7 @@ class Command(BaseCommand):
                 version_number = matches.group('version')
                 if i == 2:
                     # Dates have dashes 
-                    return version_number
+                    version_number = version_number.replace("_", "-")
                 else:
                     # Clean up versions to have dots
                     version_number = version_number.replace("_", ".")

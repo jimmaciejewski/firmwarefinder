@@ -90,7 +90,7 @@ https://help.harmanpro.com/Documents/3101/SW5791_01A_NXR_ZGW_v3_01_17.zip 3.01.1
 
 https://help.harmanpro.com/Documents/863/SW5968_ModeroX_v2_104_136.zip 2.104.136
 
-https://help.harmanpro.com/Documents/3173/N3510_Updater_2017_01_06.zip 2017_01_06
+https://help.harmanpro.com/Documents/3173/N3510_Updater_2017_01_06.zip 2017-01-06
 
 https://help.harmanpro.com/Documents/862/SW5968-G5_ModeroX-G5_v1_7_30.zip 1.7.30
 
@@ -116,7 +116,7 @@ https://help.harmanpro.com/Documents/3246/PR-WP-412_v2.11.zip 2.11
 
 https://help.harmanpro.com/Documents/854/SW2100-XX_EXB_FW_v1_0_63.zip 1.0.63
 
-https://help.harmanpro.com/Documents/3173/N3510_Updater_2017_01_06.zip 2017_01_06
+https://help.harmanpro.com/Documents/3173/N3510_Updater_2017_01_06.zip 2017-01-06
 
 https://help.harmanpro.com/Documents/866/SW2275_104_v3_1_30.zip 3.1.30
 
