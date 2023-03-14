@@ -4,12 +4,26 @@ from ..management.commands.check_for_firmware_updates import Command
 from bs4 import BeautifulSoup
 
 import re
+import os
 
 class RegexTest(TestCase):
 
     def test_regex_download_link(self):
-        import os 
         with open(os.path.join('firmware_finder', 'firmware', 'tests', 'version_regex_examples.txt'), 'r') as f:
+            for line in f.readlines():
+                # Ignore blank and header lines
+                if line.strip() == '' or "Solution" in line:
+                    continue
+                download_link, correct_version = line.split()
+                if correct_version == 'None':
+                    correct_version = None
+                version_number = Command.regex_download_link(None, download_link)
+                self.assertEqual(version_number, correct_version)
+
+
+    def test_regex_all_downloads(self):
+        '''I've added this so we check that any changes to regex doesn't break any existing versions'''
+        with open(os.path.join('firmware_finder', 'firmware', 'tests', 'all_version_regex_examples.txt'), 'r') as f:
             for line in f.readlines():
                 # Ignore blank and header lines
                 if line.strip() == '' or "Solution" in line:

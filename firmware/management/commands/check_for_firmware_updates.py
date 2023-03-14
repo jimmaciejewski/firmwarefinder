@@ -307,7 +307,7 @@ class Command(BaseCommand):
         # 2. Versions with dashes ie v1_14_5
         # 3. Versions with dates ie 2020-10-23 or 23-10-2020
         searches = [r"(v|_|-|%20)(?P<version>(\d{1,3}\.){1,}\d{0,8}-?\d).*\.zip",
-                    r"(v|V|%20|_)(?P<version>\d_\d{1,2}(_\d{1,8})?).*\.zip",
+                    r"(v|V|%20|_)(?P<version>\d_\d{1,3}(_\d{1,8})?).*\.zip",
                     r"_(?P<version>(\d{2,4}[_,-]\d{2}[_,-]\d{2,4})).*\.zip"]
         for i, regex in enumerate(searches):
             matches = re.search(regex, download_link)
