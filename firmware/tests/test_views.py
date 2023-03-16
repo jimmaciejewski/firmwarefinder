@@ -151,3 +151,13 @@ class TestNavBar(TestCase):
         self.assertTrue(user.is_authenticated)
         response = self.client.get("/")
         self.assertContains(response, '<a class="nav-link" aria-current="page" href="/admin">Admin</a>', html=True)
+
+
+class TestVersionItem(TestCase):
+    fixtures = ['firmware.json']
+
+    def test_amx_release_version_item_has_correct_link(self):
+        response = self.client.get("/products-search")
+        my_dict = response.json()
+        search_html = '<a href="https://www.amx.com/en-US/softwares/svsi-n1115-encoder-wall-plate-firmware-updater-v1-15-51"'
+        self.assertTrue(search_html in my_dict['html_from_view'])

@@ -14,7 +14,7 @@
         <i class="bi bi-list-check"></i>
       {% endif %}
     </h5>
-    <a href="{% if not version.hotfix %}{{ product.brand.base_url }}{% endif %}{{ version.download_page }}" target="_blank" class="btn btn-outline-success download-button">Download <span class="badge rounded-pill bg-secondary">
+    <a href="{{ version.download_page }}" target="_blank" class="btn btn-outline-success download-button">Download <span class="badge rounded-pill bg-secondary">
       {{version.number}} 
       </span>
     </a>
