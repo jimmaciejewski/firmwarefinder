@@ -129,6 +129,9 @@ class Command(BaseCommand):
         associated_name, _ = AssociatedName.objects.get_or_create(name=hotfix_page['Title'])
         # download hotfix page
         page_resp = requests.get(f"https://help.harmanpro.com/{hotfix_page['PageURL']}")
+        if page_resp.status_code != 200:
+            print(f"Unable to read page for https://help.harmanpro.com/{hotfix_page['PageURL']} got a {page_resp.status_code}")
+            return created_versions
         soup = BeautifulSoup(page_resp.text, 'html.parser')
         # Get readme to find FGS and associate with a product
         page_readme = soup('div', {"id": "ctl00_PlaceHolderMain_PageContent__ControlWrapper_RichHtmlField"})
