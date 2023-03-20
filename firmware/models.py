@@ -2,6 +2,7 @@ from django.db import models
 from zipfile import ZipFile, BadZipFile
 from django.core.files import File
 from django.contrib.auth.models import User
+from django.conf import settings
 import os
 
 if 'AZURE' in os.environ:
@@ -173,6 +174,12 @@ class Version(models.Model):
             # Just get head first
             headers = {'user-agent': 'FirmwareTracker'}
             r = requests.head(self.download_url, headers=headers, allow_redirects=True)
+
+            # Check file length no local copy if it is too big
+            if 'content-length' in r.headers:
+                if int(r.headers['content-length']) >= settings.FIRMWARE_VERSION_MAX_SIZE:
+                    print(f'The version file is too large: {self.name}')
+                    return
 
             filename = os.path.basename(r.url).replace('%20', '_').replace('%2B', '+')
 
