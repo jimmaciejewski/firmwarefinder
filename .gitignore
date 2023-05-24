@@ -7,3 +7,4 @@ test_email.html
 db.sqlite3
 test-reports/report.xml
 firmware/tests/test-reports/report.xml
+firmware/static/firmware/img/waiting/
