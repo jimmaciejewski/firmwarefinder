@@ -10,6 +10,7 @@ https://help.harmanpro.com/Documents/3246/PR-WP-412_v2.11.zip 2.11
 https://help.harmanpro.com/Documents/807/RMS%20Transporter%201.2.25.zip 1.2.25
 https://help.harmanpro.com/UnpublishedDocuments/982/N4Update_2022-09-7_1.0.5.zip 1.0.5
 https://help.harmanpro.com/DocumentsInternal/AMX/SVSI/N4Update_2023-02-09-1.0.6.zip 1.0.6
+https://help.harmanpro.com/Documents/3535/DXLink%204K60%20TX%20RX%20Hotfix%20Patch_V1.8.3.9.zip
 
 
 Solution #2 underscores:
