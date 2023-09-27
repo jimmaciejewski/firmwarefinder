@@ -112,6 +112,7 @@ class Version(models.Model):
     read_me = models.TextField(blank=True)
     read_me_path = models.CharField(max_length=200, blank=True, default="Readme.txt")
 
+    do_not_download = models.BooleanField(default=False)
 
     hotfix = models.BooleanField(default=False)
 

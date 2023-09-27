@@ -12,6 +12,6 @@ class Command(BaseCommand):
             if any([not product.store_firmware_versions_locally for product in related_products]):
                 self.stdout.write(self.style.WARNING(f'Not downloading a local copy of {version.name}'))
                 continue
-            if not version.local_file:
+            if not version.local_file and not version.do_not_download:
                 self.stdout.write(self.style.SUCCESS(f'Downloading a firmware version: {version.name}'))
                 version.download_firmware()
