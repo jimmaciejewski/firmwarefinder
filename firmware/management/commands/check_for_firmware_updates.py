@@ -40,10 +40,16 @@ class Command(BaseCommand):
             action='store_true',
             help='Only Hotfix pages',
         )
+        parser.add_argument(
+            '--no_email',
+            action='store_true',
+            help='Dont send any emails out'
+        )
 
 
     def handle(self, *args, **options):
         self.debug = options['debug']
+        self.no_email = options['no_email']
         if options['test_email']:
             test_ver1 = Version.objects.first()
             test_ver2 = Version.objects.get(name="SVSI N2400 Series Windowing Processor Firmware Updater")
@@ -234,7 +240,8 @@ class Command(BaseCommand):
 
     def send_emails(self, new_found_firmwares, testing=False):
         """ Email updates """
-
+        if self.no_email:
+            return
         # Create HTML email
         context = {'versions': new_found_firmwares, 'searches': self.get_failed_searches(), 'testing': testing}
 

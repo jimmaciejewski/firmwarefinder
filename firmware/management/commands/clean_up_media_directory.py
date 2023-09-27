@@ -50,6 +50,9 @@ class Command(BaseCommand):
             if version.local_file:
                 if not os.path.exists(version.local_file.path):
                     self.stdout.write(self.style.WARNING(f'I should remove local file as I cannot find it: {version.local_file}'))
+                    if not options['dry_run']:
+                        version.local_file.delete()
+                        version.save()
                 else:
                     self.stdout.write(self.style.SUCCESS(f'This file is fine: {version.local_file}'))
 
