@@ -5,7 +5,7 @@ from .models import Brand, AssociatedName, Product, FG, Version, Subscriber
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ["name", "fg_count"]
+    list_display = ["name", "store_firmware_versions_locally", "fg_count"]
 
     def fg_count(self, obj):
         return str(len(obj.fgs.all()))
