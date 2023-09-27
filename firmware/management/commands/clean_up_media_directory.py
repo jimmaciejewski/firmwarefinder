@@ -17,13 +17,14 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         '''Get a list of the files in the media directory check if they are too big or not being used'''
+        self.stdout.write(self.style.SUCCESS('Checking files in media directory....'))
         if options['dry_run']:
             self.stdout.write(self.style.SUCCESS('In DRY RUN mode....'))
         for path, subdirs, files in os.walk(settings.MEDIA_ROOT):
             for name in files:
                 # First check if we are using the file
                 folder = os.path.split(path)[1]
-                local_file_name = os.path(folder, name)
+                local_file_name = os.path.join(folder, name)
                 try:
                     version = Version.objects.get(local_file=local_file_name)
                 except Exception as error:
@@ -47,8 +48,8 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('Checking all version linked files are valid'))
         for version in Version.objects.all():
             if version.local_file:
-                if os.path.exists(version.local_file):
-                    self.stdout.write(self.style.WARNING('I should remove local file as I cannot find it: {version.local_file}'))
+                if not os.path.exists(version.local_file.path):
+                    self.stdout.write(self.style.WARNING(f'I should remove local file as I cannot find it: {version.local_file}'))
                 else:
-                    self.stdout.write(self.style.WARNING('This file is fine: {version.local_file}'))
+                    self.stdout.write(self.style.SUCCESS(f'This file is fine: {version.local_file}'))
 
