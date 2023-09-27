@@ -48,7 +48,7 @@ def refresh_readme(modeladmin, request, queryset):
         version.save()
 
 class VersionAdmin(admin.ModelAdmin):
-    list_display = ["name", "number", "hotfix", "downloaded", "fg_count"]
+    list_display = ["name", "number", "hotfix", "do_not_download", "downloaded", "fg_count"]
     actions = [refresh_readme]
 
     def downloaded(self, obj):
