@@ -6,8 +6,9 @@ app_name = 'firmware'
 
 urlpatterns = [
     path('', views.ProductSearchView.as_view(discontinued=False), name='product-list'),
-    path('discontinued-products', views.ProductSearchView.as_view(discontinued=True), name='discontinued-product-list'),\
+    path('discontinued-products', views.ProductSearchView.as_view(discontinued=True), name='discontinued-product-list'),
 
+    path('newest', views.NewestView.as_view(), name='newest'),
     # path('lines', views.lines, name='lines'),
     # path('sites', views.BrandListView.as_view(), name='brand-list'),
     # path('brand/<int:pk>/', views.BrandDetailView.as_view(), name='brand-detail'),

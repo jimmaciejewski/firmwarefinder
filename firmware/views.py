@@ -40,6 +40,15 @@ class BrandDetailView(DetailView):
     model = Brand
 
 
+class NewestView(ListView):
+    model = Version
+    content_object_name = 'new_versions'
+    # ordering = ['created']
+
+    def get_queryset(self):
+        return Version.objects.all()
+
+
 class ProductSearchView(ListView):
     model = Product
     context_object_name = 'products'

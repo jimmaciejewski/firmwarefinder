@@ -10,7 +10,7 @@ https://help.harmanpro.com/Documents/3246/PR-WP-412_v2.11.zip 2.11
 https://help.harmanpro.com/Documents/807/RMS%20Transporter%201.2.25.zip 1.2.25
 https://help.harmanpro.com/UnpublishedDocuments/982/N4Update_2022-09-7_1.0.5.zip 1.0.5
 https://help.harmanpro.com/DocumentsInternal/AMX/SVSI/N4Update_2023-02-09-1.0.6.zip 1.0.6
-https://help.harmanpro.com/Documents/3535/DXLink%204K60%20TX%20RX%20Hotfix%20Patch_V1.8.3.9.zip
+https://help.harmanpro.com/Documents/3535/DXLink%204K60%20TX%20RX%20Hotfix%20Patch_V1.8.3.9.zip 1.8.3.9
 
 
 Solution #2 underscores:
@@ -24,6 +24,7 @@ https://help.harmanpro.com/Documents/836/Build%203_01_47.zip 3.01.47
 CTP-1301_V5_0_20190820.zip 5.0.20190820
 https://help.harmanpro.com/Documents/855/NXV300_2_1_28.zip 2.1.28
 https://help.harmanpro.com/Documents/864/SW2265_ModeroS_v2_108_49.zip 2.108.49
+https://help.harmanpro.com/Documents/2367/SW1906_25A_SWITCHER_v2_0_1.zip 2.0.1
 
 
 Solution #3 dates:

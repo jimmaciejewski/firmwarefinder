@@ -1,0 +1,23 @@
+{% extends "firmware/base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="d-flex justify-content-center">
+  <div id="spinner" class="spinner-border spinner" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<div id="versions-div" class="text-center">
+    {{new_versions}}
+</div>
+
+
+{% endblock %}
+
+{% block extrajs %}
+
+<script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+
+
+{% endblock %}

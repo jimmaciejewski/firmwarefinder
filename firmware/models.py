@@ -59,6 +59,7 @@ class Product(models.Model):
     fgs = models.ManyToManyField(FG)
     associated_names = models.ManyToManyField(AssociatedName, blank=True)
     discontinued = models.BooleanField(default=False)
+    store_firmware_versions_locally = models.BooleanField(default=True)
 
     name = models.CharField(max_length=200, unique=True)
 
@@ -107,8 +108,10 @@ class Version(models.Model):
     download_url = models.CharField(max_length=200, blank=True)
     local_file = models.FileField(upload_to=upload_location, max_length=200, null=True, blank=True)
     date_last_seen = models.DateTimeField(null=True)
+    created = models.DateTimeField(auto_now_add=True)
     read_me = models.TextField(blank=True)
     read_me_path = models.CharField(max_length=200, blank=True, default="Readme.txt")
+
 
     hotfix = models.BooleanField(default=False)
 
