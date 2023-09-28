@@ -5,7 +5,6 @@
           {% else %}
               list-group-item-success
           {% endif %}">
-          
   <div class="d-flex justify-content-between">
     <h5 class="mb-1">{{version.name}} 
       {% if version.hotfix %}
@@ -28,6 +27,14 @@
         {% endif %}
       {% endif %}
   </div>
+
+  <div class="d-flex justify-content-between">
+    <small> </small>
+      {% if show_local %}
+         <a href="{% url 'firmware:product-list'%}?link={{product.name}}" class="btn btn-outline-success download-button m-1">Link to page</a>
+      {% endif %}
+  </div>
+
   {% if version.read_me %}
     {% if version.read_me != "Unable to find readme" %}
       <textarea class="readme" rows="20">{{version.read_me}}</textarea>
