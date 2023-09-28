@@ -1,7 +1,6 @@
 {% extends "firmware/base.html" %}
 {% load static %}
 {% block content %}
-
 <div class="d-flex justify-content-center">
   <div id="spinner" class="spinner-border spinner" role="status">
     <span class="visually-hidden">Loading...</span>
@@ -18,6 +17,9 @@
 
 <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 
-<script src="{% static 'firmware/js/suggestive_search.js' %}"></script>
+<script src="{% static 'firmware/js/suggestive_search.js' %}"
+  defer
+  data-link="{{link}}">
+</script>
 
 {% endblock %}

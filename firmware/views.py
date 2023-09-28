@@ -65,6 +65,8 @@ class ProductSearchView(ListView):
         if context['search'] is not None:
             # Since we search both current and discontinued product, don't highlight the NAV bar when results are shown...
             context['active'] = ""
+        context['link'] = self.request.GET.get('link')
+        return context
     
     def get_queryset(self):
         """We populate the page with ajax

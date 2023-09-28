@@ -3,6 +3,11 @@ const spinner = $('#spinner')
 const product_div = $('#products-div')
 const endpoint = '/products-search'
 const delay_by_in_ms = 700
+
+const data = document.currentScript.dataset;
+const link = data.link;
+
+
 let scheduled_scroll = false
 let scheduled_function = false
 
@@ -67,7 +72,10 @@ let ajax_call = function (endpoint, request_parameters) {
 				
 			});
 
-
+			if(link != 'None'){
+				console.log("In link: " + link)
+				$('.product[title="' + link + ' "]').click()
+			}
 
 			$('.readme-button').click(function(e) {
 				$(this).find('.readme').toggle()

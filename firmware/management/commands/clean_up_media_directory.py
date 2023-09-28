@@ -39,6 +39,7 @@ class Command(BaseCommand):
                     if not options['dry_run']:
                         self.stdout.write(self.style.WARNING(f'Removing local_file link {local_file_name}'))
                         version.local_file.delete()
+                        version.do_not_download = True
                         version.save()
             if not files and os.path.split(path)[1] != 'media':
                 self.stdout.write(self.style.WARNING(f"Removing extra folder: {path}"))
