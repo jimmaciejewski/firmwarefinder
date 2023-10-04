@@ -73,7 +73,6 @@ let ajax_call = function (endpoint, request_parameters) {
 			});
 
 			if(link != 'None'){
-				console.log("In link: " + link)
 				$('.product[title="' + link + ' "]').click()
 			}
 
