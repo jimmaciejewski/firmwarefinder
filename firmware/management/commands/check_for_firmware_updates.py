@@ -114,7 +114,7 @@ class Command(BaseCommand):
             new_version, created = Version.objects.get_or_create(name=name,
                                                                  number=version_number,
                                                                  download_page=download_page_full_url,
-                                                                 download_url=download_page)
+                                                                 download_url=download_full_url)
             new_version.date_last_seen = timezone.now()
             if created:
                 created_versions.append(new_version)
