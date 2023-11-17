@@ -1,14 +1,12 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from firmware.models import Brand, Product, FG, Version, AssociatedName, Subscriber
 from django.utils import timezone
-from django.db.utils import IntegrityError
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.conf import settings
 
 import requests
-from dataclasses import dataclass, field
 import json
 import re
 from bs4 import BeautifulSoup
@@ -46,7 +44,6 @@ class Command(BaseCommand):
             help='Dont send any emails out'
         )
 
-
     def handle(self, *args, **options):
         self.debug = options['debug']
         self.no_email = options['no_email']
@@ -59,7 +56,6 @@ class Command(BaseCommand):
 
         if not options['release_only']:
             url = "https://help.harmanpro.com/_api/web/lists/getbytitle('Pages')/Items?$top=1000&$orderby=Title&$select=PublishingPageContent,PageURL,Title,FileRef,Brand/Title, Brand/ID, Model/Title, Family/Title, DocType/Title,CaseType0/Title,FaultCategory/Title&$expand=Family,Model,CaseType0,Brand,FaultCategory,DocType&$filter=DocType/Title eq 'Hotfix firmware'"
-            
             headers = {'user-agent': 'FirmwareTracker', "accept": "application/json"}
             response = requests.get(url, headers=headers)
             my_json = json.loads(response.text)
@@ -68,7 +64,6 @@ class Command(BaseCommand):
 
                 if hotfix_page['Brand'][0]['Title'] != 'AMX':
                     continue
-                
                 if self.debug:
                     self.stdout.write(self.style.SUCCESS(f"Checking help.harmanpro.com: {hotfix_page['Title']}"))
                 new_versions = self.process_hotfix_page(hotfix_page)
@@ -76,7 +71,7 @@ class Command(BaseCommand):
                     self.new_found_versions.append(version)
 
         if not options['hotfix_only']:
-            ### Check for AMX.com updates
+            """Check for AMX.com updates"""
             brand = Brand.objects.get(name='AMX')
             for product in Product.objects.filter(brand=brand):
                 if self.debug:
@@ -88,7 +83,6 @@ class Command(BaseCommand):
             if self.debug:
                 self.stdout.write(self.style.SUCCESS(f"Sending email with updates for: {self.new_found_versions}"))
             self.send_emails(self.new_found_versions)
-
 
     def parse_amx_page(self, product: Product) -> list[Version]:
         '''Given a product parse it's amx.com page'''
@@ -107,12 +101,20 @@ class Command(BaseCommand):
             if self.debug:
                 self.stdout.write(self.style.WARNING(f"Unable to parse, brand: {brand.name}, product: {product.name}"))
             return created_versions
-        
+
         for name, version_number, download_page in firmwares:
+            if download_page[0] == "/":
+                # Old style page
+                download_page_full_url = f"{brand.base_url}{download_page}"
+                download_full_url = f"{brand.base_url}{download_page}/download"
+            else:
+                # New style page
+                download_page_full_url = url
+                download_full_url = download_page
             new_version, created = Version.objects.get_or_create(name=name,
                                                                  number=version_number,
-                                                                 download_page=f"{brand.base_url}{download_page}",
-                                                                 download_url=f"{brand.base_url}{download_page}/download")
+                                                                 download_page=download_page_full_url,
+                                                                 download_url=download_page)
             new_version.date_last_seen = timezone.now()
             if created:
                 created_versions.append(new_version)
@@ -120,7 +122,7 @@ class Command(BaseCommand):
             for fg in found_fgs:
                 new_fg, _ = FG.objects.get_or_create(number=fg)
                 new_version.fgs.add(new_fg)
-                product.fgs.add(new_fg)                             
+                product.fgs.add(new_fg)
             new_version.save()
 
             new_a_name, _ = AssociatedName.objects.get_or_create(name=new_version.name)
@@ -158,7 +160,7 @@ class Command(BaseCommand):
             else:
                 new_version, created = Version.objects.get_or_create(name=f"{hotfix_page['Title']}",
                                                                      number=version_number,
-                                                                     download_page = f"https://help.harmanpro.com{hotfix_page['PageURL']}",
+                                                                     download_page=f"https://help.harmanpro.com{hotfix_page['PageURL']}",
                                                                      download_url=f"https://help.harmanpro.com{download_link}")
                 new_version.hotfix = True
                 new_version.date_last_seen = timezone.now()
@@ -173,10 +175,10 @@ class Command(BaseCommand):
         '''Returns fg numbers found in specs table in the soup provided'''
         found_fgs = []
         try:
-            rows = soup.body("table", {"class":"specs"})[0]("tr")
+            rows = soup.body("table", {"class": "specs"})[0]("tr")
         except IndexError:
             if self.debug:
-                self.stdout.write(self.style.WARNING(f"Unable to find FG table."))
+                self.stdout.write(self.style.WARNING("Unable to find FG table."))
             return found_fgs
         for row in rows:
             if "FG Numbers" in row.text:
@@ -190,7 +192,7 @@ class Command(BaseCommand):
                     for match in matches:
                         found_fgs.append(match.group().replace(',', '').strip())
         return found_fgs
-            
+
     def get_firmware_values_from_html_table(self, soup):
         '''Returns a tuple of name version download_page of any firmwares in the html'''
         firmwares = []
@@ -223,7 +225,6 @@ class Command(BaseCommand):
                         failed_searches.append(cleaned)
         except Exception as error:
             print(f"Unable to open failed_searches: {error}")
-        
         return failed_searches
 
     def archive_searches(self):
@@ -279,9 +280,7 @@ class Command(BaseCommand):
         )
 
     def create_fgs_from_readme(self, read_me) -> list[FG]:
-        '''Given some readme text returns all FG's found
-        
-        '''
+        '''Given some readme text returns all FG's found'''
         fgs = []
         regex = r"(?P<FG>FGN?\d{4}-?\d{0,4}-?[A-Z]{0,2}-?[A-Z]{0,2}-?\d{0,2})\n?\ ?"
         matches = re.finditer(regex, read_me, re.MULTILINE)
@@ -301,11 +300,11 @@ class Command(BaseCommand):
             if download_link[-4:] in ['.tsk', '.pdf', '.AXW', '.kit'] or 'CPRMS1078.zip' in download_link or '7in%20Touch%20Panel.zip' in download_link:
                 return None
             return download_link
-          
+
         except TypeError:
             if self.debug:
                 if download_field == "ctl00_PlaceHolderMain_ctl04__ControlWrapper_RichLinkField":
-                    self.stdout.write(self.style.WARNING(f'Unable to find second download field'))
+                    self.stdout.write(self.style.WARNING('Unable to find second download field'))
                 else:
                     self.stdout.write(self.style.WARNING(f'Unable to find download field! {download_field}'))
             return None
@@ -324,12 +323,10 @@ class Command(BaseCommand):
             if hasattr(matches, 'group'):
                 version_number = matches.group('version')
                 if i == 2:
-                    # Dates have dashes 
+                    # Dates have dashes
                     version_number = version_number.replace("_", "-")
                 else:
                     # Clean up versions to have dots
                     version_number = version_number.replace("_", ".")
                 return version_number
-            
         return None
-    
