@@ -2,9 +2,9 @@
 from django.test import TestCase
 from ..management.commands.check_for_firmware_updates import Command
 from bs4 import BeautifulSoup
-
-import re
+# import re
 import os
+
 
 class RegexTest(TestCase):
 
@@ -20,7 +20,6 @@ class RegexTest(TestCase):
                 version_number = Command.regex_download_link(None, download_link)
                 self.assertEqual(version_number, correct_version)
 
-
     def test_regex_all_downloads(self):
         '''I've added this so we check that any changes to regex doesn't break any existing versions'''
         with open(os.path.join('firmware_finder', 'firmware', 'tests', 'all_version_regex_examples.txt'), 'r') as f:
@@ -35,6 +34,15 @@ class RegexTest(TestCase):
                 self.assertEqual(version_number, correct_version)
 
 
+class GetFirmwareDownloadURLfromAMX(TestCase):
+    # Given the test HTML get the download URL 
+    def test_get_download_url_from_soup(self):
+        from .html_examples import amx_download_page
+        soup = BeautifulSoup(amx_download_page, 'html.parser')
+        download_url = Command.get_file_download_url_from_amx_download_page(None, soup)
+        self.assertEqual("https://adn.harmanpro.com/softwares/wares/915_1521133661/SW1010_3XX_AVB_FW_v1_6_29.zip", download_url, )
+
+
 class CheckFirmwareTest(TestCase):
 
     # Given a hotfix url we need to do the following
@@ -47,7 +55,6 @@ class CheckFirmwareTest(TestCase):
     # Link FGs to versions
     # send email to subscribers about new versions
 
-
     def test_create_fgs_from_readme(self):
         '''Given some HTML get FGS from readme'''
         from .html_examples import page_readme
@@ -58,7 +65,6 @@ class CheckFirmwareTest(TestCase):
         page_readme = ''
         fgs = Command.create_fgs_from_readme(None, read_me=page_readme)
         self.assertEqual(len(fgs), 0)
-
 
     def test_get_download_link_from_download_field(self):
         '''Given a download field and html creates a version'''
@@ -86,7 +92,6 @@ class CheckFirmwareTest(TestCase):
                                      ('NX Series (X200) NX/MCP/DGX Controller Firmware',
                                       '1.6.179',
                                       '/en-US/softwares/nx-series-x200-nx-mcp-dgx-controller-firmware-v1-6-179')])
-
 
     # def test_get_firmware_values_from_html_software_table(self):
     #     # import requests

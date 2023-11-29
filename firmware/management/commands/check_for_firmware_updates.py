@@ -103,18 +103,15 @@ class Command(BaseCommand):
             return created_versions
 
         for name, version_number, download_page in firmwares:
-            if download_page[0] == "/":
-                # Old style page
-                download_page_full_url = f"{brand.base_url}{download_page}"
-                download_full_url = f"{brand.base_url}{download_page}/download"
-            else:
-                # New style page
-                download_page_full_url = url
-                download_full_url = download_page
+            # Example download page = "https://www.amx.com/en/softwares/dxlink-transmitter-firmware-v1-6-29"
+            # We now need to get the download url
+            dlp_response = requests.get(download_page, headers=headers)
+            dlp_soup = BeautifulSoup(dlp_response.content, 'html.parser')
+            download_url = self.get_file_download_url_from_amx_download_page(dlp_soup)
             new_version, created = Version.objects.get_or_create(name=name,
                                                                  number=version_number,
-                                                                 download_page=download_page_full_url,
-                                                                 download_url=download_full_url)
+                                                                 download_page=download_page,
+                                                                 download_url=download_url)
             new_version.date_last_seen = timezone.now()
             if created:
                 created_versions.append(new_version)
@@ -170,6 +167,15 @@ class Command(BaseCommand):
                     created_versions.append(new_version)
 
         return created_versions
+    
+    def get_file_download_url_from_amx_download_page(self, soup):
+        '''Returns the url to download the firmware from the soup provided'''
+        download_url = ""
+        try:
+            download_url = soup.find_all("a", {"class": "software-direct-link"})[0]['href']
+        except Exception as error:
+            self.stdout.write(self.style.WARNING("Unable to find the AMX download url."))
+        return download_url
 
     def get_fgs_from_specs_table(self, soup):
         '''Returns fg numbers found in specs table in the soup provided'''
