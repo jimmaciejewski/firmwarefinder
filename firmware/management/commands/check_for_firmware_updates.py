@@ -152,7 +152,7 @@ class Command(BaseCommand):
                 download_url = self.get_file_download_url_from_amx_download_page(dlp_soup)
                 new_version, created = Version.objects.get_or_create(name=name,
                                                                      number=version_number,
-                                                                     download_page=download_page,
+                                                                     download_page=download_page_full_url,
                                                                      download_url=download_url)
                 new_version.date_last_seen = timezone.now()
                 if created:
