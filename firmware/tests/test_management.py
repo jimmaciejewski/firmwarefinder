@@ -34,13 +34,32 @@ class RegexTest(TestCase):
                 self.assertEqual(version_number, correct_version)
 
 
+class GetFirmwareDownloadURLfromHARMAN(TestCase):
+    def test_get_download_url_from_harman(self):
+        from .html_examples import harman_download_page
+        soup = BeautifulSoup(harman_download_page, 'html.parser')
+        # download_url = Command.get_firmware_values_from_html_table(None, soup)
+        download_fields = ["ctl00_PlaceHolderMain_ctl03__ControlWrapper_RichLinkField", "ctl00_PlaceHolderMain_ctl04__ControlWrapper_RichLinkField"]
+        for download_field in download_fields:
+            download_link = Command.get_download_link_from_download_field(None, soup, download_field)
+        self.assertEqual("/Documents/2522/SW2106_NX-X200_Master_v1_6_205.zip", download_link)
+
+
 class GetFirmwareDownloadURLfromAMX(TestCase):
     # Given the test HTML get the download URL 
     def test_get_download_url_from_soup(self):
         from .html_examples import amx_download_page
         soup = BeautifulSoup(amx_download_page, 'html.parser')
         download_url = Command.get_file_download_url_from_amx_download_page(None, soup)
-        self.assertEqual("https://adn.harmanpro.com/softwares/wares/915_1521133661/SW1010_3XX_AVB_FW_v1_6_29.zip", download_url, )
+        self.assertEqual("https://adn.harmanpro.com/softwares/wares/879_1531421958/SW1906_DVX-x2xx_Switcher_v1_7_81.zip", download_url)
+
+
+class GetPageTitleFromHarman(TestCase):
+    def test_get_page_name_from_soup(self):
+        from .html_examples import amx_download_page
+        soup = BeautifulSoup(amx_download_page, 'html.parser')
+        download_url = Command.getpage(None, soup)
+        self.assertEqual("https://adn.harmanpro.com/softwares/wares/879_1531421958/SW1906_DVX-x2xx_Switcher_v1_7_81.zip", download_url)
 
 
 class CheckFirmwareTest(TestCase):
@@ -55,6 +74,24 @@ class CheckFirmwareTest(TestCase):
     # Link FGs to versions
     # send email to subscribers about new versions
 
+    def test_parse_hotfix_page(self):
+        """Should return a list of Versions"""
+        pass
+
+    def test_get_title_from_hotfix_page_soup(self):
+        """Should return the title of the Hotfix page"""
+        from .html_examples import harman_download_page
+        soup = BeautifulSoup(harman_download_page, 'html.parser')
+        title = Command.get_title_from_hotfix_page(None, soup)
+        self.assertEqual(title, "DVX X2XX Switcher Web Page Flash Fix")
+
+    def test_get_fgs_from_hotfix_page_soup(self):
+        from .html_examples import harman_download_page
+        soup = BeautifulSoup(harman_download_page, 'html.parser')
+        readme = Command.get_readme_from_hotfix_page(None, soup)
+        self.assertEqual(len(readme[0].text), 3568)
+
+
     def test_create_fgs_from_readme(self):
         '''Given some HTML get FGS from readme'''
         from .html_examples import page_readme
@@ -65,6 +102,13 @@ class CheckFirmwareTest(TestCase):
         page_readme = ''
         fgs = Command.create_fgs_from_readme(None, read_me=page_readme)
         self.assertEqual(len(fgs), 0)
+
+    # def test_get_links_from_hotfix_page(self):
+    #     from .html_examples import harman_download_page
+    #     soup = BeautifulSoup(harman_download_page, 'html.parser')
+    #     links = Command.get_links_from_hotfix_page(None, soup)
+    #     self.assertEqual(links, 3568)
+
 
     def test_get_download_link_from_download_field(self):
         '''Given a download field and html creates a version'''

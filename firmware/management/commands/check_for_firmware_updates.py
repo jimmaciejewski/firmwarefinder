@@ -5,11 +5,22 @@ from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.conf import settings
-
+from dataclasses import dataclass, field
 import requests
 import json
 import re
 from bs4 import BeautifulSoup
+from typing import List
+
+
+@dataclass
+class HamanproFirmwarePage:
+    link: str
+    url: str
+    name: str = None
+    soup: BeautifulSoup = None
+    firmware_urls: List[str] = field(default_factory=list)
+    created_versions: List[Version] = field(default_factory=list)
 
 
 class Command(BaseCommand):
@@ -66,9 +77,7 @@ class Command(BaseCommand):
                     continue
                 if self.debug:
                     self.stdout.write(self.style.SUCCESS(f"Checking help.harmanpro.com: {hotfix_page['Title']}"))
-                new_versions = self.process_hotfix_page(hotfix_page)
-                for version in new_versions:
-                    self.new_found_versions.append(version)
+                self.new_found_versions += self.parse_hotfix_page(f"https://help.harmanpro.com/{hotfix_page['PageURL']}")
 
         if not options['hotfix_only']:
             """Check for AMX.com updates"""
@@ -105,69 +114,157 @@ class Command(BaseCommand):
         for name, version_number, download_page in firmwares:
             # Example download page = "https://www.amx.com/en/softwares/dxlink-transmitter-firmware-v1-6-29"
             # We now need to get the download url
-            dlp_response = requests.get(download_page, headers=headers)
-            dlp_soup = BeautifulSoup(dlp_response.content, 'html.parser')
-            download_url = self.get_file_download_url_from_amx_download_page(dlp_soup)
-            new_version, created = Version.objects.get_or_create(name=name,
-                                                                 number=version_number,
-                                                                 download_page=download_page,
-                                                                 download_url=download_url)
-            new_version.date_last_seen = timezone.now()
-            if created:
-                created_versions.append(new_version)
+            # Sometimes they take you straight to the download on adn.harmanpro.com
+            # And there is no "download page", so this is the download page
+            if "adn.harmanpro.com" in download_page:
+                new_version, created = Version.objects.get_or_create(name=name,
+                                                                     number=version_number,
+                                                                     download_page=url,
+                                                                     download_url=download_page)
+                new_version.date_last_seen = timezone.now()
+                if created:
+                    self.stdout.write(self.style.SUCCESS(f'Created: {new_version.name} --> {new_version.number}'))
+                    created_versions.append(new_version)
 
-            for fg in found_fgs:
-                new_fg, _ = FG.objects.get_or_create(number=fg)
-                new_version.fgs.add(new_fg)
-                product.fgs.add(new_fg)
-            new_version.save()
+                for fg in found_fgs:
+                    new_fg, _ = FG.objects.get_or_create(number=fg)
+                    new_version.fgs.add(new_fg)
+                    product.fgs.add(new_fg)
+                new_version.save()
 
-            new_a_name, _ = AssociatedName.objects.get_or_create(name=new_version.name)
-            product.associated_names.add(new_a_name)
-            product.save()
+                new_a_name, _ = AssociatedName.objects.get_or_create(name=new_version.name)
+                product.associated_names.add(new_a_name)
+                product.save()
+                return created_versions
+
+            # Ok this is more the standard where there is a dedicated download page
+            download_page_full_url = f"{brand.base_url}{download_page}"
+            dlp_response = requests.get(download_page_full_url, headers=headers)
+            # Check if we have been redirected to the help.harmanpro.com site
+            if dlp_response.history != []:
+                # We have been redirected to help.harmanpro.com ? maybe
+                redirect_page = dlp_response.history[-1].headers['Location']
+                if 'help.harmanpro.com' in redirect_page:
+                    created_versions += self.parse_hotfix_page(redirect_page)
+            else:
+
+                dlp_soup = BeautifulSoup(dlp_response.content, 'html.parser')
+                download_url = self.get_file_download_url_from_amx_download_page(dlp_soup)
+                new_version, created = Version.objects.get_or_create(name=name,
+                                                                     number=version_number,
+                                                                     download_page=download_page,
+                                                                     download_url=download_url)
+                new_version.date_last_seen = timezone.now()
+                if created:
+                    self.stdout.write(self.style.SUCCESS(f'Created: {new_version.name} --> {new_version.number}'))
+                    created_versions.append(new_version)
+
+                for fg in found_fgs:
+                    new_fg, _ = FG.objects.get_or_create(number=fg)
+                    new_version.fgs.add(new_fg)
+                    product.fgs.add(new_fg)
+                new_version.save()
+
+                new_a_name, _ = AssociatedName.objects.get_or_create(name=new_version.name)
+                product.associated_names.add(new_a_name)
+                product.save()
 
         return created_versions
 
-    def process_hotfix_page(self, hotfix_page) -> list[Version]:
-        '''Take a hotfix url and create new versions and fgs from the html'''
+    def parse_hotfix_page(self, url) -> List[Version]:
         created_versions = []
-        associated_name, _ = AssociatedName.objects.get_or_create(name=hotfix_page['Title'])
-        # download hotfix page
-        page_resp = requests.get(f"https://help.harmanpro.com/{hotfix_page['PageURL']}")
+        page_resp = requests.get(url)
         if page_resp.status_code != 200:
-            print(f"Unable to read page for https://help.harmanpro.com/{hotfix_page['PageURL']} got a {page_resp.status_code}")
+            self.stdout.write(self.style.ERROR(f"Unable to read page for {url} got a {page_resp.status_code}"))
             return created_versions
         soup = BeautifulSoup(page_resp.text, 'html.parser')
-        # Get readme to find FGS and associate with a product
-        page_readme = soup('div', {"id": "ctl00_PlaceHolderMain_PageContent__ControlWrapper_RichHtmlField"})
-        found_fgs = self.create_fgs_from_readme(page_readme[0].text)
+        title = self.get_title_from_hotfix_page(soup)
+        if not title:
+            self.stdout.write(self.style.ERROR(f"Unable to get page title for {url}"))
+            return created_versions
+        # Create associated name
+        associated_name, _ = AssociatedName.objects.get_or_create(name=title)
+        # Get FG's from page readme (if page has it)
+        readme = self.get_readme_from_hotfix_page(soup)
+        if not readme:
+            self.stdout.write(self.style.ERROR(f"Unable to get page readme for {url}"))
+            return created_versions
+        found_fgs = self.create_fgs_from_readme(read_me=readme[0].text)
         for fg in found_fgs:
             for product in Product.objects.filter(fgs=fg):
                 product.associated_names.add(associated_name)
-        # Get version files
+        # Get links to firmwares from page
+        links = self.get_links_from_hotfix_page(soup)
+        for link in links:
+            version_number = self.regex_download_link(link)
+            if not version_number:
+                self.stdout.write(self.style.ERROR(f"Unable to get version number for {link}"))
+                continue
+            new_version, created = Version.objects.get_or_create(name=title,
+                                                                 number=version_number,
+                                                                 download_page=url,
+                                                                 download_url=f"https://help.harmanpro.com{link}")
+            new_version.hotfix = True
+            new_version.date_last_seen = timezone.now()
+            new_version.save()
+            if created:
+                self.stdout.write(self.style.SUCCESS(f'Created: {new_version.name} --> {new_version.number}'))
+                created_versions.append(new_version)
+        return created_versions
+
+    def get_title_from_hotfix_page(self, soup) -> str:
+        """Use the given soup and return the title of the page"""
+        title = soup('h3', {'class': 'wikipage-header'})[0].text
+        return title
+
+    def get_readme_from_hotfix_page(self, soup) -> str:
+        """Use the given soup and return the readme portion"""
+        readme = soup('div', {"id": "ctl00_PlaceHolderMain_PageContent__ControlWrapper_RichHtmlField"})
+        return readme
+
+    def get_links_from_hotfix_page(self, soup) -> list[str]:
+        '''Returns the url to download the firmware from the soup provided'''
+        links = []
         download_fields = ["ctl00_PlaceHolderMain_ctl03__ControlWrapper_RichLinkField", "ctl00_PlaceHolderMain_ctl04__ControlWrapper_RichLinkField"]
         for download_field in download_fields:
             download_link = self.get_download_link_from_download_field(soup, download_field)
             if not download_link:
                 continue
-            version_number = self.regex_download_link(download_link)
-            if not version_number:
-                print(f"Unable to get a version number! {download_link}")
-                continue
-            else:
-                new_version, created = Version.objects.get_or_create(name=f"{hotfix_page['Title']}",
-                                                                     number=version_number,
-                                                                     download_page=f"https://help.harmanpro.com{hotfix_page['PageURL']}",
-                                                                     download_url=f"https://help.harmanpro.com{download_link}")
-                new_version.hotfix = True
-                new_version.date_last_seen = timezone.now()
-                new_version.save()
-                if created:
-                    self.stdout.write(self.style.SUCCESS(f'Created: {new_version.name} --> {new_version.number}'))
-                    created_versions.append(new_version)
+            links.append(download_link)
+        return links
 
-        return created_versions
-    
+    # def get_name_from_harman_hotfix_page_response(self, response) -> str:
+    #     """Takes a url for HARMANPro and gets the page name"""
+    #     soup = BeautifulSoup(response.content, 'html.parser')
+    #     return ''
+
+    # def process_hotfix_page(self, page: HamanproFirmwarePage) -> list[Version]:
+    #     '''Take a hotfix url and create new versions and fgs from the html'''
+    #     # download hotfix page
+    #     page_resp = requests.get(page.url)
+    #     if page_resp.status_code != 200:
+    #         self.stdout.write(self.style.ERROR(f"Unable to read page for {page.url} got a {page_resp.status_code}"))
+    #         return []
+    #     page.soup = BeautifulSoup(page_resp.text, 'html.parser')
+    #     # Get the page title from the soup if necessary
+    #     if page.name is None:
+    #         try:
+    #             page.name = page.soup('h3', {'class': 'wikipage-header'})[0].text
+    #         except Exception as error:
+    #             self.stdout.write(self.style.ERROR(f'Unable to get Harmanpro page title: {page.url}'))
+    #     associated_name, _ = AssociatedName.objects.get_or_create(name=page.name)
+    #     # Get readme to find FGS and associate with a product
+    #     page_readme = page.soup('div', {"id": "ctl00_PlaceHolderMain_PageContent__ControlWrapper_RichHtmlField"})
+    #     found_fgs = self.create_fgs_from_readme(page_readme[0].text)
+    #     for fg in found_fgs:
+    #         for product in Product.objects.filter(fgs=fg):
+    #             product.associated_names.add(associated_name)
+
+    #     self.get_file_download_urls_from_harman_download_page(page)
+    #     self.create_versions_from_harman_download_links(page)
+
+    #     return page.created_versions
+
     def get_file_download_url_from_amx_download_page(self, soup):
         '''Returns the url to download the firmware from the soup provided'''
         download_url = ""
@@ -294,10 +391,6 @@ class Command(BaseCommand):
             new_fg, _ = FG.objects.get_or_create(number=match.group().replace(',', '').strip())
             fgs.append(new_fg)
         return fgs
-
-    def get_link_from_download_field(self, soup, download_field):
-        '''Given a download field parse the soup'''
-        pass
 
     def get_download_link_from_download_field(self, soup, download_field):
         '''Given a download field parse the soup for version numbers'''
