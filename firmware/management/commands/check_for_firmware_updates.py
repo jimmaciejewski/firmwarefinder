@@ -396,7 +396,7 @@ class Command(BaseCommand):
         '''Given a download field parse the soup for version numbers'''
         try:
             download_link = soup("div", {"id": download_field})[0]("div")[0].find("a")['href']
-            if download_link[-4:] in ['.tsk', '.pdf', '.AXW', '.kit'] or 'CPRMS1078.zip' in download_link or '7in%20Touch%20Panel.zip' in download_link:
+            if download_link[-4:] in ['.tsk', '.pdf', '.AXW', '.kit', '.dmg'] or 'CPRMS1078.zip' in download_link or '7in%20Touch%20Panel.zip' in download_link:
                 return None
             return download_link
 
