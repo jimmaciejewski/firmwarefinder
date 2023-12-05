@@ -15,7 +15,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for version in Version.objects.all():
-            if version.download_url.startswith('https://www.amx.com/en-US/softwares/'):
+            if version.download_url.startswith('https://www.amx.com/en-US/softwares/') or version.download_page.startswith('https://help.harmanpro.com//'):
                 if not options['dry_run']:
                     version.delete()
                     self.stdout.write(self.style.SUCCESS(f'Removed {version.name}'))

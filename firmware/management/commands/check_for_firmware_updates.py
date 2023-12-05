@@ -77,7 +77,7 @@ class Command(BaseCommand):
                     continue
                 if self.debug:
                     self.stdout.write(self.style.SUCCESS(f"Checking help.harmanpro.com: {hotfix_page['Title']}"))
-                self.new_found_versions += self.parse_hotfix_page(f"https://help.harmanpro.com/{hotfix_page['PageURL']}")
+                self.new_found_versions += self.parse_hotfix_page(f"https://help.harmanpro.com{hotfix_page['PageURL']}")
 
         if not options['hotfix_only']:
             """Check for AMX.com updates"""
