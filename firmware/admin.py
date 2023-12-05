@@ -10,6 +10,7 @@ class ProductAdmin(admin.ModelAdmin):
     def fg_count(self, obj):
         return str(len(obj.fgs.all()))
 
+
 class FGAdmin(admin.ModelAdmin):
     list_display = ["number", "related_product_count", "products", "related_version_count", "versions"]
 
@@ -29,6 +30,7 @@ class FGAdmin(admin.ModelAdmin):
         version_list = obj.version_set.all()
         return [version.name for version in version_list]
 
+
 class AssociatedNameAdmin(admin.ModelAdmin):
     list_display = ["name", "count", "products"]
 
@@ -47,15 +49,18 @@ def refresh_readme(modeladmin, request, queryset):
         version.read_me = version.get_release_notes()
         version.save()
 
+
 class VersionAdmin(admin.ModelAdmin):
     list_display = ["name", "number", "hotfix", "do_not_download", "downloaded", "fg_count"]
     actions = [refresh_readme]
 
+    @admin.display(boolean=True)
     def downloaded(self, obj):
         return bool(obj.local_file)
 
     def fg_count(self, obj):
         return str(len(obj.fgs.all()))
+
 
 class SubscriberAdmin(admin.ModelAdmin):
     list_display = ["user", 'get_email_address', "send_email", "send_email_even_if_none_found"]
