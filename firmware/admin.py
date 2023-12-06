@@ -51,8 +51,17 @@ def refresh_readme(modeladmin, request, queryset):
 
 
 class VersionAdmin(admin.ModelAdmin):
-    list_display = ["name", "number", "hotfix", "do_not_download", "downloaded", "fg_count"]
+    list_display = ["name", "number", "hotfix", "download_blocked", "downloaded", "fg_count"]
     actions = [refresh_readme]
+
+    @admin.display(boolean=True)
+    def download_blocked(self, obj: Version):
+        related_products = Product.objects.filter(fgs__in=obj.fgs.all())
+
+        if any([not product.store_firmware_versions_locally for product in related_products]):
+            return True
+        return obj.do_not_download
+        
 
     @admin.display(boolean=True)
     def downloaded(self, obj):

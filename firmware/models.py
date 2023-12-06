@@ -187,14 +187,14 @@ class Version(models.Model):
 
             filename = os.path.basename(r.url).replace('%20', '_').replace('%2B', '+')
 
-            # Check if we have a copy in backup
-            backup_path = os.path.join("backup_media", upload_path_name(self.name), filename)
-            if os.path.exists(backup_path):
-                with open(backup_path, 'rb') as f:
-                    self.local_file.save(f"{filename}", File(f))
-                    return
-            else: 
-                print(f"Unable to find backup copy: {backup_path}")
+            # # Check if we have a copy in backup
+            # backup_path = os.path.join("backup_media", upload_path_name(self.name), filename)
+            # if os.path.exists(backup_path):
+            #     with open(backup_path, 'rb') as f:
+            #         self.local_file.save(f"{filename}", File(f))
+            #         return
+            # else: 
+            #     print(f"Unable to find backup copy: {backup_path}")
 
             r = requests.get(self.download_url, headers=headers, stream=True)
 
