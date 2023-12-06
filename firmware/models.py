@@ -2,7 +2,12 @@ from django.db import models
 from zipfile import ZipFile, BadZipFile
 from django.core.files import File
 from django.contrib.auth.models import User
+from django.conf import settings
 import os
+
+if 'AZURE' in os.environ:
+    from firmwarefinder.storage import AzureMediaStorage
+
 import requests
 from tempfile import TemporaryFile
 
@@ -54,6 +59,7 @@ class Product(models.Model):
     fgs = models.ManyToManyField(FG)
     associated_names = models.ManyToManyField(AssociatedName, blank=True)
     discontinued = models.BooleanField(default=False)
+    store_firmware_versions_locally = models.BooleanField(default=True)
 
     name = models.CharField(max_length=200, unique=True)
 
@@ -102,8 +108,11 @@ class Version(models.Model):
     download_url = models.CharField(max_length=200, blank=True)
     local_file = models.FileField(upload_to=upload_location, max_length=200, null=True, blank=True)
     date_last_seen = models.DateTimeField(null=True)
+    created = models.DateTimeField(auto_now_add=True)
     read_me = models.TextField(blank=True)
     read_me_path = models.CharField(max_length=200, blank=True, default="Readme.txt")
+
+    do_not_download = models.BooleanField(default=False)
 
     hotfix = models.BooleanField(default=False)
 
@@ -121,7 +130,12 @@ class Version(models.Model):
         possible_encodings = ['utf-8', 'Windows-1252']
 
         try:
-            with ZipFile(self.local_file.path) as myzip:
+            if 'AZURE' in os.environ:
+                storage = AzureMediaStorage()
+                fh = storage.open(self.local_file.name, 'r')
+            else:
+                fh = self.local_file.path
+            with ZipFile(fh) as myzip:
                 # For SVSi firmware
                 for item in myzip.filelist:
                     if 'readme' in item.filename.lower():
@@ -165,16 +179,22 @@ class Version(models.Model):
             headers = {'user-agent': 'FirmwareTracker'}
             r = requests.head(self.download_url, headers=headers, allow_redirects=True)
 
+            # Check file length no local copy if it is too big
+            if 'content-length' in r.headers:
+                if int(r.headers['content-length']) >= settings.FIRMWARE_VERSION_MAX_SIZE:
+                    print(f'The version file is too large: {self.name}')
+                    return
+
             filename = os.path.basename(r.url).replace('%20', '_').replace('%2B', '+')
 
-            # Check if we have a copy in backup
-            backup_path = os.path.join("backup_media", upload_path_name(self.name), filename)
-            if os.path.exists(backup_path):
-                with open(backup_path, 'rb') as f:
-                    self.local_file.save(f"{filename}", File(f))
-                    return
-            else: 
-                print(f"Unable to find backup copy: {backup_path}")
+            # # Check if we have a copy in backup
+            # backup_path = os.path.join("backup_media", upload_path_name(self.name), filename)
+            # if os.path.exists(backup_path):
+            #     with open(backup_path, 'rb') as f:
+            #         self.local_file.save(f"{filename}", File(f))
+            #         return
+            # else: 
+            #     print(f"Unable to find backup copy: {backup_path}")
 
             r = requests.get(self.download_url, headers=headers, stream=True)
 
@@ -193,6 +213,7 @@ class Subscriber(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     
     send_email = models.BooleanField(default=True)
+    send_email_even_if_none_found = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user}"

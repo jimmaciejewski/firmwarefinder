@@ -17,6 +17,11 @@
               <a class="nav-link {% if active == 'register' %}active{% endif %}" aria-current="page" href="{% url 'firmware:register' %}">Sign Up</a>
             </li>
           {% endif %}
+          {% if user.is_staff %}
+            <li class="nav-item">
+              <a class="nav-link" aria-current="page" href="/admin">Admin</a>
+            </li>
+          {% endif %}
         </ul>
         <div class="d-flex" role="search">
           <input id="search-box" title="Searches all products, and all firmware README files" name="q" class="form-control me-2" type="search" placeholder="Search" aria-label="Search" value="{% if search %}{{search}}{% endif %}">

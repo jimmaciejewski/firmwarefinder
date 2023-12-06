@@ -6,8 +6,9 @@ app_name = 'firmware'
 
 urlpatterns = [
     path('', views.ProductSearchView.as_view(discontinued=False), name='product-list'),
-    path('discontinued-products', views.ProductSearchView.as_view(discontinued=True), name='discontinued-product-list'),\
+    path('discontinued-products', views.ProductSearchView.as_view(discontinued=True), name='discontinued-product-list'),
 
+    path('newest', views.NewestView.as_view(), name='newest'),
     # path('lines', views.lines, name='lines'),
     # path('sites', views.BrandListView.as_view(), name='brand-list'),
     # path('brand/<int:pk>/', views.BrandDetailView.as_view(), name='brand-detail'),
@@ -19,7 +20,7 @@ urlpatterns = [
     path('profile', views.profile, name='profile'),
     path('download/<int:id>', views.download_local_file, name='download'),
     path('products-search', views.products_search, name='products-search'),
-    path('thanks', views.thanks, name='thanks'),
+    # path('thanks', views.thanks, name='thanks'),
     path('activate-user/<int:id>', views.activate_user, name='activate-user'),
 
 ]

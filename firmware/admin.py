@@ -5,10 +5,11 @@ from .models import Brand, AssociatedName, Product, FG, Version, Subscriber
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ["name", "fg_count"]
+    list_display = ["name", "store_firmware_versions_locally", "fg_count"]
 
     def fg_count(self, obj):
         return str(len(obj.fgs.all()))
+
 
 class FGAdmin(admin.ModelAdmin):
     list_display = ["number", "related_product_count", "products", "related_version_count", "versions"]
@@ -29,6 +30,7 @@ class FGAdmin(admin.ModelAdmin):
         version_list = obj.version_set.all()
         return [version.name for version in version_list]
 
+
 class AssociatedNameAdmin(admin.ModelAdmin):
     list_display = ["name", "count", "products"]
 
@@ -47,18 +49,36 @@ def refresh_readme(modeladmin, request, queryset):
         version.read_me = version.get_release_notes()
         version.save()
 
+
 class VersionAdmin(admin.ModelAdmin):
-    list_display = ["name", "number", "hotfix", "downloaded", "fg_count"]
+    list_display = ["name", "number", "hotfix", "download_blocked", "downloaded", "fg_count"]
     actions = [refresh_readme]
 
+    @admin.display(boolean=True)
+    def download_blocked(self, obj: Version):
+        related_products = Product.objects.filter(fgs__in=obj.fgs.all())
+
+        if any([not product.store_firmware_versions_locally for product in related_products]):
+            return True
+        return obj.do_not_download
+        
+
+    @admin.display(boolean=True)
     def downloaded(self, obj):
         return bool(obj.local_file)
 
     def fg_count(self, obj):
         return str(len(obj.fgs.all()))
 
+
 class SubscriberAdmin(admin.ModelAdmin):
-    list_display = ["user", "send_email"]
+    list_display = ["user", 'get_email_address', "send_email", "send_email_even_if_none_found"]
+
+    def get_email_address(self, obj):
+        return obj.user.email
+    
+    get_email_address.admin_order_field = 'user'
+    get_email_address.short_description = 'Email Address'
 
 
 admin.site.register(Brand)
