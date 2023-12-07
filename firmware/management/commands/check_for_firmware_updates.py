@@ -150,6 +150,9 @@ class Command(BaseCommand):
 
                 dlp_soup = BeautifulSoup(dlp_response.content, 'html.parser')
                 download_url = self.get_file_download_url_from_amx_download_page(dlp_soup)
+                if download_url == "":
+                    self.stdout.write(self.style.WARNING(f"Skipping {name} {version_number} {download_page_full_url}"))
+                    continue
                 new_version, created = Version.objects.get_or_create(name=name,
                                                                      number=version_number,
                                                                      download_page=download_page_full_url,
@@ -198,7 +201,7 @@ class Command(BaseCommand):
         for link in links:
             version_number = self.regex_download_link(link)
             if not version_number:
-                self.stdout.write(self.style.ERROR(f"Unable to get version number for {link}"))
+                self.stdout.write(self.style.ERROR(f"Unable to get version number for https://help.harmanpro.com{link}"))
                 continue
             new_version, created = Version.objects.get_or_create(name=title,
                                                                  number=version_number,

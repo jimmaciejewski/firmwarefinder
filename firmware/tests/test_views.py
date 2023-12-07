@@ -29,7 +29,7 @@ class RegisterTest(TestCase):
                                                   'email': 'test@example.com',
                                                   'password1': 'letmein!!',
                                                   'password2': 'letmein!!'})
-        
+
         self.assertInHTML('Thanks for subscribing!', response.content.decode())
         new_user = User.objects.get(username='test.example')
         self.assertEqual(new_user.username, 'test.example')
@@ -42,8 +42,7 @@ class TestLogInWithEmail(TestCase):
     def test_login_page_has_email_as_login(self):
         response = self.client.post("/login")
         self.assertInHTML("Email", response.content.decode())
-
-        
+ 
     def test_able_to_login_with_email(self):
         new_user = User.objects.create(username="test user", email="test@example.com", is_active=True)
         new_user.set_password('letmein!!')
@@ -57,7 +56,6 @@ class TestLogInWithEmail(TestCase):
         user = auth.get_user(self.client)
 
         self.assertTrue(user.is_authenticated)
-
 
     def test_subscribe_to_emails_enable_disable(self):
         new_user = User.objects.create(username="test user", email="test@example.com", is_active=True)
@@ -100,7 +98,7 @@ class TestResetPassword(TestCase):
     def test_clicking_reset_password_sends_email(self):
         response = self.client.get('/accounts/password_reset/')
         self.assertInHTML('Reset Password', response.content.decode())
-        
+   
     def test_submit_password_reset(self):
         response = self.client.post('/accounts/password_reset/', {'email': 'test@example.com'})
         self.assertRedirects(response, '/accounts/password_reset/done/', status_code=302, target_status_code=200, fetch_redirect_response=True)

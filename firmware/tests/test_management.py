@@ -91,7 +91,6 @@ class CheckFirmwareTest(TestCase):
         readme = Command.get_readme_from_hotfix_page(None, soup)
         self.assertEqual(len(readme[0].text), 3568)
 
-
     def test_create_fgs_from_readme(self):
         '''Given some HTML get FGS from readme'''
         from .html_examples import page_readme
@@ -108,7 +107,6 @@ class CheckFirmwareTest(TestCase):
     #     soup = BeautifulSoup(harman_download_page, 'html.parser')
     #     links = Command.get_links_from_hotfix_page(None, soup)
     #     self.assertEqual(links, 3568)
-
 
     def test_get_download_link_from_download_field(self):
         '''Given a download field and html creates a version'''
@@ -136,6 +134,12 @@ class CheckFirmwareTest(TestCase):
                                      ('NX Series (X200) NX/MCP/DGX Controller Firmware',
                                       '1.6.179',
                                       '/en-US/softwares/nx-series-x200-nx-mcp-dgx-controller-firmware-v1-6-179')])
+
+    def test_url_returned_from_page(self):
+        from .html_examples import nx_no_url
+        soup = BeautifulSoup(nx_no_url, 'html.parser')
+        dl_url = Command.get_file_download_url_from_amx_download_page(None, soup)
+        self.assertEqual(dl_url, "https://adn.harmanpro.com/softwares/wares/1882_1601577124/SW2106_NX-X200_Master_v1_6_179.zip")
 
     # def test_get_firmware_values_from_html_software_table(self):
     #     # import requests
