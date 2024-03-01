@@ -20,15 +20,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
-if 'DJANGO_DEBUG_FALSE' in os.environ:  
+if 'DJANGO_DEBUG_FALSE' in os.environ:
     DEBUG = False
-    SECRET_KEY = os.environ['DJANGO_SECRET_KEY']  
-    ALLOWED_HOSTS = [os.environ['SITENAME']]  
+    SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
+    ALLOWED_HOSTS = [os.environ['SITENAME']]
 else:
-    DEBUG = True  
+    DEBUG = True
     SECRET_KEY = 'insecure-key-for-dev'
     ALLOWED_HOSTS = ["*"]
-
 
 
 # Application definition
@@ -146,7 +145,7 @@ USE_TZ = True
 
 if 'AZURE' in os.environ:
     DEFAULT_FILE_STORAGE = 'firmwarefinder.storage.AzureMediaStorage'
-    STATICFILES_STORAGE  = 'firmwarefinder.storage.AzureStaticStorage'
+    STATICFILES_STORAGE = 'firmwarefinder.storage.AzureStaticStorage'
 
     AZURE_STORAGE_KEY = os.environ.get('AZURE_STORAGE_KEY', False)
     AZURE_ACCOUNT_NAME = "firmwaredemo"  # your account name
@@ -160,14 +159,25 @@ if 'AZURE' in os.environ:
     MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{AZURE_MEDIA_CONTAINER}/'
 
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-    # any static paths you want to publish
-    # STATICFILES_DIRS = [
-    #     os.path.join(BASE_DIR, 'demo', 'static')
-    # ]
+
+elif 'GOOGLE' in os.environ:
+    DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+    STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+
+    GOOGLE_APPLICATION_CREDENTIALS = "firmwarefinder-0d0df37a6b14.json"
+    GS_BUCKET_NAME = 'firmware_finder_media'
+    GS_DEFAULT_ACL = None
+    GS_QUERYSTRING_AUTH = False
+
+    # STATIC_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{AZURE_STATIC_CONTAINER}/'
+    # MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{AZURE_MEDIA_CONTAINER}/'
+
+    # STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 
 else:
     AZURE_ACCOUNT_NAME = None
-    AZURE_STORAGE_KEY= None
+    AZURE_STORAGE_KEY = None
     STATIC_URL = 'static/'
     STATIC_ROOT = BASE_DIR / '../static/'
 
@@ -179,7 +189,7 @@ else:
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-if 'DJANGO_DEBUG_FALSE' in os.environ:  
+if 'DJANGO_DEBUG_FALSE' in os.environ:
     CAPTCHA_SITEKEY = os.environ['CAPTCHA_SITEKEY']
     CAPTCHA_SECRET_KEY = os.environ['CAPTCHA_SECRET_KEY']
 else:
@@ -187,7 +197,7 @@ else:
     CAPTCHA_SITEKEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
     CAPTCHA_SECRET_KEY = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
 
-if 'DJANGO_DEBUG_FALSE' in os.environ:  
+if 'DJANGO_DEBUG_FALSE' in os.environ:
     EMAIL_BACKEND = "mailer.backend.DbBackend"
     DEFAULT_FROM_EMAIL = os.environ['EMAIL_DEFAULT_USER']
     EMAIL_USE_TLS = True
@@ -203,11 +213,11 @@ else:
     EMAIL_HOST = os.environ['EMAIL_HOST']
     EMAIL_HOST_USER = 'user'
     EMAIL_HOST_PASSWORD = 'password'
-    EMAIL_PORT = 587 
+    EMAIL_PORT = 587
 
 LOGIN_REDIRECT_URL = '/'
 
-CSRF_TRUSTED_ORIGINS = ['https://'+ os.environ['SITENAME']]
+CSRF_TRUSTED_ORIGINS = ['https://' + os.environ['SITENAME']]
 
 
 FIRMWARE_VERSION_MAX_SIZE = 500000000

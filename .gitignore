@@ -8,3 +8,8 @@ db.sqlite3
 test-reports/report.xml
 firmware/tests/test-reports/report.xml
 firmware/static/firmware/img/waiting/
+.env
+firmwarefinder-0d0df37a6b14.json
+firmwarefinder.code-workspace
+.vscode/
+virtualenv/

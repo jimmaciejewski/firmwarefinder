@@ -3,6 +3,7 @@ from zipfile import ZipFile, BadZipFile
 from django.core.files import File
 from django.contrib.auth.models import User
 from django.conf import settings
+from storages.backends.gcloud import GoogleCloudStorage
 import os
 
 if 'AZURE' in os.environ:
@@ -10,6 +11,8 @@ if 'AZURE' in os.environ:
 
 import requests
 from tempfile import TemporaryFile
+
+storage = GoogleCloudStorage()
 
 
 class Brand(models.Model):
@@ -40,7 +43,7 @@ class AssociatedName(models.Model):
     """ The associated names, these are the names that products are referred to.
         For example:
         NMX-ENC-N2412A Encoder
-        or N2412A 
+        or N2412A
         or ENC-N2412A
         or n2400-svsi-hotfix-firmware-updater
     """
@@ -74,7 +77,7 @@ class Product(models.Model):
         new_name = self.create_dashless_associated_name()
         self.associated_names.add(new_name)
         return product
-  
+
     def __str__(self):
         return f"{self.name}"
 
@@ -83,7 +86,7 @@ def upload_path_name(name):
     replacement_list = ['/', ' ', ':', '&', '(', ')']
     for item in replacement_list:
         name = name.replace(item, '-')
-    # Remove trailing - 
+    # Remove trailing -
     if name[-1] == '-':
         name = name[:-1]
     # Remove double --
@@ -193,7 +196,7 @@ class Version(models.Model):
             #     with open(backup_path, 'rb') as f:
             #         self.local_file.save(f"{filename}", File(f))
             #         return
-            # else: 
+            # else:
             #     print(f"Unable to find backup copy: {backup_path}")
 
             r = requests.get(self.download_url, headers=headers, stream=True)
@@ -203,7 +206,14 @@ class Version(models.Model):
 
             tf.seek(0)
 
-            self.local_file.save(f"{filename}", File(tf))
+            if "GOOGLE-STORAGE" in os.environ:
+                try:
+                    path = storage.save(filename, File(tf))
+                    return storage.url(path)
+                except Exception as e:
+                    print("Failed to upload!")
+            else:
+                self.local_file.save(f"{filename}", File(tf))
 
     def __str__(self):
         return f"{self.name} v{self.number}"
@@ -211,7 +221,7 @@ class Version(models.Model):
 
 class Subscriber(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    
+
     send_email = models.BooleanField(default=True)
     send_email_even_if_none_found = models.BooleanField(default=False)
 
