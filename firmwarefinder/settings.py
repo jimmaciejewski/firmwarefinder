@@ -180,15 +180,15 @@ elif 'GOOGLE' in os.environ:
     GS_CREDENTIALS = service_account.Credentials.from_service_account_file("../firmwarefinder-0d0df37a6b14.json")
 
     GS_BUCKET_NAME = 'firmware_finder'
-    # GS_DEFAULT_ACL = None
-    # GS_QUERYSTRING_AUTH = False
+    GS_DEFAULT_ACL = None
+    GS_QUERYSTRING_AUTH = False
 
-    STATIC_URL = f'https://storage.googleapis.com/firmware_finder/'
-    MEDIA_URL = f'https://storage.googleapis.com/firmware_finder/'
+    STATIC_URL = 'https://storage.googleapis.com/firmware_finder/'
+    MEDIA_URL = 'https://storage.googleapis.com/firmware_finder/'
 
-    # STATIC_URL = 'static/'
-    # STATIC_ROOT = BASE_DIR / '../static/'
-    # STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    STATIC_URL = 'static/'
+    STATIC_ROOT = BASE_DIR / '../static/'
+
 
 else:
     AZURE_ACCOUNT_NAME = None
