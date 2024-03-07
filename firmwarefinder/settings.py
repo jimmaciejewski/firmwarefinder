@@ -14,6 +14,8 @@ from pathlib import Path
 import os
 from google.oauth2 import service_account
 
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -173,14 +175,16 @@ if 'AZURE' in os.environ:
 elif 'GOOGLE' in os.environ:
     DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
     STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+    # DEFAULT_FILE_STORAGE = "core.gcsUtils.Media"
+    # STATICFILES_STORAGE = "core.gcsUtils.Static"
     GS_CREDENTIALS = service_account.Credentials.from_service_account_file("../firmwarefinder-0d0df37a6b14.json")
 
     GS_BUCKET_NAME = 'firmware_finder'
     # GS_DEFAULT_ACL = None
     # GS_QUERYSTRING_AUTH = False
 
-    STATIC_URL = f'https://storage.googleapis.com/firmware_finde/static/'
-    MEDIA_URL = f'https://storage.googleapis.com/firmware_finder/media/'
+    STATIC_URL = f'https://storage.googleapis.com/firmware_finder/'
+    MEDIA_URL = f'https://storage.googleapis.com/firmware_finder/'
 
     # STATIC_URL = 'static/'
     # STATIC_ROOT = BASE_DIR / '../static/'
@@ -231,4 +235,4 @@ LOGIN_REDIRECT_URL = '/'
 CSRF_TRUSTED_ORIGINS = ['https://' + os.environ['SITENAME']]
 
 
-FIRMWARE_VERSION_MAX_SIZE = 500000000
+FIRMWARE_VERSION_MAX_SIZE = 50000000000
