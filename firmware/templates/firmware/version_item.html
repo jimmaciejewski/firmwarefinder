@@ -23,7 +23,7 @@
     <small>Last seen on the website: {{ version.date_last_seen|date:"d-M-Y" }}</small>
       {% if show_local %}
         {% if version.local_file %}
-          <a href="{% url 'firmware:download' version.id %}" class="btn btn-outline-success download-button m-1">Local Copy</a>
+          <a href="{{ version.local_file.url }}" class="btn btn-outline-success download-button m-1">Local Copy</a>
         {% endif %}
       {% endif %}
   </div>
