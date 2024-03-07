@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import os
+from google.oauth2 import service_account
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -99,6 +100,14 @@ if 'AZURE' in os.environ:
             'OPTIONS': {'sslmode': os.environ['DATABASE_SSL']}
         }
     }
+elif 'LOCAL' in os.environ:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / '../database/test_db.sql',
+        }
+    }
+
 else:
     DATABASES = {
         'default': {
@@ -109,6 +118,7 @@ else:
             'PASSWORD': os.environ['DATABASE_PASSWORD']
         }
     }
+
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
@@ -163,17 +173,18 @@ if 'AZURE' in os.environ:
 elif 'GOOGLE' in os.environ:
     DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
     STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_file("firmwarefinder-0d0df37a6b14.json")
 
-    GOOGLE_APPLICATION_CREDENTIALS = "firmwarefinder-0d0df37a6b14.json"
-    GS_BUCKET_NAME = 'firmware_finder_media'
-    GS_DEFAULT_ACL = None
-    GS_QUERYSTRING_AUTH = False
+    GS_BUCKET_NAME = 'firmware_finder'
+    # GS_DEFAULT_ACL = None
+    # GS_QUERYSTRING_AUTH = False
 
-    # STATIC_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{AZURE_STATIC_CONTAINER}/'
-    # MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{AZURE_MEDIA_CONTAINER}/'
+    STATIC_URL = f'https://storage.googleapis.com/firmware_finde/static/'
+    MEDIA_URL = f'https://storage.googleapis.com/firmware_finder/media/'
 
+    # STATIC_URL = 'static/'
+    # STATIC_ROOT = BASE_DIR / '../static/'
     # STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
 
 else:
     AZURE_ACCOUNT_NAME = None
