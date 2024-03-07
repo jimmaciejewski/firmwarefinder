@@ -6,14 +6,10 @@ from django.conf import settings
 from storages.backends.gcloud import GoogleCloudStorage
 import os
 
-if 'AZURE' in os.environ:
-    from firmwarefinder.storage import AzureMediaStorage
-
 import requests
 from tempfile import TemporaryFile
 
 storage = GoogleCloudStorage()
-
 
 class Brand(models.Model):
     """ The Brand of the product ie AMX BSS Crown
@@ -133,8 +129,7 @@ class Version(models.Model):
         possible_encodings = ['utf-8', 'Windows-1252']
 
         try:
-            if 'AZURE' in os.environ:
-                storage = AzureMediaStorage()
+            if 'GOOGLE' in os.environ:
                 fh = storage.open(self.local_file.name, 'r')
             else:
                 fh = self.local_file.path
@@ -206,7 +201,7 @@ class Version(models.Model):
 
             tf.seek(0)
 
-            if "GOOGLE-STORAGE" in os.environ:
+            if "GOOGLE" in os.environ:
                 try:
                     path = storage.save(filename, File(tf))
                     return storage.url(path)

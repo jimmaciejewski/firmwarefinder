@@ -173,7 +173,7 @@ if 'AZURE' in os.environ:
 elif 'GOOGLE' in os.environ:
     DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
     STATICFILES_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
-    GS_CREDENTIALS = service_account.Credentials.from_service_account_file("firmwarefinder-0d0df37a6b14.json")
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_file("../firmwarefinder-0d0df37a6b14.json")
 
     GS_BUCKET_NAME = 'firmware_finder'
     # GS_DEFAULT_ACL = None
