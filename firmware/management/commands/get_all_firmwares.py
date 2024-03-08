@@ -16,5 +16,5 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.WARNING(f"Version marked do not download: {version.name}"))
                 continue
             if not version.local_file and not version.do_not_download:
-                self.stdout.write(self.style.SUCCESS(f'Downloading a firmware version: {version.name}'))
+                self.stdout.write(self.style.SUCCESS(f'Downloading a firmware version: {version.name} - {version.number}'))
                 version.download_firmware()
