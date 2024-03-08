@@ -184,30 +184,11 @@ class Version(models.Model):
                     return
 
             filename = os.path.basename(r.url).replace('%20', '_').replace('%2B', '+')
-
-            # # Check if we have a copy in backup
-            # backup_path = os.path.join("backup_media", upload_path_name(self.name), filename)
-            # if os.path.exists(backup_path):
-            #     with open(backup_path, 'rb') as f:
-            #         self.local_file.save(f"{filename}", File(f))
-            #         return
-            # else:
-            #     print(f"Unable to find backup copy: {backup_path}")
-
             r = requests.get(self.download_url, headers=headers, stream=True)
 
             for chunk in r.iter_content(chunk_size=4096):
                 tf.write(chunk)
-
             tf.seek(0)
-
-            # if "GOOGLE" in os.environ:
-            #     try:
-            #         path = storage.save(filename, File(tf))
-            #         return storage.url(path)
-            #     except Exception as e:
-            #         print("Failed to upload!")
-            # else:
             self.local_file.save(f"{filename}", File(tf))
 
     def __str__(self):
