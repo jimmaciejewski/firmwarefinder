@@ -10,6 +10,9 @@ class Command(BaseCommand):
             if version.local_file:
                 r = requests.head(url=version.local_file.url)
                 if r.status_code != 200:
-                    self.stdout.write(self.style.ERROR(f"{version} has a bad link, code: {r.status_code}"))
+                    self.stdout.write(self.style.ERROR(f"{version} has a bad link, code: {r.status_code} -- removing file"))
+                    version.local_file.delete()
+                    version.save()
+
                 else:
                     self.stdout.write(self.style.SUCCESS(f"{version} has a good link!"))
