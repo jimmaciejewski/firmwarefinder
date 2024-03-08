@@ -201,14 +201,14 @@ class Version(models.Model):
 
             tf.seek(0)
 
-            if "GOOGLE" in os.environ:
-                try:
-                    path = storage.save(filename, File(tf))
-                    return storage.url(path)
-                except Exception as e:
-                    print("Failed to upload!")
-            else:
-                self.local_file.save(f"{filename}", File(tf))
+            # if "GOOGLE" in os.environ:
+            #     try:
+            #         path = storage.save(filename, File(tf))
+            #         return storage.url(path)
+            #     except Exception as e:
+            #         print("Failed to upload!")
+            # else:
+            self.local_file.save(f"{filename}", File(tf))
 
     def __str__(self):
         return f"{self.name} v{self.number}"
