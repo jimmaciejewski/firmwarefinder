@@ -1,8 +1,8 @@
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from firmware.models import Version
+from storages.backends.gcloud import GoogleCloudStorage
 import os
-
 
 class Command(BaseCommand):
     help = 'Removes any unused or oversized files in the media directory'
@@ -20,40 +20,25 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('Checking files in media directory....'))
         if options['dry_run']:
             self.stdout.write(self.style.SUCCESS('In DRY RUN mode....'))
-        for path, subdirs, files in os.walk(settings.MEDIA_ROOT):
-            for name in files:
-                # First check if we are using the file
-                folder = os.path.split(path)[1]
-                local_file_name = os.path.join(folder, name)
-                try:
-                    version = Version.objects.get(local_file=local_file_name)
-                except Exception as error:
-                    self.stdout.write(self.style.WARNING(f'{error}'))
-                    self.stdout.write(self.style.WARNING(f'Unable to find version, removing: {local_file_name}'))
-                    if not options['dry_run']:
-                        os.remove(os.path.join(path, name))
-                    continue
-                # Check if the file is too big
-                if os.path.getsize(os.path.join(path, name)) >= settings.FIRMWARE_VERSION_MAX_SIZE:
-                    self.stdout.write(self.style.WARNING(f'Need to remove oversized file {local_file_name}'))
-                    if not options['dry_run']:
-                        self.stdout.write(self.style.WARNING(f'Removing local_file link {local_file_name}'))
-                        version.local_file.delete()
-                        version.do_not_download = True
-                        version.save()
-            if not files and os.path.split(path)[1] != 'media':
-                self.stdout.write(self.style.WARNING(f"Removing extra folder: {path}"))
+        storage = GoogleCloudStorage()
+
+        for blob in storage.client.list_blobs(bucket_or_name='firmware_finder'):
+            self.stdout.write(self.style.SUCCESS(f'{blob.name}'))
+
+            # First check if we are using the file
+            try:
+                folder, file_name = os.path.split(blob.name)
+            except Exception as error:
+                self.stdout.write(self.style.WARNING(f'No Folder, ignoring? {blob.name}'))
+                continue
+
+            version = Version.objects.filter(local_file=blob.name).first()
+            if version:
+                self.stdout.write(self.style.SUCCESS(f'Matched file: {blob.name} on {version.name} {version.number}'))
+            else:
                 if not options['dry_run']:
-                    os.rmdir(path)
-
-        self.stdout.write(self.style.SUCCESS('Checking all version linked files are valid'))
-        for version in Version.objects.all():
-            if version.local_file:
-                if not os.path.exists(version.local_file.path):
-                    self.stdout.write(self.style.WARNING(f'I should remove local file as I cannot find it: {version.local_file}'))
-                    if not options['dry_run']:
-                        version.local_file.delete()
-                        version.save()
+                    storage.delete(blob.name)
+                    self.stdout.write(self.style.SUCCESS(f'Removed!: {blob.name}'))
+                    quit()
                 else:
-                    self.stdout.write(self.style.SUCCESS(f'This file is fine: {version.local_file}'))
-
+                    self.stdout.write(self.style.WARNING(f'Unable to find version, would be removing: {blob.name}'))

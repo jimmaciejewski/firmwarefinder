@@ -3,13 +3,12 @@ from zipfile import ZipFile, BadZipFile
 from django.core.files import File
 from django.contrib.auth.models import User
 from django.conf import settings
-from storages.backends.gcloud import GoogleCloudStorage
 import os
 
 import requests
 from tempfile import TemporaryFile
 
-storage = GoogleCloudStorage()
+
 
 class Brand(models.Model):
     """ The Brand of the product ie AMX BSS Crown
@@ -129,10 +128,7 @@ class Version(models.Model):
         possible_encodings = ['utf-8', 'Windows-1252']
 
         try:
-            if 'GOOGLE' in os.environ:
-                fh = storage.open(self.local_file.name, 'r')
-            else:
-                fh = self.local_file.path
+            fh = self.local_file.path
             with ZipFile(fh) as myzip:
                 # For SVSi firmware
                 for item in myzip.filelist:
